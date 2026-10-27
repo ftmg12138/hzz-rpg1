@@ -1,0 +1,11 @@
+node_modules/
+.wrangler/
+Dist/
+dist/
+.build/
+*.log
+.DS_Store
+.env
+.env.*
+shots/
+.cache/

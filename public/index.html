@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="雾钟城：第七声 — 单人文字冒险 RPG" />
+  <title>雾钟城：第七声</title>
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23121820'/%3E%3Cpath d='M32 10v36M20 22h24' stroke='%23c9a86a' stroke-width='3' fill='none'/%3E%3Ccircle cx='32' cy='48' r='4' fill='%23c9a86a'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <div id="fog" aria-hidden="true"></div>
+  <div id="app">
+    <!-- Title -->
+    <section id="screen-title" class="screen active">
+      <div class="title-card">
+        <p class="eyebrow">单人文字冒险</p>
+        <h1>雾钟城：第七声</h1>
+        <p class="tagline">钟骨苏醒。回声病蔓延。你还有不到一夜，决定失去什么。</p>
+        <div class="title-actions">
+          <button type="button" class="btn primary" id="btn-new">开始旅程</button>
+          <button type="button" class="btn" id="btn-continue" hidden>继续存档</button>
+          <button type="button" class="btn ghost" id="btn-load">读取存档</button>
+          <button type="button" class="btn ghost" id="btn-endings">已见结局</button>
+        </div>
+        <p class="hint">本地存档 · 无需登录 · 约 60–80 分钟</p>
+      </div>
+    </section>
+
+    <!-- Character select -->
+    <section id="screen-chars" class="screen">
+      <div class="panel">
+        <header class="panel-head">
+          <h2>选择主角</h2>
+          <p>未被选择的两人会作为重要 NPC 登场。界面不显示六维数值。</p>
+        </header>
+        <div id="char-grid" class="char-grid"></div>
+        <button type="button" class="btn ghost" id="btn-chars-back">返回</button>
+      </div>
+    </section>
+
+    <!-- Game -->
+    <section id="screen-game" class="screen">
+      <header class="hud">
+        <div class="hud-left">
+          <span id="hud-name" class="hud-name"></span>
+          <span id="hud-loc" class="hud-loc"></span>
+        </div>
+        <div class="hud-mid">
+          <span id="hud-time" title="时间"></span>
+          <span id="hud-resonance" title="共鸣压力"></span>
+          <span id="hud-hp" title="伤势"></span>
+        </div>
+        <div class="hud-right">
+          <button type="button" class="icon-btn" id="btn-journal" title="日志">日志</button>
+          <button type="button" class="icon-btn" id="btn-bag" title="行囊">行囊</button>
+          <button type="button" class="icon-btn" id="btn-save" title="存档">存档</button>
+          <button type="button" class="icon-btn" id="btn-menu" title="菜单">菜单</button>
+        </div>
+      </header>
+      <main class="stage">
+        <h2 id="node-title" class="node-title"></h2>
+        <article id="node-text" class="node-text" aria-live="polite"></article>
+        <div id="check-result" class="check-result" hidden></div>
+        <div id="choices" class="choices"></div>
+      </main>
+    </section>
+
+    <!-- Overlays -->
+    <div id="overlay" class="overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true">
+        <header class="modal-head">
+          <h3 id="modal-title"></h3>
+          <button type="button" class="icon-btn" id="modal-close" aria-label="关闭">×</button>
+        </header>
+        <div id="modal-body" class="modal-body"></div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+  </div>
+  <script src="js/checks.js"></script>
+  <script src="js/save.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "wuzhongcheng-rpg",
+  "private": true,
+  "description": "雾钟城：第七声 — static text RPG for rpg.xyzhzz.com",
+  "scripts": {
+    "parse": "python3 tools/parse-script.py && python3 tools/synthesize-extra.py",
+    "deploy": "bash scripts/deploy.sh",
+    "push": "bash scripts/push.sh"
+  },
+  "dependencies": {
+    "wrangler": "^4.30.0"
+  }
+}
