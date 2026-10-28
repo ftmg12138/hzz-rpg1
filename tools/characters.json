@@ -1,0 +1,111 @@
+{
+ "edric": {
+  "id": "edric",
+  "name": "艾德里克",
+  "title": "人类斥候",
+  "blurb": "善于察觉与潜行。为了妹妹的离境文书，他走在北路的雨里。",
+  "traits": [
+   "善于察觉",
+   "身手敏捷",
+   "寡言"
+  ],
+  "stats": {
+   "STR": 12,
+   "DEX": 15,
+   "CON": 13,
+   "CHA": 10,
+   "INS": 15,
+   "WIL": 12
+  },
+  "hp": 16,
+  "max_hp": 16,
+  "carried": [
+   "border_sword",
+   "hand_crossbow",
+   "6_bolts",
+   "lily_comb",
+   "8_vouchers"
+  ],
+  "storage": [
+   "bedroll",
+   "winter_cloak",
+   "28_vouchers"
+  ],
+  "fragment": "memory_ring",
+  "fragment_name": "旧雨骨（铁戒指）",
+  "private_goal": "secure_exit_writ",
+  "start": "E-PRO-01"
+ },
+ "liriel": {
+  "id": "liriel",
+  "name": "莉瑞尔",
+  "title": "半精灵流亡者",
+  "blurb": "口才与魅力出众。十年前的哨所旧案仍缠着她的银链。",
+  "traits": [
+   "能言善辩",
+   "身手敏捷",
+   "心事重"
+  ],
+  "stats": {
+   "STR": 9,
+   "DEX": 15,
+   "CON": 11,
+   "CHA": 16,
+   "INS": 14,
+   "WIL": 13
+  },
+  "hp": 12,
+  "max_hp": 12,
+  "carried": [
+   "elf_rapier",
+   "burnt_ledger",
+   "chalk",
+   "11_vouchers"
+  ],
+  "storage": [
+   "lute",
+   "spare_dress",
+   "9_vouchers"
+  ],
+  "fragment": "desire_chain",
+  "fragment_name": "饥月骨（银链）",
+  "private_goal": "learn_outpost_truth",
+  "start": "L-PRO-01"
+ },
+ "thorin": {
+  "id": "thorin",
+  "name": "索林",
+  "title": "矮人工匠",
+  "blurb": "体格结实，拒不认输。怀表里的裂锤骨会放大他的愤怒。",
+  "traits": [
+   "体格结实",
+   "力大",
+   "工匠之手"
+  ],
+  "stats": {
+   "STR": 16,
+   "DEX": 9,
+   "CON": 16,
+   "CHA": 10,
+   "INS": 12,
+   "WIL": 14
+  },
+  "hp": 24,
+  "max_hp": 24,
+  "carried": [
+   "old_hammer",
+   "rune_pick",
+   "delivery_receipt",
+   "5_vouchers"
+  ],
+  "storage": [
+   "tool_chest",
+   "spare_parts",
+   "24_vouchers"
+  ],
+  "fragment": "anger_watch",
+  "fragment_name": "裂锤骨（怀表）",
+  "private_goal": "obtain_delivery_seal",
+  "start": "T-PRO-01"
+ }
+}

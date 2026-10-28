@@ -12,7 +12,9 @@ DIST="${DIST:-$ROOT/public}"
 
 if [[ "${SKIP_PARSE:-0}" != "1" ]]; then
   python3 "$ROOT/tools/parse-script.py"
-  python3 "$ROOT/tools/synthesize-extra.py"
+  # 有任何原始标记泄漏或结构错误时，lint 以非零退出，阻止部署
+  python3 "$ROOT/tools/lint-nodes.py"
+  python3 "$ROOT/tools/audit-text.py"
 fi
 
 if [[ ! -x "$ROOT/node_modules/.bin/wrangler" ]]; then

@@ -142,3 +142,33 @@ body { overflow-x: hidden; }
   margin-top: 12px; font-size: 11px; color: var(--muted); font-family: ui-monospace, monospace;
   white-space: pre-wrap; border-top: 1px dashed var(--line); padding-top: 8px;
 }
+
+/* v2 */
+.node-id { color: var(--muted); font-family: ui-monospace, monospace; font-size: 11px; }
+.node-text p, .result p { margin: 0 0 .9em; }
+.node-text { white-space: normal; }
+.b-inner { color: #b7a0d4; font-style: italic; }
+.b-note { color: var(--muted); font-size: 15px; }
+.b-say .speaker { display: inline-block; margin-right: .6em; color: var(--accent2); font-family: var(--sans); font-size: 14px; font-weight: 600; }
+.b-say .line { color: #e8dcc0; }
+.b-h { font-family: var(--serif); color: var(--accent); font-size: 17px; margin: 1.2em 0 .5em; }
+.result { font-family: var(--serif); font-size: 16px; line-height: 1.85; margin: 0 0 18px; padding: 12px 14px; border-left: 3px solid var(--accent); background: #10161fcc; border-radius: 0 10px 10px 0; }
+.you-chose { font-family: var(--sans); font-size: 13px; color: var(--accent); margin-bottom: 6px; }
+.you-chose::before { content: "▸ "; }
+.check-line { font-family: var(--sans); font-size: 13px; margin-bottom: 8px; padding: 4px 10px; border-radius: 999px; display: inline-block; border: 1px solid var(--line); }
+.check-line.ok { color: var(--ok); border-color: #2a5a40; }
+.check-line.fail { color: var(--danger); border-color: #5a3030; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chip { font-family: var(--sans); font-size: 12px; padding: 3px 10px; border-radius: 999px; background: #1a2230; border: 1px solid var(--line); }
+.chip.good { color: var(--ok); } .chip.bad { color: var(--danger); }
+.reread { color: var(--muted); font-size: 14px; }
+.reread summary { cursor: pointer; margin-bottom: 8px; }
+.hub-status { margin-top: 16px; font-size: 13px; color: var(--accent2); padding: 6px 12px; border: 1px dashed var(--line); border-radius: 8px; display: inline-block; }
+.hub-status[hidden] { display: none !important; }
+.choice { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 0; }
+.choice .label { flex: 1 1 70%; }
+.choice .tags { flex-basis: 100%; padding-left: 22px; display: flex; gap: 6px; flex-wrap: wrap; }
+.choice .tag { font-size: 12px; color: var(--accent2); }
+.choice .tag::before { content: "「"; } .choice .tag::after { content: "」"; }
+.menu { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.modal-body h4 { margin: 12px 0 4px; color: var(--accent); font-family: var(--serif); }

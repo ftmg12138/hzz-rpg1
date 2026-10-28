@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="雾钟城：第七声 — 单人文字冒险 RPG" />
   <title>雾钟城：第七声</title>
-  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/app.css?v=2" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23121820'/%3E%3Cpath d='M32 10v36M20 22h24' stroke='%23c9a86a' stroke-width='3' fill='none'/%3E%3Ccircle cx='32' cy='48' r='4' fill='%23c9a86a'/%3E%3C/svg%3E" />
 </head>
 <body>
@@ -23,7 +23,7 @@
           <button type="button" class="btn ghost" id="btn-load">读取存档</button>
           <button type="button" class="btn ghost" id="btn-endings">已见结局</button>
         </div>
-        <p class="hint">本地存档 · 无需登录 · 约 60–80 分钟</p>
+        <p class="hint">本地存档 · 无需登录 · 三位主角 · 十余种结局</p>
       </div>
     </section>
 
@@ -32,7 +32,7 @@
       <div class="panel">
         <header class="panel-head">
           <h2>选择主角</h2>
-          <p>未被选择的两人会作为重要 NPC 登场。界面不显示六维数值。</p>
+          <p>未被选择的两人会作为同行者在故事中登场。</p>
         </header>
         <div id="char-grid" class="char-grid"></div>
         <button type="button" class="btn ghost" id="btn-chars-back">返回</button>
@@ -48,8 +48,9 @@
         </div>
         <div class="hud-mid">
           <span id="hud-time" title="时间"></span>
+          <span id="hud-hp" title="体力"></span>
+          <span id="hud-vouchers" title="商会券"></span>
           <span id="hud-resonance" title="共鸣压力"></span>
-          <span id="hud-hp" title="伤势"></span>
         </div>
         <div class="hud-right">
           <button type="button" class="icon-btn" id="btn-journal" title="日志">日志</button>
@@ -59,9 +60,10 @@
         </div>
       </header>
       <main class="stage">
-        <h2 id="node-title" class="node-title"></h2>
-        <article id="node-text" class="node-text" aria-live="polite"></article>
-        <div id="check-result" class="check-result" hidden></div>
+        <div id="result" class="result" aria-live="polite" hidden></div>
+        <h2 id="node-title" class="node-title"></h2><small id="node-id" class="node-id"></small>
+        <article id="node-text" class="node-text"></article>
+        <div id="hub-status" class="hub-status" hidden></div>
         <div id="choices" class="choices"></div>
       </main>
     </section>
@@ -79,10 +81,10 @@
 
     <div id="toast" class="toast" hidden></div>
   </div>
-  <script src="js/checks.js"></script>
-  <script src="js/save.js"></script>
-  <script src="js/engine.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/checks.js?v=2"></script>
+  <script src="js/save.js?v=2"></script>
+  <script src="js/engine.js?v=2"></script>
+  <script src="js/ui.js?v=2"></script>
+  <script src="js/main.js?v=2"></script>
 </body>
 </html>

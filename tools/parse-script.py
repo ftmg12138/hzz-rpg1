@@ -1,822 +1,778 @@
 #!/usr/bin/env python3
-"""Parse 《雾钟城：第七声》 markdown scripts into public/data/nodes.json + meta.json."""
-from __future__ import annotations
+"""v2 parser for 《雾钟城：第七声》.
 
-import json
-import re
-import sys
+Turns the markdown scripts into structured nodes:
+  node = {id, title, kind, blocks:[{t, who?, text, cond?}], choices:[choice], default_next, routes, hub?, ...}
+  choice = {id, label, group?, cond?, mark?, once, check?, cost?, result:[blocks], effects:[ops],
+            next, success:{result,effects,next}, fail:{...}, sub:[choice]}
+Nothing shown to the player keeps markdown, dev variables, node ids or 〔〕 annotations.
+"""
+from __future__ import annotations
+import json, re, sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+import wzc_text as T
+from wzc_text import sanitize, label_clean, parse_effects, find_check, parse_cond, CTX, NODE_ID_RX, narrate
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "script"
 OUT = ROOT / "public" / "data"
+sys.path.insert(0, str(ROOT / "tools"))
+from wzc_names import ITEM_NAMES, NPC_NAMES  # noqa: E402
+T.ITEM_NAMES.update(ITEM_NAMES)
 
-# Files that contain playable nodes (order = source priority for duplicates)
-STORY_FILES = [
-    "01_序章_艾德里克.md",
-    "02_序章_莉瑞尔.md",
-    "03_序章_索林.md",
-    "04_第一幕_灰桥镇.md",
-    "05A_第二幕_雾钟城自由探索.md",
-    "05B_雾钟城支线故事.md",
-    "05C_雾钟城地点交互与世界文本.md",
-    "05_第二幕_黑砧矿区.md",
-    "06_第三幕_初鸣庭.md",
-    "07_NPC完整对话与关系场景.md",
-    "08_随机事件_钟骨侵扰与路人.md",
-    "09_战斗_伤势_物品与资源文本.md",
-    "10_结局_失败结局与后日谈.md",
-    "13_城市NPC与疗法对白.md",
+FILES = [
+    "01_序章_艾德里克.md", "02_序章_莉瑞尔.md", "03_序章_索林.md", "04_第一幕_灰桥镇.md",
+    "05A_第二幕_雾钟城自由探索.md", "05B_雾钟城支线故事.md", "05_第二幕_黑砧矿区.md",
+    "06_第三幕_初鸣庭.md", "07_NPC完整对话与关系场景.md", "09_战斗_伤势_物品与资源文本.md",
+    "10_结局_失败结局与后日谈.md", "13_城市NPC与疗法对白.md",
 ]
+H2 = re.compile(r"^##\s+(" + NODE_ID_RX + r")\s*(.*)$")
+DEV_HEADINGS = ("当前线索的自然提示", "行动规则", "规则测试", "此时玩家知道什么", "抽取规则", "战斗表现原则",
+                "通用动作文本", "结算顺序", "支线收束原则", "城市 NPC 反应规则", "设计", "说明", "备注")
+TOPIC_PREFIXES = ("D-NPC", "D-ALT", "CITY-NPC", "LOC-")
+TOPIC_NODES = {"A3-SHRINE-07", "A1-TOWN-02", "A1-TOWN-03", "A1-TOWN-04", "A1-TOWN-05", "A1-TOWN-07"}
+SEQ_NODES = {"A1-TOWN-09", "CITY-03", "SQ-CITY-01", "SQ-CITY-02", "A2-MINE-04", "A2-MINE-05", "A3-SHRINE-03"}
+DEV_LINE = re.compile(r"(后推进|推进。?$|进入下一节点|跳转|^本节点|^此节点|^注[：:]|^设计[：:])")
 
-# Node ID pattern: E-PRO-01, A1-TOWN-08, A3-SHRINE-07-LATE, END-CURE-01, CITY-01, SQ-CITY-01, D-NPC-VALEN, R-MEM-01, C-04, LOC-*, etc.
-NODE_HEADER = re.compile(
-    r"^##\s+([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*)\s+(.+?)\s*$",
-    re.MULTILINE,
-)
+unparsed_global: list[str] = []
 
-# Skip non-node ## headers in 00 / README / 11 / 12
-SKIP_IDS = set()
+# ------------------------------------------------------------------ reading
 
-EFFECT_RE = re.compile(r"〔效果〕\s*(.*)")
-CHECK_RE = re.compile(r"〔检定[：:]\s*([^〕]+)〕")
-COND_INLINE = re.compile(r"〔仅\s*([^〕]+)〕")
-COND_NEED = re.compile(r"〔(?:需要|条件)[：:]?\s*([^〕]+)〕")
-ARROW_RE = re.compile(
-    r"→\s*`?("
-    r"[A-Z][A-Z0-9]*-(?:[A-Z0-9]+-)*[A-Z0-9]+"  # must contain hyphen
-    r"|__\w+__"
-    r")`?"
-)
-ARROW_RETURN = re.compile(r"→\s*返回")
-BACKTICK_ASSIGN = re.compile(
-    r"`([a-zA-Z_][\w.]*)\s*((?:\+=|-=|=))\s*([^`;]+)`"
-)
-PLAIN_ASSIGN = re.compile(
-    r"(?<![`\w])([a-zA-Z_][\w.]*)\s*((?:\+=|-=|=))\s*(true|false|-?\d+|\[[^\]]*\])"
-)
-STAT_NAMES = {"STR", "DEX", "CON", "CHA", "INS", "WIL"}
-
-
-def parse_effects(text: str) -> list[dict]:
-    """Extract atomic effect ops from a Chinese/backtick mixed effect string."""
-    effects: list[dict] = []
-    if not text:
-        return effects
-    # Prefer backtick segments
-    for m in BACKTICK_ASSIGN.finditer(text):
-        key, op, val = m.group(1), m.group(2), m.group(3).strip()
-        effects.append({"op": op, "key": key, "value": coerce(val)})
-    if effects:
-        # Also catch "获得 `item`" patterns
-        for m in re.finditer(r"获得\s*`([^`]+)`", text):
-            effects.append({"op": "add_item", "key": m.group(1).strip(), "value": 1})
-        for m in re.finditer(r"失去\s*(\d+)\s*HP", text):
-            effects.append({"op": "-=", "key": "hp", "value": int(m.group(1))})
-        return effects
-    # Fallback plain assigns
-    for m in PLAIN_ASSIGN.finditer(text):
-        effects.append({"op": m.group(2), "key": m.group(1), "value": coerce(m.group(3))})
-    for m in re.finditer(r"获得\s*`([^`]+)`|获得\s+([a-zA-Z_][\w]*)", text):
-        item = (m.group(1) or m.group(2) or "").strip()
-        if item:
-            effects.append({"op": "add_item", "key": item, "value": 1})
-    for m in re.finditer(r"失去\s*(\d+)\s*HP", text):
-        effects.append({"op": "-=", "key": "hp", "value": int(m.group(1))})
-    # rel.x +1 without backtick
-    for m in re.finditer(r"(rel\.\w+)\s*([+-]\d+)", text):
-        effects.append({"op": "+=", "key": m.group(1), "value": int(m.group(2))})
-    return effects
-
-
-def coerce(val: str):
-    val = val.strip().rstrip("；。.,")
-    if val in ("true", "True"):
-        return True
-    if val in ("false", "False"):
-        return False
-    if re.fullmatch(r"-?\d+", val):
-        return int(val)
-    if val.startswith("[") and val.endswith("]"):
-        inner = val[1:-1].strip()
-        if not inner:
-            return []
-        parts = [p.strip().strip("'\"") for p in re.split(r"[,，]", inner)]
-        return parts
-    return val.strip("'\"")
-
-
-def parse_check(spec: str) -> dict | None:
-    """Parse 'CHA，DC 13；...' or 'INS，DC 13；汤姆同行时 +1'."""
-    if not spec:
-        return None
-    stats = []
-    for s in STAT_NAMES:
-        if re.search(rf"\b{s}\b", spec):
-            stats.append(s)
-    # also 'CHA 或 DEX'
-    dc_m = re.search(r"DC\s*(\d+)", spec)
-    dc = int(dc_m.group(1)) if dc_m else 13
-    advantage = "优势" in spec
-    disadvantage = "劣势" in spec
-    # situational modifiers written as `+1` or +1
-    mods = []
-    for m in re.finditer(r"(?:时|若)[^；;]*?`?\+(\d+)`?", spec):
-        mods.append({"when": "context", "bonus": int(m.group(1)), "raw": m.group(0)})
-    # alternate DC
-    alt_dc = None
-    m2 = re.search(r"若\s*`?([^`；;]+)`?[^；;]*DC\s*(\d+)", spec)
-    if m2:
-        alt_dc = {"when": m2.group(1).strip(), "dc": int(m2.group(2))}
-    return {
-        "stats": stats or ["INS"],
-        "dc": dc,
-        "advantage": advantage,
-        "disadvantage": disadvantage,
-        "mods": mods,
-        "alt_dc": alt_dc,
-        "raw": spec.strip(),
-    }
-
-
-def parse_condition(raw: str) -> dict:
-    """Loose condition: flag name, '汤姆同行', attribute checks, etc."""
-    raw = raw.strip()
-    # backtick flags
-    flags = re.findall(r"`([^`]+)`", raw)
-    return {"raw": raw, "flags": flags}
-
-
-OPTION_START = re.compile(r"^(\d+)\.\s+\*\*(.+?)\*\*\s*(.*)$")
-SUBOPT = re.compile(r"^-\s+\*\*(.+?)\*\*\s*(.*)$")
-BULLET = re.compile(r"^-\s+(.*)$")
-
-
-NODE_HEADER_H3 = re.compile(
-    r"^###\s+([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*)\s+(.+?)\s*$",
-    re.MULTILINE,
-)
-
-def split_nodes(text: str) -> list[tuple[str, str, str]]:
-    """Return list of (id, title, body)."""
-    matches = list(NODE_HEADER.finditer(text))
-    # Also ###-level story nodes (R-MEM-01 etc.) that aren't already ## parents
-    h3 = list(NODE_HEADER_H3.finditer(text))
-    existing_pos = {(m.start()) for m in matches}
-    for m in h3:
-        nid = m.group(1)
-        if "-" in nid and is_story_node_id(nid):
-            matches.append(m)
-    matches.sort(key=lambda m: m.start())
-    out = []
-    for i, m in enumerate(matches):
-        nid, title = m.group(1), m.group(2).strip()
-        # Filter out numbered section headers like "## 1. 节点命名"
-        if re.match(r"^\d+\.", title) or nid in SKIP_IDS:
-            # Actually ## 1. would not match our NODE_HEADER because of digit-first... 
-            # our pattern requires letter start. Good.
-            pass
-        start = m.end()
-        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
-        body = text[start:end].strip()
-        out.append((nid, title, body))
+def split_h2(text, fname):
+    out, cur = [], None
+    for line in text.splitlines():
+        m = H2.match(line)
+        if m:
+            cur = {"id": m.group(1), "title": m.group(2).strip(), "lines": [], "source": fname}
+            out.append(cur); continue
+        if line.startswith("## "):
+            cur = None; continue
+        if line.startswith("# "):
+            continue
+        if cur is not None:
+            cur["lines"].append(line)
     return out
 
-
-def extract_body_and_choices(body: str) -> tuple[str, list[dict], str | None]:
-    """Split prose from ### 选择 / #### 选择 blocks; also catch trailing → NODE."""
-    # Find first choice section
-    choice_headers = list(re.finditer(r"^#{2,4}\s*选择\s*$", body, re.MULTILINE))
-    # Also "### 与瓦伦..." style - we keep as prose but try to parse numbered lists after them
-
-    default_next = None
-    # trailing arrow at end of node (for nodes without numbered choices)
-    trail = list(ARROW_RE.finditer(body))
-    if trail:
-        # last arrow not inside a choice we parse might be default next
-        default_next = trail[-1].group(1)
-
-    if not choice_headers:
-        # Try to find numbered options at top level even without ### 选择
-        choices = parse_choice_block(body)
-        prose = body
-        if choices:
-            # remove the numbered list from prose roughly
-            first = re.search(r"^\d+\.\s+\*\*", body, re.MULTILINE)
-            if first:
-                prose = body[: first.start()].strip()
-        # Also handle END nodes: no choices
-        if not choices and default_next and default_next.startswith("END"):
-            pass
-        return prose, choices, default_next if not choices else None
-
-    # Prose = before first ### 选择; but hub nodes have multiple ### sections.
-    # Strategy: full body as text; extract ALL numbered **options** across the node.
-    prose = body
-    choices = parse_choice_block(body)
-    # If choices exist, default_next only used when a choice lacks →
-    return prose, choices, None
-
-
-def parse_choice_block(text: str) -> list[dict]:
-    choices = []
-    lines = text.splitlines()
-    i = 0
-    while i < len(lines):
-        m = OPTION_START.match(lines[i].strip())
-        if not m:
-            i += 1
-            continue
-        num = int(m.group(1))
-        label = m.group(2).strip()
-        rest = m.group(3).strip()
-        block_lines = [rest] if rest else []
-        i += 1
-        # Collect continuation bullets / indented lines until next option or ## header
-        while i < len(lines):
-            s = lines[i]
-            st = s.strip()
-            if OPTION_START.match(st):
-                break
-            if re.match(r"^##\s+", st):
-                break
-            # stop at next ### that's not 选择-related subcontent? keep going for hub
-            # Actually for hubs, each #### 选择 resets numbering - that's fine, we collect all
-            if re.match(r"^#{3,4}\s+", st) and "选择" not in st and not st.startswith("####"):
-                # new subsection - stop this option
-                if re.match(r"^###\s+", st):
-                    break
-            block_lines.append(s)
-            i += 1
-            # limit runaway
-            if len(block_lines) > 40:
-                break
-
-        block = "\n".join(block_lines).strip()
-        choice = build_choice(num, label, block)
-        choices.append(choice)
-    return choices
-
-
-def build_choice(num: int, label: str, block: str) -> dict:
-    cond_raw = None
-    cm = COND_INLINE.search(label) or COND_INLINE.search(block[:200])
-    if cm:
-        cond_raw = cm.group(1)
-        label = COND_INLINE.sub("", label).strip()
-    cm2 = COND_NEED.search(label) or COND_NEED.search(block[:200])
-    if cm2 and not cond_raw:
-        cond_raw = cm2.group(1)
-
-    check = None
-    cm3 = CHECK_RE.search(block)
-    if cm3:
-        check = parse_check(cm3.group(1))
-    # also 〔CHA，DC 13〕 without 检定
-    if not check:
-        m = re.search(r"〔((?:STR|DEX|CON|CHA|INS|WIL)[^〕]*DC\s*\d+[^〕]*)〕", block)
+def read_all():
+    raw = []
+    for f in FILES:
+        raw += split_h2((SCRIPT / f).read_text(encoding="utf-8"), f)
+    # 08 random events: ### R-* under pool sections
+    text = (SCRIPT / "08_随机事件_钟骨侵扰与路人.md").read_text(encoding="utf-8")
+    pool, cur = None, None
+    pools_by_h2 = {"通用旅行事件": "travel", "艾德里克：记忆侵扰池": "edric", "莉瑞尔：欲望侵扰池": "liriel",
+                   "索林：愤怒侵扰池": "thorin", "路人新闻池": "news"}
+    for line in text.splitlines():
+        if line.startswith("## "):
+            pool = pools_by_h2.get(line[3:].strip()); cur = None; continue
+        m = re.match(r"^###\s+(R-[A-Z]+-\d+)\s*(.*)$", line)
         if m:
-            check = parse_check(m.group(1))
-
-    effects_text = ""
-    em = EFFECT_RE.search(block)
-    if em:
-        effects_text = em.group(1)
-
-    success_text = ""
-    fail_text = ""
-    success_effects: list[dict] = []
-    fail_effects: list[dict] = []
-    cost_effects: list[dict] = []
-
-    # Parse 成功/失败 lines
-    for line in block.splitlines():
-        t = line.strip().lstrip("- ").strip()
-        if t.startswith("成功"):
-            success_text = re.sub(r"^成功[：:：]?\s*", "", t)
-            success_effects = parse_effects(t)
-        elif t.startswith("失败"):
-            fail_text = re.sub(r"^失败[：:：]?\s*", "", t)
-            fail_effects = parse_effects(t)
-        elif t.startswith("代价"):
-            cost_effects = parse_effects(t)
-
-    effects = parse_effects(effects_text) if effects_text else []
-    # Also parse effects from whole block if no 〔效果〕
-    if not effects and not check:
-        effects = parse_effects(block)
-
-    next_id = None
-    arrows = list(ARROW_RE.finditer(block))
-    if arrows:
-        next_id = arrows[-1].group(1)
-    elif ARROW_RETURN.search(block):
-        next_id = "__RETURN__"
-
-    # Nested sub-options (like 会 / 别等我)
-    subchoices = []
-    for sm in SUBOPT.finditer(block):
-        sub_label = sm.group(1).strip()
-        sub_rest = sm.group(2).strip()
-        sub_next = None
-        am = ARROW_RE.search(sub_rest)
-        if am:
-            # might be effect not node - check if looks like NODE
-            cand = am.group(1)
-            if re.match(r"^(E|L|T|A\d|CITY|SQ|END|D-|R-|C-|LOC|FAIL)", cand):
-                sub_next = cand
-        subchoices.append(
-            {
-                "label": sub_label,
-                "text": sub_rest,
-                "effects": parse_effects(sub_rest),
-                "next": sub_next,
-            }
-        )
-
-    # Narrative bullets (non-effect flavor)
-    flavor_lines = []
-    for line in block.splitlines():
-        st = line.strip()
-        if not st.startswith("-"):
+            cur = {"id": m.group(1), "title": m.group(2).strip(), "lines": [], "source": "08", "pool": pool}
+            raw.append(cur); continue
+        if line.startswith("### "):
+            cur = None; continue
+        if cur is not None:
+            cur["lines"].append(line)
+    # news pool lines (bullets) become one node each if no ### ids exist there
+    # 05C: districts → LOC hubs; ambient ### → own nodes
+    text = (SCRIPT / "05C_雾钟城地点交互与世界文本.md").read_text(encoding="utf-8")
+    loc_ids = {"锚门广场": "LOC-ANCHOR", "白塔区": "LOC-WHITETOWER", "书吏区": "LOC-SCRIBE",
+               "河渠区": "LOC-CANAL", "上环区": "LOC-UPPER", "西炉区": "LOC-WESTFORGE"}
+    district, cur = None, None
+    for line in text.splitlines():
+        if line.startswith("## "):
+            name = line[3:].strip()
+            district = None; cur = None
+            if name in loc_ids:
+                district = {"id": loc_ids[name], "title": name, "lines": [], "source": "05C", "ambients": []}
+                raw.append(district); cur = district
             continue
-        if any(
-            x in st
-            for x in (
-                "〔效果〕",
-                "〔检定",
-                "成功",
-                "失败",
-                "代价",
-                "→",
-            )
-        ):
+        m = re.match(r"^###\s+(CITY-AMBIENT-\d+)\s*(.*)$", line)
+        if m and district:
+            cur = {"id": m.group(1), "title": m.group(2).strip(), "lines": [], "source": "05C", "district": district["id"]}
+            district["ambients"].append(cur["id"]); raw.append(cur); continue
+        if line.startswith("### ") and district:
+            cur = district; continue  # 区域正文 heading: prose belongs to district
+        if cur is not None:
+            cur["lines"].append(line)
+    # 10: FAIL-* and epilogues
+    text = (SCRIPT / "10_结局_失败结局与后日谈.md").read_text(encoding="utf-8")
+    cur = None
+    for line in text.splitlines():
+        m = re.match(r"^###\s+(FAIL-\d+)\s*(.*)$", line)
+        if m:
+            cur = {"id": m.group(1), "title": m.group(2).strip(), "lines": [], "source": "10", "fail": True}
+            raw.append(cur); continue
+        if line.startswith("#"):
+            cur = None; continue
+        if cur is not None:
+            cur["lines"].append(line)
+    return raw
+
+def epilogues():
+    text = (SCRIPT / "10_结局_失败结局与后日谈.md").read_text(encoding="utf-8")
+    sec = text.split("## 主角私人尾声", 1)[1].split("\n## ", 1)[0]
+    out = {}
+    for part in re.split(r"^###\s+", sec, flags=re.M)[1:]:
+        name, body = part.split("\n", 1)
+        pc = T.PCS.get(name.strip())
+        out[pc] = [p for p in re.split(r"\n\s*\n", body.strip()) if p.strip()]
+    return out
+
+# ------------------------------------------------------------------ blocks
+
+def speech_block(text):
+    m = re.match(r"^【([^】]+)】\s*(.*)$", text)
+    if not m:
+        return None
+    who, rest = m.group(1), m.group(2)
+    body = sanitize(rest)
+    if not body:
+        return None
+    if who in ("旁白",):
+        return {"t": "p", "text": body}
+    if who in ("内心",):
+        return {"t": "inner", "text": body}
+    if "系统" in who or "提示" in who or "设计" in who:
+        return {"t": "dev"}
+    return {"t": "say", "who": sanitize(who) or who, "text": body}
+
+def prose_block(line, cond=None):
+    s = line.strip()
+    if not s:
+        return None
+    if s.startswith("|") or s.startswith("```") or re.fullmatch(r"-{3,}", s):
+        return None
+    if s.startswith(">"):
+        b = sanitize(s.lstrip("> "))
+        return {"t": "quote", "text": b} if b else None
+    s2 = re.sub(r"^\s*[-*]\s+", "", s)
+    sp = speech_block(s2)
+    if sp:
+        if sp.get("t") == "dev":
+            return None
+        if cond: sp["cond"] = cond
+        return sp
+    b = sanitize(s2)
+    if not b:
+        return None
+    blk = {"t": "p", "text": b}
+    if cond: blk["cond"] = cond
+    return blk
+
+# ------------------------------------------------------------------ choices
+
+OPT_NUM = re.compile(r"^(\s*)(\d+)\.\s+(.*)$")
+OPT_BUL = re.compile(r"^(\s*)[-*]\s+(.*)$")
+BOLD_LEAD = re.compile(r"^\*\*(.+?)\*\*\s*(.*)$")
+
+def indent_of(line):
+    return len(line) - len(line.lstrip(" "))
+
+def gather_items(lines, numbered: bool):
+    """Split section lines into option items: (head_text, [child lines]) with child indentation kept."""
+    items, pre, cur = [], [], None
+    base = None
+    for ln in lines:
+        if not ln.strip():
             continue
-        if st.startswith("- **"):
+        if numbered:
+            m = OPT_NUM.match(ln)
+            if m and (base is None or indent_of(ln) <= base):
+                base = indent_of(ln)
+                cur = [m.group(3), []]; items.append(cur); continue
+        else:
+            m = OPT_BUL.match(ln)
+            if m and (base is None or indent_of(ln) <= base):
+                base = indent_of(ln)
+                cur = [m.group(2), []]; items.append(cur); continue
+        if cur is None:
+            pre.append(ln)
+        elif indent_of(ln) > (base or 0) or ln.lstrip().startswith(("-", "*", "成功", "失败")):
+            cur[1].append(ln)
+        else:
+            # unindented line after the list ends the list
+            cur = None; pre.append(ln)
+    return pre, items
+
+def split_label(head: str):
+    """Return (label, rest_of_line)."""
+    m = BOLD_LEAD.match(head.strip())
+    if m:
+        lab, rest = m.group(1), m.group(2)
+        lab = lab.rstrip("：:")
+        if rest.startswith("：") or rest.startswith(":"):
+            rest = rest[1:]
+        return lab, rest
+    # "label：rest" plain bullet
+    m = re.match(r"^([^：:。，“【〔`]{2,18})[：:]\s*(.*)$", head.strip())
+    if m:
+        return m.group(1), m.group(2)
+    # "label，rest" — take first clause
+    m = re.match(r"^([^，。；“【〔]{2,16})[，；]\s*(.*)$", head.strip())
+    if m:
+        return m.group(1), m.group(2)
+    return head.strip(), ""
+
+OUTCOME = re.compile(r"(关键失败|大成功|成功|失败)(?:时)?[：:，]?")
+
+def outcome_segments(s: str):
+    """Split 'xxx成功A；失败B' into [(kind|None, text)]."""
+    segs, pos, kind = [], 0, None
+    for m in OUTCOME.finditer(s):
+        # only treat as marker at clause starts
+        before = s[:m.start()]
+        if m.start() != 0 and not re.search(r"[；。;，,\s〕]\s*$", before) and not re.search(r"(检定|DC\s*\d+)\s*$", before):
             continue
-        flavor_lines.append(st.lstrip("- ").strip())
+        if "也" in s[m.end():m.end() + 1] and m.group(1) == "失败":
+            pass
+        segs.append((kind, s[pos:m.start()]))
+        kind = {"大成功": "success", "成功": "success", "关键失败": "fail", "失败": "fail"}[m.group(1)]
+        pos = m.end()
+    segs.append((kind, s[pos:]))
+    return [(k, t) for k, t in segs if t.strip()]
 
-    return {
-        "id": f"opt-{num}",
-        "num": num,
-        "label": label,
-        "condition": parse_condition(cond_raw) if cond_raw else None,
-        "check": check,
-        "effects": effects,
-        "success_text": success_text,
-        "fail_text": fail_text,
-        "success_effects": success_effects,
-        "fail_effects": fail_effects,
-        "cost_effects": cost_effects,
-        "next": next_id,
-        "subchoices": subchoices or None,
-        "flavor": flavor_lines,
-        "raw_block": block[:500],
-    }
+def arrows(s: str):
+    nxt = None
+    for m in re.finditer(r"→\s*`?(" + NODE_ID_RX + r")`?", s):
+        nxt = m.group(1)
+    if nxt is None:
+        for m in re.finditer(r"(?:进入|前往|转入|跳到|可走)[^`，。；]{0,12}`(" + NODE_ID_RX + r")`", s):
+            nxt = m.group(1)
+    if nxt is None and re.search(r"→\s*返回", s):
+        nxt = "__SELF__"
+    if nxt and "/" in nxt:
+        nxt = nxt.split("/")[0]
+    return nxt
 
+def _first_is_rest(txt, rest):
+    return bool(rest) and txt.strip() == re.sub(r"〔(?!检定|效果|战斗)(?![^〕]*DC)[^〕]*〕", "", rest).strip()
 
-def is_story_node_id(nid: str) -> bool:
-    prefixes = (
-        "E-PRO", "L-PRO", "T-PRO",
-        "A1-", "A2-", "A3-",
-        "CITY-", "SQ-", "END-",
-        "D-NPC", "D-ALT",
-        "R-", "C-", "LOC-", "FAIL-", "IX-", "EVT-", "BATTLE-", "ITEM-",
-        "NPC-",
-    )
-    return nid.startswith(prefixes) or bool(re.match(r"^(E|L|T)-", nid))
+def fallback_text(kind, check, label):
+    CTX.fallbacks += 1
+    stat = (check or {}).get("stats", ["INS"])[0] if check else None
+    if kind == "fail":
+        return {
+            "STR": "力气差了一点，事情没能按你想的发展。", "DEX": "你的动作慢了半拍，没能成功。",
+            "CON": "你的身体撑不住，只得作罢。", "CHA": "对方并不买账。", "INS": "你没能看出更多端倪。",
+            "WIL": "那股冲动压过了你，这一次你没能守住。",
+        }.get(stat, "事情没有按你想的发展。")
+    if kind == "success":
+        return {
+            "STR": "你咬牙发力，成了。", "DEX": "你动作干净利落。", "CON": "你硬撑了下来。",
+            "CHA": "对方被你说动了。", "INS": "你看出了关键。", "WIL": "你守住了自己。",
+        }.get(stat, "你做到了。")
+    lab = re.sub(r"[。！？]$", "", label).strip("“”\"")
+    if lab.startswith(("“", "\"")) or "“" in label:
+        return "你把话说出口，对方沉默片刻，记下了。"
+    return f"你决定：{lab}。"
 
+def build_choice(head: str, children: list[str], cid: str, ctx_npc=None):
+    lab_raw, rest = split_label(head)
+    ch = {"id": cid, "label": "", "result": [], "effects": [], "next": None}
+    # inline annotations on the label line
+    raw_ann = re.findall(r"〔([^〕]*)〕", lab_raw + " " + rest)
+    for a in raw_ann:
+        if a.startswith("检定") or re.search(r"DC\s*\d", a) or a.startswith("战斗"):
+            continue
+        if a.startswith("始终可见"):
+            mm = re.search(r"若(.+?)则标注[“\"](.+?)[”\"]", a)
+            if mm:
+                ch["mark"] = {"cond": parse_cond(mm.group(1)), "suffix": mm.group(2)}
+            continue
+        if a.startswith(("效果",)):
+            continue
+        c = parse_cond(a)
+        if c:
+            ch["cond"] = c if "cond" not in ch else {"all": [ch["cond"], c]}
+        else:
+            ch.setdefault("cond_note", []).append(a)
+    lab_noann = re.sub(r"〔[^〕]*〕", "", lab_raw)
+    ch["label"] = label_clean(lab_noann)
+    rest_noann = re.sub(r"〔(?!检定|效果|战斗)(?![^〕]*DC)[^〕]*〕", "", rest)
+    lines = []
+    if rest_noann.strip():
+        lines.append((0, rest_noann.strip()))
+    child_base = min((indent_of(l) for l in children), default=0)
+    sub_items = []
+    i = 0
+    while i < len(children):
+        ln = children[i]
+        ind = indent_of(ln) - child_base
+        txt = re.sub(r"^\s*[-*]\s+", "", ln).strip()
+        bm = BOLD_LEAD.match(txt)
+        if bm and (txt.startswith("**“") or txt.startswith("**\"") or "→" in txt or ind == 0 and len(bm.group(1)) <= 24 and not bm.group(1).endswith(("：", ":"))):
+            # nested option → sub-choice (collect its deeper children)
+            kids = []
+            j = i + 1
+            while j < len(children) and indent_of(children[j]) - child_base > ind:
+                kids.append(children[j]); j += 1
+            sub_items.append((txt, kids))
+            i = j; continue
+        lines.append((ind, txt)); i += 1
+
+    check, _, _ = find_check(lab_raw)
+    if check is None:
+        _c, _s, _e = find_check(rest)
+        if _c and not re.search(r"(成功|失败)", rest[_e:]):
+            check = _c
+    branch = {"success": {"result": [], "effects": [], "next": None}, "fail": {"result": [], "effects": [], "next": None}}
+    after_check = check is not None
+    pay_alt = None
+    for ind, txt in lines:
+        if re.fullmatch(r"→\s*`?[^`]*`?。?", txt) or txt.startswith("→"):
+            n = arrows(txt)
+            if n: ch["next"] = n
+            continue
+        nx = arrows(txt)
+        # payment-or-check alternative
+        pm = re.search(r"需要\s*(\d+)\s*张?票据", txt)
+        ck, cs, ce = find_check(txt)
+        if pm and ck:
+            pay_alt = int(pm.group(1))
+        elif pm and not ck:
+            ch["cost"] = {"vouchers": int(pm.group(1))}
+        if txt.startswith("〔效果〕") or txt.startswith("效果："):
+            ops = parse_effects(txt)
+            ch["effects"] += ops
+            tail = sanitize(re.sub(r"^〔效果〕|^效果：", "", txt))
+            if tail: ch["result"].append({"t": "p", "text": tail})
+            if nx: ch["next"] = nx
+            continue
+        if ck and check is not None and cs <= 2 and not after_check:
+            pass
+        if ck and (check is None or (txt is not None and lines and lines[0][1] == txt and _first_is_rest(txt, rest))):
+            if check is not None and lines[0][1] == txt:
+                ck = check
+            check = ck
+            after_check = True
+            before, after = txt[:cs], txt[ce:]
+            if re.search(r"自动成功", txt[:cs]) or "有钥匙" in before:
+                pass
+            am = re.search(r"若([^，,；]{1,12})[，,]\s*(?:可|则)?([^；;]*?)[；;，,]\s*否则\s*$", before)
+            if am:
+                ac = parse_cond(am.group(1))
+                if ac:
+                    check["auto_if"] = ac
+                    check["auto_text"] = narrate(sanitize(am.group(2)))
+                before = before[:am.start()]
+            if pm:
+                before = ""
+            if before.strip():
+                b = prose_block(before)
+                if b and not re.search(r"需要\s*\d+\s*张?票据", before):
+                    ch["result"].append(b)
+            segs = outcome_segments(after)
+            first = True
+            for kind, seg in segs:
+                k = kind or "success"
+                tgt = branch[k]
+                tgt["effects"] += parse_effects(seg)
+                n2 = arrows(seg)
+                if n2: tgt["next"] = n2
+                if "失败也可进入" in txt or ("也可进入" in seg and k == "fail"):
+                    tgt["also"] = True
+                seg_clean = re.sub(r"^(?:也可进入|仍可进入)[，,]?\s*(?:但)?", "", seg.strip())
+                if pm and k == "success" and not kind:
+                    continue
+                b = narrate(sanitize(seg_clean)) if sanitize(seg_clean) else ""
+                if seg_clean.strip().startswith(("也可进入", "仍可进入")):
+                    b = narrate(sanitize(seg.strip()))
+                if b and len(b) > 3:
+                    tgt["result"].append({"t": "p", "text": b})
+                first = False
+            continue
+        om = re.match(r"^(关键失败|大成功|成功|失败)[：:]\s*(.*)$", txt)
+        if om and (check or pay_alt):
+            k = "success" if om.group(1) in ("成功", "大成功") else "fail"
+            seg = om.group(2)
+            branch[k]["effects"] += parse_effects(seg)
+            if nx: branch[k]["next"] = nx
+            b = prose_block(seg)
+            if b:
+                if b["t"] == "p": b["text"] = narrate(b["text"])
+                branch[k]["result"].append(b)
+            continue
+        if om and not check:
+            # outcome text without a parsable check → treat as plain result
+            txt = om.group(2)
+        # inline outcomes in a plain line after check: "成功X；失败Y"
+        if check and re.search(r"(^|[；。，])\s*(成功|失败)", txt) and not txt.startswith("【"):
+            for kind, seg in outcome_segments(txt):
+                k = kind or "success"
+                branch[k]["effects"] += parse_effects(seg)
+                b = sanitize(seg)
+                if b and len(b) > 3: branch[k]["result"].append({"t": "p", "text": narrate(b)})
+            continue
+        if DEV_LINE.search(txt):
+            continue
+        ops = parse_effects(txt)
+        if nx and not ch["next"]:
+            ch["next"] = nx
+        if txt.startswith(("代价：", "后果：")):
+            b = sanitize(txt)
+            ch["effects"] += ops
+            if b: ch["result"].append({"t": "note", "text": b})
+            continue
+        cond = None
+        cm = re.match(r"^若([^，,：:]{1,30})[，,：:]", txt)
+        if cm:
+            cond = parse_cond(cm.group(1))
+        b = prose_block(txt)
+        if cond is not None and ops:
+            ch.setdefault("cond_effects", []).append({"cond": cond, "ops": ops})
+            ops = []
+        if after_check and b and b["t"] == "p" and not cond:
+            branch["success"]["result"].append(b)
+            branch["success"]["effects"] += ops
+        else:
+            if b:
+                if cond: b["cond"] = cond
+                ch["result"].append(b)
+            ch["effects"] += ops
+    if check:
+        ch["check"] = check
+        for k in ("success", "fail"):
+            br = branch[k]
+            if not br["result"]:
+                br["result"].append({"t": "p", "text": fallback_text(k, check, ch["label"])})
+                br["fallback"] = True
+            if br.get("also") and not br["next"]:
+                br["next"] = branch["success"]["next"] or ch["next"]
+            br.pop("also", None)
+            if not br["next"]:
+                br["next"] = None
+            if not br["effects"]:
+                br.pop("effects")
+            ch[k] = br
+    else:
+        for b in ch["result"]:
+            if b.get("text"):
+                b["text"] = re.sub(r"^(?:成功|大成功)(?:时)?[，：:]?", "", b["text"]) or b["text"]
+        # outcome bits without check (e.g. pay alternative) fold into result
+        for k in ("success",):
+            ch["result"] += branch[k]["result"]; ch["effects"] += branch[k]["effects"]
+            if branch[k]["next"] and not ch["next"]:
+                ch["next"] = branch[k]["next"]
+    # sub-choices
+    subs = []
+    for j, (shead, skids) in enumerate(sub_items):
+        sc = build_choice(shead, skids, f"{cid}.{j+1}", ctx_npc)
+        subs.append(sc)
+    if subs:
+        ch["sub"] = subs
+    if not ch["label"]:
+        ch["label"] = "继续"
+    if pay_alt:
+        ch["pay_alt"] = pay_alt
+    if not ch.get("check") and not ch["result"] and not subs:
+        ch["result"].append({"t": "p", "text": fallback_text(None, None, ch["label"])})
+        ch["fallback"] = True
+    if ctx_npc:
+        for e in [*ch["effects"], *(ch.get("success", {}).get("effects") or []), *(ch.get("fail", {}).get("effects") or [])]:
+            pass
+    return ch
+
+def expand_pay_alt(ch):
+    """'需要 8 张票据；或 CHA DC 13' → two choices: pay (auto success) and talk (check)."""
+    n = ch.pop("pay_alt", None)
+    if not n:
+        return [ch]
+    pay = json.loads(json.dumps(ch))
+    pay["id"] = ch["id"] + "p"
+    pay["label"] = ch["label"]
+    pay["cost"] = {"vouchers": n}
+    pay.pop("check", None)
+    succ = pay.pop("success", {})
+    pay.pop("fail", None)
+    pay["result"] = ch["result"] + [b for b in succ.get("result", []) if not succ.get("fallback")]
+    pay["effects"] = ch["effects"] + succ.get("effects", [])
+    pay["next"] = succ.get("next") or ch["next"]
+    pay["group_with"] = ch["id"]
+    return [pay, ch]
+
+# ------------------------------------------------------------------ sections / nodes
+
+def split_sections(lines):
+    secs, cur = [], {"h": None, "level": 2, "lines": []}
+    secs.append(cur)
+    for ln in lines:
+        m = re.match(r"^(#{3,4})\s+(.*)$", ln)
+        if m:
+            cur = {"h": m.group(2).strip(), "level": len(m.group(1)), "lines": []}
+            secs.append(cur); continue
+        cur["lines"].append(ln)
+    return secs
+
+def section_kind(sec, node_id):
+    h = sec["h"] or ""
+    body = [l for l in sec["lines"] if l.strip()]
+    if any(k in h for k in DEV_HEADINGS):
+        return "dev"
+    numbered = sum(1 for l in body if OPT_NUM.match(l) and indent_of(l) == 0)
+    bullets = [l for l in body if OPT_BUL.match(l) and indent_of(l) == 0]
+    bold_b = sum(1 for l in bullets if BOLD_LEAD.match(re.sub(r"^\s*[-*]\s+", "", l)))
+    if "选择" in h or numbered >= 2:
+        return "choices_num" if numbered else ("choices_bul" if bullets else "prose")
+    if bullets and (bold_b >= 2 or (node_id.startswith(("R-", "CITY-AMBIENT", "C-")) and len(bullets) >= 2)):
+        return "choices_bul"
+    if bullets and node_id.startswith(("C-",)):
+        return "choices_bul"
+    if h in ("调查仪式", "办法", "起势", "处理", "解决", "行动", "可用方式", "开门方式", "调查目标", "检查尸体",
+             "唤醒矿工", "制动危机", "倒塌", "下降", "追逐", "撤离分配", "公开处理", "谁留下") and bullets:
+        return "choices_bul"
+    if h.startswith(("第一轮", "第二轮", "第三轮", "方案")) and bullets:
+        return "choices_bul"
+    return "prose"
+
+def heading_cond(h):
+    if not h:
+        return None
+    for name, pc in T.PCS.items():
+        if h.startswith(name + "：") or h.startswith(name + ":"):
+            return {"pc": pc}
+    if h.startswith("若") or "路线" in h or "专属" in h:
+        return parse_cond(h)
+    return None
+
+def parse_prose_lines(lines, cond=None, nid=""):
+    blocks, enter_effects, routes, default_next, notes = [], [], [], None, []
+    para = []
+    def flush():
+        if para:
+            txt = "".join(p.strip() for p in para)
+            b = prose_block(txt, cond)
+            if b: blocks.append(b)
+            para.clear()
+    for ln in lines:
+        s = ln.strip()
+        if not s:
+            flush(); continue
+        if s.startswith("```") or DEV_LINE.search(s):
+            flush(); continue
+        if s.startswith("|"):
+            flush(); continue
+        m = re.match(r"^〔(进入|触发|来源|条件|可见|始终可见[^〕]*)〕\s*(.*)$", s)
+        if m:
+            flush()
+            notes.append(m.group(1) + "：" + m.group(2))
+            if m.group(1) == "可见" or m.group(1) == "条件":
+                c = parse_cond(m.group(2))
+                if c: cond = c
+            continue
+        m = re.match(r"^〔([^〕]*)〕\s*$", s)
+        if m and not m.group(1).startswith("效果"):
+            flush()
+            c = parse_cond(m.group(1))
+            cond = c
+            notes.append("cond:" + m.group(1))
+            continue
+        if s.startswith("〔效果〕"):
+            flush(); enter_effects += parse_effects(s); continue
+        if s.startswith("→") or re.fullmatch(r".{0,20}→\s*`?" + NODE_ID_RX + r"`?.{0,30}", s):
+            flush()
+            n = arrows(s)
+            if n:
+                rc = parse_cond(s.split("→")[0]) if "若" in s.split("→")[0] else None
+                if rc:
+                    routes.append({"cond": rc, "next": n})
+                else:
+                    default_next = n
+            continue
+        if re.match(r"^\s*[-*]\s+", ln) or s.startswith("【") or s.startswith(">"):
+            flush()
+            sm = re.match(r"^\s*[-*]\s+([^：:]{2,10})路线[：:]\s*(.*)$", ln)
+            if sm and sm.group(1) in T.PCS:
+                b = prose_block(sm.group(2), {"pc": T.PCS[sm.group(1)]})
+            else:
+                b = prose_block(s, cond)
+            if b: blocks.append(b)
+            continue
+        para.append(s)
+    flush()
+    return blocks, enter_effects, routes, default_next, notes
+
+def build_node(r):
+    nid = r["id"]
+    node = {"id": nid, "title": label_clean(r["title"]) or nid, "source": r["source"], "kind": "scene",
+            "blocks": [], "choices": [], "default_next": None, "routes": [], "enter_effects": []}
+    if r.get("pool"): node["pools"] = [r["pool"]]; node["kind"] = "random"
+    if nid.startswith("END"): node["kind"] = "ending"
+    if r.get("fail"): node["kind"] = "ending"; node["fail"] = True
+    if nid.startswith(("D-", "CITY-NPC")): node["kind"] = "dialogue"
+    if nid.startswith("C-"): node["kind"] = "combat"
+    if nid.startswith("LOC-"): node["kind"] = "hub"
+    topic_mode = nid.startswith(TOPIC_PREFIXES) or nid in TOPIC_NODES
+    secs = split_sections(r["lines"])
+    seq = nid in SEQ_NODES or (nid.startswith("C-") and any("转折" in (x["h"] or "") for x in secs))
+    parent_h, parent_cond, last_topic, round_idx = None, None, None, 0
+    for si, sec in enumerate(secs):
+        h = sec["h"] or ""
+        hcond = heading_cond(h) if si > 0 else None
+        if sec["level"] == 3 or si == 0:
+            parent_h, parent_cond, last_topic = (h or None), hcond, None
+        eff_cond = hcond if sec["level"] == 3 else (hcond or parent_cond)
+        kind = section_kind(sec, nid)
+        if kind == "dev":
+            continue
+        if kind == "prose":
+            blocks, ee, routes, dn, notes = parse_prose_lines(sec["lines"], eff_cond, nid)
+            if topic_mode and h and si > 0 and blocks and not eff_cond:
+                for bb in blocks: bb.pop("cond", None)
+                tc = {"id": f"t{si}", "label": label_clean(h), "result": blocks, "effects": ee, "next": None, "topic": True}
+                node["choices"].append(tc); last_topic = tc
+                ee = []
+            elif topic_mode and h and si > 0 and blocks and last_topic is not None and sec["level"] == 4:
+                last_topic["result"] += blocks
+            else:
+                if h and si > 0 and blocks and not eff_cond and not h.startswith(("区域正文", "选择")):
+                    hb = {"t": "h", "text": label_clean(h)}
+                    if seq: hb["round"] = round_idx
+                    node["blocks"].append(hb)
+                if seq:
+                    for bb in blocks: bb["round"] = round_idx
+                node["blocks"] += blocks
+            node["enter_effects"] += ee
+            node["routes"] += routes
+            if dn: node["default_next"] = dn
+            continue
+        numbered = kind == "choices_num"
+        pre, items = gather_items(sec["lines"], numbered)
+        sec_cond = None
+        pre_lines = []
+        for p in pre:
+            m = re.match(r"^\s*〔([^〕]*)〕\s*(.*)$", p.strip())
+            if m and not m.group(1).startswith(("效果", "检定")):
+                c = parse_cond(m.group(1)); sec_cond = c or sec_cond
+                rest = m.group(2)
+                if rest.strip():
+                    c2 = parse_cond(rest)
+                    if c2: sec_cond = {"all": [x for x in (sec_cond, c2) if x]}
+                continue
+            pre_lines.append(p)
+        allc = [x for x in (sec_cond, eff_cond) if x]
+        sec_cond = None if not allc else (allc[0] if len(allc) == 1 else {"all": allc})
+        pblocks, ee, routes, dn, _ = parse_prose_lines(pre_lines, None, nid)
+        node["enter_effects"] += ee
+        node["routes"] += routes
+        if dn: node["default_next"] = dn
+        group = None
+        if h and h != "选择" and not hcond:
+            group = label_clean(h)
+        elif h == "选择" and sec["level"] == 4 and parent_h and not parent_cond:
+            group = label_clean(parent_h)
+        built = []
+        for k, (head, kids) in enumerate(items):
+            c = build_choice(head, kids, f"s{si}c{k+1}")
+            built += expand_pay_alt(c)
+        if topic_mode:
+            if sec["level"] == 4 and last_topic is not None:
+                if pblocks: last_topic["result"] += pblocks
+                last_topic.setdefault("sub", []).extend(built)
+                continue
+            if h and h != "选择" and si > 0:
+                tc = {"id": f"t{si}", "label": group or label_clean(h) or "交谈",
+                      "result": pblocks or [{"t": "p", "text": fallback_text(None, None, group or "交谈")}],
+                      "effects": [], "next": None, "topic": True, "sub": built}
+                if sec_cond: tc["cond"] = sec_cond
+                node["choices"].append(tc); last_topic = tc
+                continue
+        if pblocks:
+            if group and not topic_mode and len(built) and (seq or sec["level"] == 3):
+                pblocks.insert(0, {"t": "h", "text": group})
+            for bb in pblocks:
+                if sec_cond and "cond" not in bb: bb["cond"] = sec_cond
+                if seq: bb["round"] = round_idx
+            node["blocks"] += pblocks
+        for c in built:
+            if group and not seq: c["group"] = group
+            if sec_cond: c["cond"] = {"all": [c["cond"], sec_cond]} if c.get("cond") else sec_cond
+            c["round"] = round_idx if seq else 0
+            node["choices"].append(c)
+        if seq and built:
+            round_idx += 1
+    node["rounds"] = max(1, round_idx) if seq else 1
+    if r.get("ambients"):
+        node["ambients"] = r["ambients"]
+    return node
+
+def split_rounds(nodes):
+    """A node with several sequential choice sections becomes NID, NID~2, ... chained."""
+    out = {}
+    for nid, n in nodes.items():
+        R = n.pop("rounds", 1)
+        if R <= 1 or n["kind"] in ("dialogue", "hub"):
+            for c in n["choices"]: c.pop("round", None)
+            for b in n["blocks"]: b.pop("round", None)
+            out[nid] = n; continue
+        final_next = n["default_next"]
+        parts = []
+        for r_i in range(R):
+            pid = nid if r_i == 0 else f"{nid}~{r_i+1}"
+            p = dict(n) if r_i == 0 else {"id": pid, "title": n["title"], "source": n["source"], "kind": n["kind"],
+                                          "blocks": [], "choices": [], "default_next": None, "routes": [], "enter_effects": []}
+            p["blocks"] = [b for b in n["blocks"] if b.get("round", 0) == r_i] if r_i else [b for b in n["blocks"] if not b.get("round")]
+            p["choices"] = [c for c in n["choices"] if c.get("round", 0) == r_i]
+            for c in p["choices"]: c.pop("round", None)
+            for b in p["blocks"]: b.pop("round", None)
+            parts.append(p)
+        for i, p in enumerate(parts):
+            nxt = parts[i + 1]["id"] if i + 1 < len(parts) else final_next
+            p["default_next"] = nxt
+            if i + 1 < len(parts):
+                p["routes"] = []
+                p["pick_one"] = True
+            if not p["blocks"]:
+                p["blocks"] = [{"t": "p", "text": "局面还没有结束。"}]
+            out[p["id"]] = p
+    return out
 
 def main():
-    nodes: dict[str, dict] = {}
-    warnings: list[str] = []
-    sources_used = []
-
-    for fname in STORY_FILES:
-        path = SCRIPT / fname
-        if not path.exists():
-            warnings.append(f"missing file: {fname}")
+    raw = read_all()
+    nodes = {}
+    for r in raw:
+        if r["id"] in nodes:
             continue
-        text = path.read_text(encoding="utf-8")
-        sources_used.append(fname)
-        for nid, title, body in split_nodes(text):
-            if not is_story_node_id(nid):
-                # e.g. accidental matches - skip
-                if re.match(r"^\d", nid):
-                    continue
-                # Allow END and others already covered
-                if nid not in ("结算顺序",) and len(nid) < 3:
-                    continue
-                # Skip Chinese-only weirdness
-                if not re.match(r"^[A-Z]", nid):
-                    continue
-            prose, choices, default_next = extract_body_and_choices(body)
-
-            # Classify
-            kind = "scene"
-            if nid.startswith("END"):
-                kind = "ending"
-            elif nid.startswith("D-"):
-                kind = "dialogue"
-            elif nid.startswith("R-") or nid.startswith("EVT"):
-                kind = "random"
-            elif nid.startswith("C-") or nid.startswith("BATTLE"):
-                kind = "combat"
-            elif "HUB" in nid or nid in (
-                "A1-TOWN-01",
-                "CITY-01",
-                "CITY-10",
-            ):
-                kind = "hub"
-
-            # Clean prose for display: keep speaker tags
-            display = prose.strip()
-            # Strip leading 〔进入〕 lines into enter_condition
-            enter = None
-            em = re.match(r"〔进入〕([^\n]+)\n*", display)
-            if em:
-                enter = em.group(1).strip()
-                display = display[em.end() :].lstrip()
-
-            node = {
-                "id": nid,
-                "title": title,
-                "source": fname,
-                "kind": kind,
-                "enter": enter,
-                "text": display,
-                "choices": choices,
-                "default_next": default_next,
-            }
-
-            if nid in nodes:
-                warnings.append(f"duplicate node {nid} in {fname} (keeping first from {nodes[nid]['source']})")
-                continue
-            nodes[nid] = node
-
-    # Patch critical transitions if missing
-    patches = apply_patches(nodes, warnings)
-
-    # Link integrity
-    missing_links = []
-    for nid, node in nodes.items():
-        targets = []
-        if node.get("default_next") and node["default_next"] not in ("__RETURN__",):
-            targets.append(node["default_next"])
-        for c in node.get("choices") or []:
-            if c.get("next") and c["next"] not in ("__RETURN__",):
-                targets.append(c["next"])
-            for sc in c.get("subchoices") or []:
-                if sc.get("next"):
-                    targets.append(sc["next"])
-        for t in targets:
-            if t not in nodes:
-                missing_links.append(f"{nid} → {t}")
-
-    # Meta
-    meta = {
-        "title": "雾钟城：第七声",
-        "version": "1.0.0",
-        "node_count": len(nodes),
-        "sources": sources_used,
-        "characters": {
-            "edric": {
-                "id": "edric",
-                "name": "艾德里克",
-                "title": "人类斥候",
-                "blurb": "善于察觉与潜行。为了妹妹的离境文书，他走在北路的雨里。",
-                "traits": ["善于察觉", "身手敏捷", "寡言"],
-                "stats": {"STR": 12, "DEX": 15, "CON": 13, "CHA": 10, "INS": 15, "WIL": 12},
-                "hp": 16,
-                "max_hp": 16,
-                "carried": ["border_sword", "hand_crossbow", "6_bolts", "lily_comb", "8_vouchers"],
-                "storage": ["bedroll", "winter_cloak", "28_vouchers"],
-                "fragment": "memory_ring",
-                "fragment_name": "旧雨骨（铁戒指）",
-                "private_goal": "secure_exit_writ",
-                "start": "E-PRO-01",
-            },
-            "liriel": {
-                "id": "liriel",
-                "name": "莉瑞尔",
-                "title": "半精灵流亡者",
-                "blurb": "口才与魅力出众。十年前的哨所旧案仍缠着她的银链。",
-                "traits": ["能言善辩", "身手敏捷", "心事重"],
-                "stats": {"STR": 9, "DEX": 15, "CON": 11, "CHA": 16, "INS": 14, "WIL": 13},
-                "hp": 12,
-                "max_hp": 12,
-                "carried": ["elf_rapier", "burnt_ledger", "chalk", "11_vouchers"],
-                "storage": ["lute", "spare_dress", "9_vouchers"],
-                "fragment": "desire_chain",
-                "fragment_name": "饥月骨（银链）",
-                "private_goal": "learn_outpost_truth",
-                "start": "L-PRO-01",
-            },
-            "thorin": {
-                "id": "thorin",
-                "name": "索林",
-                "title": "矮人工匠",
-                "blurb": "体格结实，拒不认输。怀表里的裂锤骨会放大他的愤怒。",
-                "traits": ["体格结实", "力大", "工匠之手"],
-                "stats": {"STR": 16, "DEX": 9, "CON": 16, "CHA": 10, "INS": 12, "WIL": 14},
-                "hp": 24,
-                "max_hp": 24,
-                "carried": ["old_hammer", "rune_pick", "delivery_receipt", "5_vouchers"],
-                "storage": ["tool_chest", "spare_parts", "24_vouchers"],
-                "fragment": "anger_watch",
-                "fragment_name": "裂锤骨（怀表）",
-                "private_goal": "obtain_delivery_seal",
-                "start": "T-PRO-01",
-            },
-        },
-        "time_labels": ["黄昏", "入夜", "深夜", "午夜", "三更", "四更", "黎明"],
-        "item_names": ITEM_NAMES,
-        "warnings": warnings[:200],
-        "missing_links": missing_links[:200],
-        "patches_applied": patches,
-    }
-
+        nodes[r["id"]] = build_node(r)
+    nodes = split_rounds(nodes)
+    import wzc_patches
+    wzc_patches.apply(nodes, epilogues())
+    finalize(nodes)
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "nodes.json").write_text(
-        json.dumps(nodes, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    (OUT / "meta.json").write_text(
-        json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    (OUT / "nodes.json").write_text(json.dumps(nodes, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    meta = wzc_patches.meta(nodes)
+    meta["unknown_conditions"] = sorted(set(CTX.unknown_conds))
+    meta["fallback_texts"] = CTX.fallbacks
+    meta["item_keys_without_name"] = sorted(k for k in CTX.items if k not in ITEM_NAMES)
+    (OUT / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"v2 parse: {len(nodes)} nodes; unknown conds {len(set(CTX.unknown_conds))}; fallback texts {CTX.fallbacks}; "
+          f"unnamed items {len(meta['item_keys_without_name'])}")
 
-    # Stats
-    with_choices = sum(1 for n in nodes.values() if n["choices"])
-    endings = sum(1 for n in nodes.values() if n["kind"] == "ending")
-    print(f"Parsed {len(nodes)} nodes ({with_choices} with choices, {endings} endings)")
-    print(f"Warnings: {len(warnings)}, missing links: {len(missing_links)}")
-    if missing_links[:15]:
-        print("Sample missing:", *missing_links[:15], sep="\n  ")
-    return 0
-
-
-ITEM_NAMES = {
-    "border_sword": "边防长剑",
-    "hand_crossbow": "手弩",
-    "6_bolts": "弩矢×6",
-    "lily_comb": "莉莉的木梳",
-    "8_vouchers": "商会券×8",
-    "28_vouchers": "商会券×28",
-    "bedroll": "铺盖卷",
-    "winter_cloak": "冬氅",
-    "elf_rapier": "精灵细剑",
-    "burnt_ledger": "烧焦账册",
-    "chalk": "粉笔",
-    "11_vouchers": "商会券×11",
-    "lute": "鲁特琴",
-    "spare_dress": "备用衣裙",
-    "9_vouchers": "商会券×9",
-    "old_hammer": "旧锤",
-    "rune_pick": "符文镐",
-    "delivery_receipt": "交货回执",
-    "5_vouchers": "商会券×5",
-    "tool_chest": "工具箱",
-    "spare_parts": "备用零件",
-    "24_vouchers": "商会券×24",
-    "memory_ring": "铁戒指（旧雨骨）",
-    "desire_chain": "银链（饥月骨）",
-    "anger_watch": "怀表（裂锤骨）",
-    "half_mine_map": "半张矿道图",
-    "ysolde_note": "伊索尔的纸条",
-    "medicine_pack": "止血粉",
-    "toren_badge": "疤脸铜扣",
-    "mine_drain_route": "矿区排水渠路线",
-}
-
-
-def apply_patches(nodes: dict, warnings: list) -> list[str]:
-    """Hand-coded critical transitions for hub / incomplete parses."""
-    applied = []
-
-    def ensure_choice(nid, label, next_id, effects=None, condition=None):
-        if nid not in nodes:
-            return
-        node = nodes[nid]
-        # avoid dup labels
-        for c in node["choices"]:
-            if c["label"] == label:
-                if not c.get("next"):
-                    c["next"] = next_id
-                    applied.append(f"fill next {nid}: {label} → {next_id}")
-                return
-        node["choices"].append(
-            {
-                "id": f"patch-{len(node['choices'])+1}",
-                "num": len(node["choices"]) + 1,
-                "label": label,
-                "condition": condition,
-                "check": None,
-                "effects": effects or [],
-                "success_text": "",
-                "fail_text": "",
-                "success_effects": [],
-                "fail_effects": [],
-                "cost_effects": [],
-                "next": next_id,
-                "subchoices": None,
-                "flavor": [],
-                "raw_block": "(patch)",
-            }
-        )
-        applied.append(f"add choice {nid}: {label} → {next_id}")
-
-    # Prologue ends → Greybridge hub
-    for pid, nxt in (
-        ("E-PRO-08", "A1-TOWN-01"),
-        ("L-PRO-08", "A1-TOWN-01"),
-        ("T-PRO-08", "A1-TOWN-01"),
-    ):
-        if pid in nodes:
-            n = nodes[pid]
-            if not n["choices"]:
-                ensure_choice(pid, "进入灰桥镇", nxt, [{"op": "=", "key": "time", "value": 1}])
-            else:
-                for c in n["choices"]:
-                    if not c.get("next"):
-                        c["next"] = nxt
-                        applied.append(f"prologue link {pid} → {nxt}")
-
-    # Greybridge hub navigation
-    if "A1-TOWN-01" in nodes:
-        hub_opts = [
-            ("前往白鸦旅店", "A1-TOWN-02"),
-            ("前往灰烛礼拜堂", "A1-TOWN-03"),
-            ("前往红牡丹", "A1-TOWN-04"),
-            ("前往格罗姆的铺子", "A1-TOWN-05"),
-            ("处理私人目标", "A1-TOWN-06"),
-            ("前往军务所（哈兰）", "A1-TOWN-07"),
-        ]
-        for label, nxt in hub_opts:
-            if nxt in nodes:
-                ensure_choice("A1-TOWN-01", label, nxt)
-
-    # Return to hub from locations if no next
-    for loc in (
-        "A1-TOWN-02",
-        "A1-TOWN-03",
-        "A1-TOWN-04",
-        "A1-TOWN-05",
-        "A1-TOWN-06",
-        "A1-TOWN-07",
-    ):
-        if loc in nodes:
-            n = nodes[loc]
-            has_return = any(
-                (c.get("next") in ("A1-TOWN-01", "A1-TOWN-08", "A1-TOWN-09"))
-                for c in n["choices"]
-            )
-            if not n["choices"] or not has_return:
-                ensure_choice(
-                    loc,
-                    "离开此地，回到镇口",
-                    "A1-TOWN-01",
-                    [{"op": "+=", "key": "town_visits", "value": 1}],
-                )
-
-    # After enough visits / time, push toward clock / warehouse
-    if "A1-TOWN-08" in nodes and "A1-TOWN-09" in nodes:
-        for c in nodes["A1-TOWN-08"].get("choices") or []:
-            if not c.get("next"):
-                c["next"] = "A1-TOWN-09"
-        if not nodes["A1-TOWN-08"]["choices"]:
-            ensure_choice("A1-TOWN-08", "仓促赶往东仓", "A1-TOWN-09")
-
-    if "A1-TOWN-10" in nodes:
-        # Fire aftermath → city
-        if "CITY-01" in nodes:
-            ensure_choice("A1-TOWN-10", "连夜赶往雾钟城", "CITY-01")
-            if "A2-MINE-01A" in nodes:
-                ensure_choice("A1-TOWN-10", "改道黑砧矿区", "A2-MINE-01A")
-
-    # City hub
-    if "CITY-01" in nodes:
-        for label, nxt in [
-            ("前往锚门广场", "CITY-02"),
-            ("打听白塔拔除术", "CITY-03"),
-            ("打听学院稳定术", "CITY-04"),
-            ("打听河渠换命契", "CITY-05"),
-            ("打听西炉拆解术", "CITY-06"),
-            ("查阅第零蓄水池档案", "CITY-07"),
-            ("倾听六钟错拍", "CITY-08"),
-            ("前往静默署", "CITY-09"),
-        ]:
-            if nxt in nodes:
-                ensure_choice("CITY-01", label, nxt)
-
-    for loc in [f"CITY-0{i}" for i in range(2, 10)] + ["CITY-10"]:
-        if loc in nodes:
-            ensure_choice(loc, "返回雾钟城街区", "CITY-01")
-
-    if "CITY-10" in nodes and "A3-SHRINE-00" in nodes:
-        ensure_choice("CITY-10", "潜入第零蓄水池", "A3-SHRINE-00")
-    if "A3-SHRINE-00" in nodes and "A3-SHRINE-01" in nodes:
-        ensure_choice("A3-SHRINE-00", "沿裂隙桥下行", "A3-SHRINE-01")
-
-    # Chain shrine if missing nexts
-    shrine_chain = [
-        "A3-SHRINE-01",
-        "A3-SHRINE-02",
-        "A3-SHRINE-03",
-        "A3-SHRINE-04",
-        "A3-SHRINE-05",
-        "A3-SHRINE-06",
-        "A3-SHRINE-07",
-        "A3-SHRINE-08",
-    ]
-    for a, b in zip(shrine_chain, shrine_chain[1:]):
-        if a in nodes and b in nodes:
-            n = nodes[a]
-            if not any(c.get("next") for c in n["choices"]):
-                ensure_choice(a, "继续深入", b)
-
-    # Ending choices from final plan node
-    if "A3-SHRINE-07" in nodes:
-        for label, end in [
-            ("记录后沉睡，留下事实", "END-01"),
-            ("切断服从铭文，承受反噬", "END-02"),
-            ("尝试建立雾钟地方新约", "END-03"),
-            ("带着诅咒离开（若已安排退路）", "END-08"),
-        ]:
-            if end in nodes:
-                ensure_choice("A3-SHRINE-07", label, end)
-
-    # Personal cure endings from city therapy nodes
-    cure_map = [
-        ("CITY-03", "接受白塔代祷并离城", "END-CURE-01"),
-        ("CITY-04", "接受学院长期稳定术", "END-CURE-02"),
-        ("CITY-05", "签下河渠换命契", "END-CURE-03"),
-        ("CITY-06", "接受西炉内化拆解", "END-CURE-04"),
-    ]
-    for loc, label, end in cure_map:
-        if loc in nodes and end in nodes:
-            ensure_choice(loc, label, end)
-
-    # Ensure ending nodes are terminal
+def finalize(nodes):
+    """Resolve choice next defaults & once flags."""
     for nid, n in nodes.items():
-        if n["kind"] == "ending" and not n["choices"]:
-            n["choices"] = [
-                {
-                    "id": "to-title",
-                    "num": 1,
-                    "label": "合上这一页（返回标题）",
-                    "condition": None,
-                    "check": None,
-                    "effects": [{"op": "ending", "key": nid, "value": True}],
-                    "success_text": "",
-                    "fail_text": "",
-                    "success_effects": [],
-                    "fail_effects": [],
-                    "cost_effects": [],
-                    "next": "__TITLE__",
-                    "subchoices": None,
-                    "flavor": [],
-                    "raw_block": "(ending)",
-                }
-            ]
-            applied.append(f"ending terminal {nid}")
-
-    # Nodes with no choices and no default_next: add stub continue if we can guess
-    for nid, n in list(nodes.items()):
-        if n["kind"] == "ending":
-            continue
-        if n["choices"]:
-            # fill empty nexts with default if present in text
-            continue
-        if n.get("default_next") and n["default_next"] in nodes:
-            ensure_choice(nid, "继续", n["default_next"])
-        elif n.get("default_next") and n["default_next"] not in nodes:
-            warnings.append(f"default_next missing: {nid} → {n['default_next']}")
-            ensure_choice(
-                nid,
-                "继续（此分支目标未收录）",
-                "__STUB__",
-            )
-
-    # Stub node
-    if "__STUB__" not in nodes:
-        nodes["__STUB__"] = {
-            "id": "__STUB__",
-            "title": "未完全解析的岔路",
-            "source": "patch",
-            "kind": "scene",
-            "enter": None,
-            "text": "【旁白】雾比刚才更浓。这段岔路的数据尚未完全从剧本转录进来，但你的旅程不必停在这里。\n\n你可以回到最近的安全地点，或直接进入已知的下一幕。",
-            "choices": [],
-            "default_next": None,
-        }
-        ensure_choice("__STUB__", "返回灰桥镇口", "A1-TOWN-01")
-        if "CITY-01" in nodes:
-            ensure_choice("__STUB__", "前往雾钟城", "CITY-01")
-        if "A3-SHRINE-01" in nodes:
-            ensure_choice("__STUB__", "前往初鸣庭（若已发现）", "A3-SHRINE-01")
-        applied.append("created __STUB__")
-
-    return applied
-
+        dn = n.get("default_next")
+        def fix(c, top=True):
+            for k in ("success", "fail"):
+                if c.get(k) and c[k].get("next") == "__SELF__":
+                    c[k]["next"] = "__SELF__"
+            if c.get("next") is None and not c.get("success", {}).get("next") and not c.get("sub"):
+                if top and dn and not n.get("stay_choices") and not c.get("topic"):
+                    c["next"] = dn
+                else:
+                    c["next"] = "__SELF__"
+            if c.get("next") in (None, "__SELF__") or (c.get("success") and c["success"].get("next") in (None, "__SELF__")):
+                c.setdefault("once", True)
+            for s in c.get("sub") or []:
+                fix(s, False)
+        for c in n["choices"]:
+            fix(c)
+        if not n["routes"]:
+            n.pop("routes")
+        if not n["enter_effects"]:
+            n.pop("enter_effects")
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

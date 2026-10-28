@@ -16,6 +16,7 @@
           continue;
         }
         const data = JSON.parse(raw);
+        if (data.version !== 2) { out.push({ index: i, empty: true }); continue; }
         out.push({
           index: i,
           empty: false,
@@ -34,12 +35,12 @@
 
   function save(slot, state, meta) {
     const payload = {
-      version: 1,
+      version: 2,
       savedAt: new Date().toISOString(),
-      characterName: (meta.characters && meta.characters[state.protagonist]?.name) || state.protagonist,
-      nodeId: state.nodeId,
-      nodeTitle: (meta._nodes && meta._nodes[state.nodeId]?.title) || state.nodeId,
-      timeLabel: (meta.time_labels || [])[state.time] || String(state.time),
+      characterName: state.name,
+      nodeId: state.node,
+      nodeTitle: (meta._nodes && meta._nodes[state.node] && meta._nodes[state.node].title) || state.node,
+      timeLabel: (meta.time_labels || [])[Math.min(6, (state.vars && state.vars.time) || 0)] || "",
       state,
     };
     localStorage.setItem(slotKey(slot), JSON.stringify(payload));
@@ -50,7 +51,7 @@
   function load(slot) {
     const raw = localStorage.getItem(slotKey(slot));
     if (!raw) return null;
-    return JSON.parse(raw);
+    try { const d = JSON.parse(raw); return d && d.version === 2 && d.state ? d : null; } catch (e) { return null; }
   }
 
   function autosave(state, meta) {

@@ -9,3 +9,4 @@ dist/
 .env.*
 shots/
 .cache/
+__pycache__/
