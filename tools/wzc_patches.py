@@ -63,6 +63,27 @@ def walk_choices(n):
 def set_result(c, *texts):
     c["result"] = [P(t) for t in texts]
 
+def find_any(n, prefix):
+    for c in walk_choices(n):
+        if c.get("label", "").startswith(prefix):
+            return c
+    raise KeyError(f"{n['id']}: no nested choice starting {prefix!r}")
+
+def ensure_effect(target, effect):
+    effects = target.setdefault("effects", [])
+    if effect not in effects:
+        effects.append(effect)
+
+def voucher_effect(target, amount):
+    effects = target.setdefault("effects", [])
+    effects[:] = [e for e in effects if not (e.get("op") == "add" and e.get("k") == "vouchers")]
+    if amount:
+        effects.append(add("vouchers", amount))
+
+def voucher_cost(choice, amount):
+    voucher_effect(choice, 0)
+    choice["cost"] = {"vouchers": amount}
+
 # ------------------------------------------------------------------ apply
 def apply(N, epis):
     prologues(N)
@@ -72,6 +93,9 @@ def apply(N, epis):
     mine(N)
     shrine(N)
     import wzc_combat; wzc_combat.combat(N)
+    reward_integrity(N)
+    random_event_integrity(N)
+    condition_integrity(N)
     detours(N)
     endings(N, epis)
     text_fixes(N)
@@ -482,6 +506,408 @@ def city(N):
     find(n, "河渠旧浴场")["cond"] = ANY({"seen": "CITY-05"}, {"seen": "LOC-CANAL"})
     c = find(n, "残片强引")
     c["effects"] = c.get("effects", []) + [hp(-4), add("fragment_used")]
+
+# ---------------------------------------------------------------- reward and consequence integrity
+def reward_integrity(N):
+    """Keep player-facing promises synchronized with persistent game state."""
+    # Prologues and Greybridge: several rewards were present only in prose.
+    voucher_cost(find(N["E-PRO-08"], "交 4 张"), 4)
+    c = find(N["T-PRO-01"], "接受减价")
+    ensure_effect(c["success"], item("mine_access_token"))
+    ensure_effect(c["fail"], item("mine_access_token"))
+    voucher_effect(find(N["T-PRO-02"], "将怀表攥进掌心"), 5)
+    voucher_effect(find(N["T-PRO-03"], "把科德留给私兵"), 18)
+
+    c = find_any(N["A1-TOWN-02"], "拿假线索")
+    ensure_effect(c["success"], add("vouchers", 4))
+    voucher_effect(find_any(N["A1-TOWN-02"], "要求她买下残片"), 20)
+    voucher_effect(find_any(N["A1-TOWN-04"], "卖掉这个真相"), 10)
+    c = find(N["A1-TOWN-06"], "只给钱")
+    voucher_cost(c, 20)
+    ensure_effect(c, setf("harlan_writ"))
+    ensure_effect(c, setf("family_writ_paid"))
+
+    # City side quest 1: every advertised non-cash reward now exists in inventory.
+    n = N["SQ-CITY-01~2"]
+    c = find(n, "公开两份账")
+    ensure_effect(c, setf("tenant_union_started"))
+    c = find(n, "烧官方账")
+    ensure_effect(c, item("free_storage_token"))
+    c = find(n, "用账勒索奥多")
+    ensure_effect(c, setf("oddo_blackmailed"))
+    c = find(n, "把账交给塞拉")
+    ensure_effect(c, item("sewn_pack_strap"))
+    c = find(n, "替奥多向人群辩护")
+    ensure_effect(c, setf("oddo_restitution"))
+
+    # City side quest 2: let the player investigate before committing to a plan.
+    n = N["SQ-CITY-02"]
+    n["stay_choices"] = True
+    investigations = [
+        ("瓦瑞克确实", "varick_profit_known"),
+        ("他匿名资助", "varick_hospital_known"),
+        ("他计划在明日", "varick_vote_known"),
+    ]
+    for prefix, key in investigations:
+        c = find(n, prefix)
+        c["next"] = "__SELF__"
+        c["once"] = True
+        ensure_effect(c, setf(key))
+        ensure_effect(c, add("varick_investigations"))
+    if not any(c.get("id") == "to_action" for c in n["choices"]):
+        n["choices"].append(C(
+            "to_action", "结束调查，决定今晚怎么做。", "SQ-CITY-02~2",
+            ["你离开人群，重新衡量阿莱娜的委托与瓦瑞克造成的伤害。"], [],
+        ))
+
+    n = N["SQ-CITY-02~2"]
+    c = find(n, "按约下毒")
+    ensure_effect(c["success"], add("vouchers", 20))
+    ensure_effect(c["success"], setf("varick_dead"))
+    ensure_effect(c["success"], item("upper_house_key"))
+    ensure_effect(c["fail"], setf("alaina_exposed"))
+    c = find(n, "当面刺杀")
+    ensure_effect(c, add("vouchers", 20))
+    ensure_effect(c, setf("varick_dead"))
+    ensure_effect(c, item("upper_house_key"))
+    c = find(n, "偷账本")
+    ensure_effect(c["success"], item("varick_ledger"))
+    ensure_effect(c["success"], setf("varick_removed"))
+    c = find(n, "以账本勒索")
+    c["cond"] = flag("varick_profit_known")
+    ensure_effect(c["success"], setf("silent_office_bill_withdrawn"))
+    ensure_effect(c["success"], add("city_rep"))
+    c = find(n, "向瓦瑞克出卖")
+    ensure_effect(c, setf("alaina_betrayed"))
+    ensure_effect(c, item("upper_house_key"))
+    c = find(n, "把双方叫到同一桌")
+    c["cond"] = ALL(
+        cmp("varick_investigations", ">=", 3),
+        NOT(flag("alaina_exposed")),
+        NOT(flag("alaina_betrayed")),
+    )
+    ensure_effect(c, setf("varick_hearing"))
+    ensure_effect(c, item("upper_house_key"))
+
+    # City side quest 3: payment options cannot drive currency below zero.
+    n = N["SQ-CITY-03"]
+    c = find(n, "替妮玛付差价")
+    voucher_cost(c, 4)
+    ensure_effect(c, item("archive_cabinet_key"))
+    ensure_effect(c, setf("nima_brother_saved"))
+    c = find(n, "让达莫斯赊账")
+    ensure_effect(c["success"], item("archive_cabinet_key"))
+    ensure_effect(c["success"], setf("nima_brother_saved"))
+    c = find(n, "让妮玛带走药")
+    ensure_effect(c, item("archive_cabinet_key"))
+    ensure_effect(c, setf("nima_brother_saved"))
+    ensure_effect(c, setf("paid_patient_harmed"))
+    c = find(n, "抓住妮玛")
+    ensure_effect(c, setf("nima_detained"))
+    c = find(n, "调配替代药")
+    ensure_effect(c["success"], item("archive_cabinet_key"))
+    ensure_effect(c["success"], item("stable_medicine"))
+    ensure_effect(c["success"], setf("all_patients_helped"))
+    ensure_effect(c["fail"], setf("medicine_spoiled"))
+    c = find(n, "买下整家药铺")
+    voucher_cost(c, 18)
+    ensure_effect(c, item("pharmacy_credit"))
+    ensure_effect(c, item("stable_medicine"))
+
+    # City side quest 4: payment, route, map access and the amulet are real rewards.
+    n = N["SQ-CITY-04"]
+    c = find(n, "把真品还给伊芮")
+    voucher_effect(c, 8)
+    ensure_effect(c, item("smugglers_canal_route"))
+    ensure_effect(c, setf("silver_finger_returned"))
+    c = find(n, "说服伊芮暂借")
+    ensure_effect(c, setf("revocable_museum_loan"))
+    c = find(n, "制作替代件")
+    voucher_cost(c, 6)
+    ensure_effect(c, item("silver_shard_amulet"))
+    ensure_effect(c, item("smugglers_canal_route"))
+    ensure_effect(c, setf("flood_bell_repaired"))
+    c = find(n, "把真品卖给第三方")
+    voucher_effect(c, 20)
+    ensure_effect(c, setf("silver_finger_sold"))
+    c = find(n, "拒绝归还")
+    ensure_effect(c, item("city_old_map_access"))
+    c = find(n, "砸毁银指")
+    ensure_effect(c, add("rel.iri", -2))
+    ensure_effect(c, add("rel.belmont", -2))
+    ensure_effect(c, setf("silver_finger_destroyed"))
+
+    # City side quest 5: outcomes alter evidence, people and money independently.
+    n = N["SQ-CITY-05"]
+    c = find(n, "按委托暗杀")
+    ensure_effect(c, item("merchant_storage_token"))
+    ensure_effect(c, setf("leona_dead"))
+    c = find(n, "威胁她离城")
+    ensure_effect(c["success"], setf("leona_exiled"))
+    ensure_effect(c["success"], setf("pollution_records_hidden"))
+    c = find(n, "收买她")
+    c["cond"] = ALL(
+        ANY(flag("stable_medicine"), flag("benzoin_medicine"), flag("medicine_pack")),
+        ANY(flag("mira_safehouse_hint"), flag("mine_drain_route"), flag("smugglers_canal_route")),
+    )
+    voucher_effect(c, 12)
+    ensure_effect(c, setf("leona_names_withheld"))
+    c = find(n, "保护她完成交接")
+    c["check"] = {"stats": ["DEX", "CHA"], "dc": 13}
+    c["result"] = []
+    c["effects"] = []
+    c["success"] = branch(
+        "你挡住刀手，让莱欧娜把记录交给三名互不隶属的见证人。拉德克被立案调查，商会票据也跟着贬值了一阵。",
+        [add("city_rep", 2), item("leona_testimony"), setf("radek_investigated")],
+    )
+    c["fail"] = branch(
+        "刀手伤了你，但莱欧娜仍把一份记录扔进了人群。证据保住了，她本人只能连夜转移。",
+        [hp(-2), add("city_rep"), item("pollution_records"), setf("leona_exiled")],
+    )
+    c = find(n, "把她挪用赈济款一并公开")
+    ensure_effect(c, item("leona_testimony"))
+    ensure_effect(c, add("truth"))
+    ensure_effect(c, setf("leona_prosecuted"))
+    ensure_effect(c, setf("radek_investigated"))
+    c = find(n, "双重勒索")
+    c["check"] = {"stats": ["INS", "CHA"], "dc": 16}
+    c["result"] = []
+    c["effects"] = []
+    c["success"] = branch(
+        "你把两个彼此冲突的谎言都维持到了交钱那一刻，一共拿到三十二张票据。",
+        [add("corruption", 2), add("vouchers", 32), setf("double_blackmail")],
+    )
+    c["fail"] = branch(
+        "莱欧娜和拉德克核对了你的说法。两边都公开了你索钱的字据，你一张也没拿到。",
+        [add("city_rep", -3), setf("blackmail_exposed")],
+    )
+    c = find(n, "杀拉德克")
+    ensure_effect(c, add("cruelty"))
+    ensure_effect(c, setf("radek_dead"))
+
+    # Random and ambient scenes: convert prose-only spending to guarded costs.
+    voucher_cost(find(N["R-TRAVEL-07"], "付钱请她别唱"), 1)
+    voucher_cost(find(N["R-TRAVEL-11"], "不赌，直接付费"), 4)
+    ensure_effect(find(N["R-TRAVEL-11"], "不赌，直接付费"), setf("skye_reliable_answer"))
+    ensure_effect(find(N["R-DES-02"], "砸镜")["success"], add("vouchers", -2))
+    voucher_cost(find(N["R-ANG-01"], "付钱"), 4)
+    c = find(N["R-ANG-01"], "据理还价")
+    ensure_effect(c["success"], add("vouchers", -2))
+    c = find(N["R-ANG-01"], "砸柜台")
+    ensure_effect(c, add("corruption"))
+    ensure_effect(c, add("alarm_town"))
+    ensure_effect(find(N["R-ANG-01"], "修好他坏掉的秤"), item("rope"))
+    voucher_cost(find(N["R-ANG-02"], "买下两份药"), 5)
+    c = find(N["R-ANG-05"], "买下马")
+    voucher_cost(c, 8)
+    ensure_effect(c, item("pack_animal"))
+
+    ambient_costs = {
+        "CITY-AMBIENT-04": ("你替她付", 3),
+        "CITY-AMBIENT-07": ("贿赂 2", 2),
+        "CITY-AMBIENT-08": ("花 3", 3),
+        "CITY-AMBIENT-10": ("支付 3", 3),
+        "CITY-AMBIENT-16": ("代垫 12", 12),
+    }
+    for nid, (prefix, amount) in ambient_costs.items():
+        voucher_cost(find(N[nid], prefix), amount)
+    ensure_effect(find(N["CITY-AMBIENT-03"], "只记下签发人"), setf("radek_named"))
+    ensure_effect(find(N["CITY-AMBIENT-05"], "建议两人共同检查"), item("copper_tuning_fork"))
+    ensure_effect(find(N["CITY-AMBIENT-08"], "花 3"), item("banned_bell_history"))
+    ensure_effect(find(N["CITY-AMBIENT-08"], "举报摊主"), item("academy_access_note"))
+    ensure_effect(find(N["CITY-AMBIENT-13"], "以一枚糖"), item("childs_sound_map"))
+    voucher_effect(find(N["CITY-AMBIENT-17"], "强行修复"), 3)
+
+    c = find(N["CITY-AMBIENT-09"], "购买一次签名服务")
+    voucher_cost(c, 5)
+    ensure_effect(c, item("forged_signature_pen"))
+    c = find(N["CITY-AMBIENT-09"], "砸笔")
+    c["result"] = [P("笔断成两截。抄写员指着价目牌，要你赔十二张票据；巷口已经有人在叫巡吏。")]
+    c["effects"] = []
+    c["next"] = None
+    c["sub"] = [
+        C("pay", "赔十二张票据。", "__RETURN__", ["抄写员收起断笔，仍不认同你替她砸东西。"], [], cost={"vouchers": 12}),
+        C("run", "趁巡吏赶来前逃走。", "__RETURN__", [], [], check={"stats": ["DEX"], "dc": 13},
+          success=branch("你钻进两座档案楼之间的窄缝，甩开了巡吏。", [add("city_rep", -1)]),
+          fail=branch("巡吏追上了你。你赔了钱，名字也被记进损毁公物的册子。", [add("vouchers", -12), add("city_rep", -1)])),
+    ]
+
+    # A base negative voucher effect is always an up-front price. Expressing it
+    # as cost lets the UI show the amount and disables choices the player cannot pay.
+    for n in N.values():
+        for c in walk_choices(n):
+            debit = -sum(
+                int(e.get("v") or 0)
+                for e in c.get("effects", [])
+                if e.get("op") == "add" and e.get("k") == "vouchers" and int(e.get("v") or 0) < 0
+            )
+            if debit and not c.get("cost"):
+                voucher_cost(c, debit)
+
+def condition_integrity(N):
+    """Resolve source annotations that would otherwise leave gated choices always visible."""
+    rules = [
+        ("E-PRO-06", "请汤姆先入城", ANY(flag("tom_alive"), flag("tom_with"), flag("tom_saved"))),
+        ("L-PRO-05", "把完整账页", flag("burnt_ledger")),
+        ("L-PRO-05", "“你若想审判", cmp("mod.INS", ">=", 2)),
+        ("L-PRO-06", "让凯尔射击", cmp("rel.kael", ">=", -1)),
+        ("T-PRO-05", "把怒气对准", flag("c02_ward_alone")),
+        ("A1-TOWN-02", "给他看真实物证", ANY(
+            flag("saved_neve"), flag("c01_prisoner"), flag("shadow_named_hint"),
+            flag("harlan_evidence"), flag("imperial_oil_seal"),
+        )),
+        ("A1-TOWN-02", "询问灰袍人", ANY(
+            flag("shadow_offer"), flag("shadow_named_hint"), flag("shadow_pattern"),
+        )),
+        ("A1-TOWN-02", "质问她为何早知", flag("ysolde_note")),
+        ("A1-TOWN-04", "把瓦伦说成危险人物", flag("valen_betrayed")),
+        ("A1-TOWN-07", "指控他执行非法灭口", ANY(
+            flag("family_truth"), flag("father_letter_kept"), flag("burnt_ledger"), flag("eilyn_record"),
+        )),
+        ("A2-MINE-01A", "煽动士兵拒绝炸矿", ANY(
+            flag("eilyn_record"), flag("family_truth"), flag("father_letter_kept"), cmp("mod.CHA", ">=", 3),
+        )),
+        ("A3-SHRINE-01", "指出幻象中的错误", ANY(
+            flag("memory_anchor_honest"), flag("family_truth"), flag("kael_confession"),
+            flag("gromm_approach_honest"), flag("honest_witness"),
+        )),
+        ("D-NPC-TOREN", "“你怕第四层", flag("toren_dream")),
+    ]
+    for node_id, prefix, cond in rules:
+        choice = find_any(N[node_id], prefix)
+        choice["cond"] = cond
+        choice.pop("cond_note", None)
+
+def random_event_integrity(N):
+    """Restore state changes that terse random-event bullets lost during parsing."""
+    def ch(node_id, choice_id):
+        return next(c for c in N[node_id]["choices"] if c["id"] == choice_id)
+
+    # Shared travel events.
+    ensure_effect(ch("R-TRAVEL-01", "s0c1")["success"], {"op": "adv", "k": "*"})
+    ensure_effect(ch("R-TRAVEL-01", "s0c2"), item("single_military_boot"))
+    c = ch("R-TRAVEL-02", "s0c1"); voucher_cost(c, 10); ensure_effect(c, item("silver_coins"))
+    ensure_effect(ch("R-TRAVEL-02", "s0c2")["success"], setf("toren_bank_run_known"))
+    ensure_effect(ch("R-TRAVEL-02", "s0c3")["success"], item("silver_coins"))
+    ensure_effect(ch("R-TRAVEL-02", "s0c3")["fail"], add("alarm_town"))
+    ensure_effect(ch("R-TRAVEL-02", "s0c4"), setf("street_exchange_closed"))
+
+    c = ch("R-TRAVEL-03", "s0c1"); ensure_effect(c, setf("clean_water_spent")); ensure_effect(c, setf("well_child_saved"))
+    c = ch("R-TRAVEL-03", "s0c2"); ensure_effect(c, setf("white_well_sealed")); ensure_effect(c, setf("chapel_water_shortage"))
+    ensure_effect(ch("R-TRAVEL-03", "s0c3"), setf("well_child_sick"))
+    c = ch("R-TRAVEL-03", "s0c4")
+    ensure_effect(c["success"], add("time")); ensure_effect(c["success"], setf("city_resonance_casualties_reduced"))
+
+    c = ch("R-TRAVEL-04", "s0c1")
+    for branch_data in (c["success"], c["fail"]):
+        ensure_effect(branch_data, setf("buried_worker_saved")); ensure_effect(branch_data, add("time"))
+    ensure_effect(c["fail"], setf("drain_route_blocked"))
+    ensure_effect(ch("R-TRAVEL-04", "s0c2"), setf("buried_worker_waiting"))
+
+    ensure_effect(ch("R-TRAVEL-05", "s0c1"), item("conflicting_imperial_orders"))
+    ensure_effect(ch("R-TRAVEL-05", "s0c3")["success"], setf("forged_blast_order_known"))
+    ensure_effect(ch("R-TRAVEL-05", "s0c4"), setf("conflicting_orders_burned"))
+    ensure_effect(ch("R-TRAVEL-06", "s0c1")["success"], setf("deserter_disarmed"))
+    ensure_effect(ch("R-TRAVEL-06", "s0c1")["fail"], setf("baker_wounded"))
+    ensure_effect(ch("R-TRAVEL-06", "s0c2")["success"], setf("deserter_captured"))
+    ensure_effect(ch("R-TRAVEL-06", "s0c2")["fail"], add("alarm_town"))
+    ensure_effect(ch("R-TRAVEL-06", "s0c3"), setf("checkpoint_password"))
+    ensure_effect(ch("R-TRAVEL-06", "s0c4"), setf("deserter_to_empire"))
+
+    ensure_effect(ch("R-TRAVEL-07", "s0c1"), setf("alaina_convoy_clue"))
+    c = ch("R-TRAVEL-07", "s0c2"); ensure_effect(c, add("fragment_pressure", -1)); ensure_effect(c, setf("liriel_identity_public"))
+    c = ch("R-TRAVEL-08", "s0c1"); ensure_effect(c, item("spare_rivet"))
+    c = ch("R-TRAVEL-08", "s0c2"); ensure_effect(c, item("stolen_tool_kit")); ensure_effect(c, setf("helga_tools_stolen"))
+    ensure_effect(ch("R-TRAVEL-08", "s0c3"), item("borrowed_file"))
+    ensure_effect(ch("R-TRAVEL-09", "s0c1"), setf("hero_rumor_corrected"))
+    ensure_effect(ch("R-TRAVEL-09", "s0c3"), setf("warehouse_helpers"))
+    c = ch("R-TRAVEL-09", "s0c4"); ensure_effect(c, add("corruption")); ensure_effect(c, add("fragment_pressure", -1))
+    c = ch("R-TRAVEL-10", "s0c1"); ensure_effect(c, add("time")); ensure_effect(c, add("rel.miners"))
+    ensure_effect(ch("R-TRAVEL-10", "s0c2"), setf("winter_clothes_stored"))
+    ensure_effect(ch("R-TRAVEL-10", "s0c4"), item("winter_cloak"))
+    ensure_effect(ch("R-TRAVEL-11", "s0c3"), add("rel.skye", -1))
+    ensure_effect(ch("R-TRAVEL-11", "s0c3"), setf("skye_alaina_clue"))
+    ensure_effect(ch("R-TRAVEL-12", "s0c1"), setf("quake_child_saved"))
+    ensure_effect(ch("R-TRAVEL-12", "s0c2"), setf("quake_evidence_saved"))
+    ensure_effect(ch("R-TRAVEL-12", "s0c3"), add("rel.companion"))
+    ensure_effect(ch("R-TRAVEL-12", "s0c4"), setf("quake_all_saved"))
+
+    # Edric's memory intrusions.
+    c = ch("R-MEM-01", "s0c1"); ensure_effect(c, add("time")); ensure_effect(c, setf("father_boot_detail"))
+    ensure_effect(ch("R-MEM-01", "s0c2")["success"], add("fragment_pressure", -1))
+    c = ch("R-MEM-01", "s0c4"); ensure_effect(c, add("fragment_used")); ensure_effect(c, setf("father_bone_memory"))
+    ensure_effect(ch("R-MEM-02", "s0c3"), setf("lily_memory_anchor"))
+    ensure_effect(ch("R-MEM-02", "s0c4"), {"op": "item", "k": "lily_comb", "v": False})
+    ensure_effect(ch("R-MEM-03", "s0c1"), setf("guilt_pressure_immunity"))
+    ensure_effect(ch("R-MEM-03", "s0c2"), setf("honest_witness"))
+    ensure_effect(ch("R-MEM-03", "s0c4"), setf("victim_name_remembered"))
+    ensure_effect(ch("R-MEM-04", "s0c2"), add("rel.companion"))
+    c = ch("R-MEM-04", "s0c4")
+    c["effects"] = [setf("protect_companion_ready")]
+    c = ch("R-MEM-05", "s0c1"); voucher_cost(c, 3); ensure_effect(c, item("old_wooden_bowl"))
+    ensure_effect(ch("R-MEM-05", "s0c3")["success"], item("old_wooden_bowl"))
+    ensure_effect(ch("R-MEM-05", "s0c3")["success"], add("corruption"))
+    ensure_effect(ch("R-MEM-06", "s0c1"), setf("escape_plan_open"))
+    ensure_effect(ch("R-MEM-06", "s0c2"), add("fragment_pressure", -1))
+    c = ch("R-MEM-06", "s0c3"); ensure_effect(c, add("time")); ensure_effect(c, setf("lily_real_message"))
+    c = ch("R-MEM-06", "s0c4"); ensure_effect(c, add("fragment_used")); ensure_effect(c, add("corruption"))
+
+    # Liriel's desire intrusions.
+    ensure_effect(ch("R-DES-01", "s0c1"), add("fragment_pressure", -1))
+    c = ch("R-DES-01", "s0c2"); ensure_effect(c, add("rel.companion", -2)); ensure_effect(c, add("corruption")); ensure_effect(c, setf("support_mission_failed"))
+    ensure_effect(ch("R-DES-01", "s0c4"), setf("loneliness_anchor"))
+    c = ch("R-DES-02", "s0c2"); ensure_effect(c, {"op": "adv", "k": "CHA"}); ensure_effect(c, add("fragment_used"))
+    c = ch("R-DES-03", "s0c1"); ensure_effect(c, hp(2)); ensure_effect(c, add("corruption"))
+    c = ch("R-DES-03", "s0c2"); voucher_cost(c, 3); ensure_effect(c, add("fragment_pressure", -1))
+    c = ch("R-DES-03", "s0c4"); ensure_effect(c, setf("warehouse_access_hint")); ensure_effect(c, add("corruption")); ensure_effect(c, setf("enchanted_follower_pending"))
+    c = ch("R-DES-04", "s0c1"); ensure_effect(c, add("rel.kael", -1)); ensure_effect(c, add("corruption")); ensure_effect(c, setf("kael_forced_risk"))
+    ensure_effect(ch("R-DES-04", "s0c3"), add("rel.kael"))
+    c = ch("R-DES-05", "s0c1"); ensure_effect(c, add("time")); ensure_effect(c, add("rel.eilyn"))
+    ensure_effect(ch("R-DES-05", "s0c2"), setf("chapel_return_promised"))
+    c = ch("R-DES-05", "s0c3"); ensure_effect(c, add("corruption")); ensure_effect(c, setf("patient_dependency_extended"))
+    ensure_effect(ch("R-DES-06", "s0c1")["success"], setf("enchanted_follower_released"))
+    ensure_effect(ch("R-DES-06", "s0c1")["fail"], hp(-2))
+    c = ch("R-DES-06", "s0c2"); ensure_effect(c, add("corruption")); ensure_effect(c, setf("follower_memory_erased"))
+    c = ch("R-DES-06", "s0c3"); c["cond"] = cmp("rel.mira", ">=", 0); ensure_effect(c, setf("follower_with_mira"))
+    c = ch("R-DES-06", "s0c4"); ensure_effect(c, add("cruelty")); ensure_effect(c, setf("enchanted_follower_dead"))
+
+    # Thorin's anger intrusions.
+    ensure_effect(ch("R-ANG-02", "s0c1")["success"], setf("officer_yielded"))
+    ensure_effect(ch("R-ANG-02", "s0c1")["fail"], add("alarm_town"))
+    c = ch("R-ANG-02", "s0c2"); ensure_effect(c["success"], add("city_rep")); ensure_effect(c["success"], add("alarm_town"))
+    c = ch("R-ANG-02", "s0c3"); ensure_effect(c, add("corruption")); ensure_effect(c, add("fragment_used"))
+    ensure_effect(ch("R-ANG-02", "s0c4"), item("medicine_pack"))
+    ensure_effect(ch("R-ANG-03", "s0c1"), add("time"))
+    ensure_effect(ch("R-ANG-03", "s0c2"), {"op": "dis", "k": "INS"})
+    ensure_effect(ch("R-ANG-03", "s0c3"), item("improved_tools"))
+    ensure_effect(ch("R-ANG-03", "s0c4"), setf("toren_material_theft_known"))
+    c = ch("R-ANG-04", "s0c1"); ensure_effect(c, add("rel.companion")); ensure_effect(c, add("fragment_pressure", -1))
+    ensure_effect(ch("R-ANG-04", "s0c2"), add("rel.companion", -1))
+    c = ch("R-ANG-04", "s0c3"); ensure_effect(c, add("rel.companion", -2)); ensure_effect(c, add("corruption"))
+    ensure_effect(ch("R-ANG-04", "s0c4")["success"], setf("anger_anchor"))
+    ensure_effect(ch("R-ANG-05", "s0c1")["success"], add("time"))
+    ensure_effect(ch("R-ANG-05", "s0c2"), add("cruelty"))
+    ensure_effect(ch("R-ANG-06", "s0c2"), add("defiance"))
+    ensure_effect(ch("R-ANG-06", "s0c3"), setf("damaged_item_repaired"))
+
+    # Non-random scenes caught by the same audit.
+    c = find_any(N["A1-TOWN-05"], "指责他制造了武器")
+    ensure_effect(c, add("rel.gromm", -2)); ensure_effect(c, item("tuning_tools"))
+    ensure_effect(find_any(N["A1-TOWN-05"], "以索林师父")["success"], item("tuning_tools"))
+    ensure_effect(find_any(N["A1-TOWN-05"], "保证誓环只用于封存"), item("tuning_tools"))
+    ensure_effect(find(N["CITY-03~2"], "借仪式反向读取")["success"], add("sanctuary_clues"))
+    ensure_effect(find(N["A2-MINE-01A"], "出示哈兰文书")["success"], setf("mine_explosives_known"))
+    c = find(N["A2-MINE-02"], "先下井确认")
+    ensure_effect(c, setf("fast_descent_access")); ensure_effect(c, add("rel.miners", -1))
+
+    # Ambient follow-through.
+    c = find(N["CITY-AMBIENT-07"], "用城市声望担保")
+    c["cond"] = cmp("city_rep", ">=", 1); ensure_effect(c, item("load_bearing_clasp"))
+    ensure_effect(find(N["CITY-AMBIENT-07"], "找到二十年前")["success"], item("load_bearing_clasp"))
+    ensure_effect(find(N["CITY-AMBIENT-07"], "贿赂 2"), item("load_bearing_clasp"))
+    ensure_effect(find(N["CITY-AMBIENT-07"], "教布罗克"), item("load_bearing_clasp"))
+    c = find(N["CITY-AMBIENT-07"], "威胁书吏"); ensure_effect(c, item("load_bearing_clasp")); ensure_effect(c, add("alarm_town"))
+    ensure_effect(find(N["CITY-AMBIENT-12"], "买下两半"), item("bridge_deed"))
 
 # ---------------------------------------------------------------- mine
 def mine(N):

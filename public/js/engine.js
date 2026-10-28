@@ -95,7 +95,12 @@
           break;
         }
         case "item": {
-          if (e.v === false) { s.items = s.items.filter((x) => x !== k); const n = itemName(k); if (n) toasts.push({ t: "bad", text: `失去：「${n}」` }); }
+          if (e.v === false) {
+            s.items = s.items.filter((x) => x !== k);
+            s.vars[k] = false;
+            const n = itemName(k);
+            if (n) toasts.push({ t: "bad", text: `失去：「${n}」` });
+          }
           else if (!s.items.includes(k)) {
             s.items.push(k); s.vars[k] = true;
             const n = itemName(k); if (n) toasts.push({ t: "good", text: `获得：「${n}」` });

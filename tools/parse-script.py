@@ -743,11 +743,18 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "nodes.json").write_text(json.dumps(nodes, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     meta = wzc_patches.meta(nodes)
-    meta["unknown_conditions"] = sorted(set(CTX.unknown_conds))
+    unresolved = set()
+    for node in nodes.values():
+        stack = list(node.get("choices") or [])
+        while stack:
+            choice = stack.pop()
+            unresolved.update(choice.get("cond_note") or [])
+            stack.extend(choice.get("sub") or [])
+    meta["unknown_conditions"] = sorted(unresolved)
     meta["fallback_texts"] = CTX.fallbacks
     meta["item_keys_without_name"] = sorted(k for k in CTX.items if k not in ITEM_NAMES)
     (OUT / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"v2 parse: {len(nodes)} nodes; unknown conds {len(set(CTX.unknown_conds))}; fallback texts {CTX.fallbacks}; "
+    print(f"v2 parse: {len(nodes)} nodes; unresolved conds {len(unresolved)}; fallback texts {CTX.fallbacks}; "
           f"unnamed items {len(meta['item_keys_without_name'])}")
 
 def finalize(nodes):

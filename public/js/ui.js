@@ -20,6 +20,16 @@
   }
   function blocksHTML(list) { return (list || []).map(blockHTML).join(""); }
 
+  function characterArt(id, name) {
+    return `<img class="char-portrait" src="assets/characters/${encodeURIComponent(id)}.jpg" alt="${esc(name)}角色肖像" loading="eager" />`;
+  }
+
+  function endingArt(id, title, compact) {
+    if (!/^(END|FAIL)-[A-Z0-9-]+$/.test(id || "")) return "";
+    const classes = compact ? "ending-art ending-art-compact" : "ending-art";
+    return `<img class="${classes}" src="assets/endings/${encodeURIComponent(id)}.jpg" alt="结局《${esc(title)}》象征画" loading="lazy" />`;
+  }
+
   function toast(text) {
     const el = $("toast"); el.textContent = text; el.hidden = false;
     clearTimeout(toast._t); toast._t = setTimeout(() => (el.hidden = true), 2600);
@@ -39,7 +49,7 @@
       const ch = meta.characters[id];
       const b = document.createElement("button");
       b.type = "button"; b.className = "char-card"; b.dataset.pc = id;
-      b.innerHTML = `<h3>${esc(ch.name)}</h3><div class="role">${esc(ch.title)}</div><p class="blurb">${esc(ch.blurb)}</p><div class="traits">${(ch.traits || []).map((t) => `<span>${esc(t)}</span>`).join("")}</div>`;
+      b.innerHTML = characterArt(id, ch.name) + `<span class="char-card-copy"><h3>${esc(ch.name)}</h3><span class="role">${esc(ch.title)}</span><span class="blurb">${esc(ch.blurb)}</span><span class="traits">${(ch.traits || []).map((t) => `<span>${esc(t)}</span>`).join("")}</span></span>`;
       b.onclick = () => onPick(id);
       grid.appendChild(b);
     }
@@ -109,6 +119,7 @@
     // 节点正文
     let body = blocksHTML(E().blocksFor(s, s.node));
     if (n.kind === "ending") {
+      body = endingArt(s.node, n.title, false) + body;
       const ep = E().epilogue(s);
       if (ep) body += `<h3 class="b-h">后来</h3>` + blockHTML({ t: "p", text: ep.text });
     }
@@ -143,7 +154,7 @@
   }
   function renderEndings(meta, nodes) {
     const list = global.WZCSave.getUnlockedEndings();
-    modal("已见结局", list.length ? `<ul>${list.map((e) => `<li>${esc(e.title)}</li>`).join("")}</ul>` : "<p>还没有见过任何结局。</p>");
+    modal("已见结局", list.length ? `<div class="ending-gallery">${list.map((e) => `<article class="ending-card">${endingArt(e.id, e.title, true)}<span>${esc(e.title)}</span></article>`).join("")}</div>` : "<p>还没有见过任何结局。</p>");
   }
   function renderSaveLoad(mode, onPick) {
     const slots = global.WZCSave.listSlots();

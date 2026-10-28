@@ -62,14 +62,21 @@ body { overflow-x: hidden; }
 @media (min-width: 640px) { .char-grid { grid-template-columns: repeat(3, 1fr); } }
 .char-card {
   text-align: left; border: 1px solid var(--line); background: #121826; border-radius: var(--radius);
-  padding: 14px; cursor: pointer; color: inherit; font: inherit; transition: .15s;
+  padding: 0; overflow: hidden; cursor: pointer; color: inherit; font: inherit; transition: .15s;
 }
 .char-card:hover, .char-card:focus-visible { border-color: var(--accent); transform: translateY(-2px); outline: none; }
+.char-portrait { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; object-position: center top; background: #0c1018; border-bottom: 1px solid var(--line); }
+.char-card-copy { display: block; padding: 14px; }
 .char-card h3 { margin: 0 0 4px; font-family: var(--serif); color: var(--accent); }
-.char-card .role { font-size: 12px; color: var(--accent2); margin-bottom: 8px; }
-.char-card .blurb { font-size: 13px; color: var(--muted); line-height: 1.55; margin: 0 0 8px; }
+.char-card .role { display: block; font-size: 12px; color: var(--accent2); margin-bottom: 8px; }
+.char-card .blurb { display: block; font-size: 13px; color: var(--muted); line-height: 1.55; margin: 0 0 8px; }
 .char-card .traits { display: flex; flex-wrap: wrap; gap: 4px; }
 .char-card .traits span { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #1e2838; color: var(--muted); }
+@media (max-width: 639px) {
+  .char-card { display: grid; grid-template-columns: minmax(120px, 42%) 1fr; }
+  .char-portrait { height: 100%; aspect-ratio: 4 / 5; border-right: 1px solid var(--line); border-bottom: 0; }
+  .char-card-copy { align-self: center; }
+}
 
 .hud {
   display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
@@ -172,3 +179,8 @@ body { overflow-x: hidden; }
 .choice .tag::before { content: "「"; } .choice .tag::after { content: "」"; }
 .menu { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .modal-body h4 { margin: 12px 0 4px; color: var(--accent); font-family: var(--serif); }
+.ending-art { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: center; margin: 0 0 1.2em; border: 1px solid var(--line); border-radius: 10px; background: #0c1018; box-shadow: 0 10px 30px #0008; }
+.ending-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.ending-card { overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: #101622; }
+.ending-card span { display: block; padding: 8px 10px; color: var(--accent); font-family: var(--serif); }
+.ending-art-compact { aspect-ratio: 16 / 9; margin: 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; box-shadow: none; }

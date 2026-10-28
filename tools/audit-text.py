@@ -1,6 +1,11 @@
-"""Second-pass text audit: designer-voice and broken-sentence heuristics (stricter than lint)."""
-import json, re, sys
-N = json.load(open("public/data/nodes.json"))
+"""Second-pass text audit: designer-voice and broken-sentence heuristics."""
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+N = json.loads((ROOT / "public/data/nodes.json").read_text(encoding="utf-8"))
 PATS = {
     "unbalanced": None,
     "no terminal punct": re.compile(r"[^。！？…”」』）\)—～~!?\.》]$"),
