@@ -149,6 +149,61 @@ def prologues(N):
     n = N["E-PRO-03"]
     n["choices"].append(C("pc1", "拔出边境剑，迎向扑来的劫匪。", "E-PRO-04",
                           ["你把汤姆推到车轮后面，自己迎着泥地冲了上去。"], call="C-01"))
+
+    # ---- E-PRO-05 玛拉结算护送费（剧本只写了叙述，解析器未生成 vouchers 效果）
+    n = N["E-PRO-05"]
+    # 两段开头叙事互斥：救彼得 / 保货致彼得受伤
+    for b in n["blocks"]:
+        t = b.get("text") or ""
+        if "客人会满意" in t or "三十二张商会券" in t or "三十二张票据" in t:
+            b["cond"] = flag("peter_injured")
+        if "里德是黑砧矿区" in t or (b.get("who") == "里德"):
+            b["cond"] = ANY(flag("c01_prisoner"), flag("prisoner"))
+    # 进入节点即按结果发券：基础 28；保货且彼得受伤路径给 32（含保匣加成）；
+    # 救彼得且另保住木匣再 +4；谈妥奖金再 +2。
+    n["enter_effects"] = [
+        {"cond": flag("peter_injured"), "ops": [add("vouchers", 32)]},
+        {"cond": ALL(flag("saved_peter"), NOT(flag("peter_injured"))), "ops": [add("vouchers", 28)]},
+        {"cond": ALL(NOT(flag("saved_peter")), NOT(flag("peter_injured"))), "ops": [add("vouchers", 28)]},
+        {"cond": ALL(flag("saved_peter"), flag("coffer_saved"), NOT(flag("peter_injured"))), "ops": [add("vouchers", 4)]},
+        {"cond": flag("promised_bonus"), "ops": [add("vouchers", 2)]},
+    ]
+    # 彼得受伤时可自选留下 6 张作医药费
+    if not any("医药费" in (c.get("label") or "") for c in n["choices"]):
+        n["choices"].insert(0, C(
+            "pay_peter", "留下六张商会券，给彼得作医药费。", "__SELF__",
+            ["你数出六张商会券按进玛拉手里。她没有道谢，只是把券塞进彼得的衣襟。"],
+            [add("sacrifice", 1), add("rel.mara", 1)],
+            cond=flag("peter_injured"), cost={"vouchers": 6}, once=True,
+        ))
+    # 汤姆对白选项：补上剧本效果
+    for c in n["choices"]:
+        lab = c.get("label") or ""
+        if "你活下来了" in lab:
+            c["effects"] = [add("rel.tom", 1)]
+        elif "你欠我一条命" in lab:
+            c["effects"] = [add("rel.tom", -1), setf("tom_owes_favor")]
+        elif "疤脸徽记写进报告" in lab:
+            c["effects"] = []
+            c["cond_effects"] = [{"cond": ANY(flag("toren_badge"), flag("c01_prisoner"), flag("prisoner")),
+                                  "ops": [setf("harlan_evidence")]}]
+        elif lab.startswith("交给帝国"):
+            c["effects"] = [setf("prisoner_to_empire"), add("mercy", -1)]
+            c["cond"] = ANY(flag("c01_prisoner"), flag("prisoner"))
+        elif "割断绳索" in lab:
+            c["effects"] = [add("mercy", 1), add("rel.toren", -1), item("toren_badge")]
+            c["cond"] = ANY(flag("c01_prisoner"), flag("prisoner"))
+        elif "逼问矿区暗路" in lab:
+            c["cond"] = ANY(flag("c01_prisoner"), flag("prisoner"))
+        elif "杀了他" in lab:
+            c["effects"] = [add("cruelty", 1), item("toren_badge")]
+            c["cond_effects"] = [{"cond": flag("tom_alive"), "ops": [add("rel.tom", -2)]}]
+            c["cond"] = ANY(flag("c01_prisoner"), flag("prisoner"))
+    if not any(c.get("id") == "settle_cont" for c in n["choices"]):
+        n["choices"].append(C(
+            "settle_cont", "清点完毕，继续上路。", "E-PRO-06",
+            ["雨还在下。车队重新排好了队形。"], [],
+        ))
     # ---- Thorin: fight in the shed
     n = N["T-PRO-02"]
     c = find(n, "砸下去")

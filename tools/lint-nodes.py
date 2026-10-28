@@ -206,6 +206,34 @@ unreach = sorted(set(nodes) - seen)
 for u in unreach:
     sfail("unreachable node", u)
 
+# Critical story settlements that must grant currency (regression guards)
+def _effects_grant_vouchers(effs):
+    for e in effs or []:
+        if e.get("op") == "add" and e.get("k") == "vouchers" and int(e.get("v") or 0) > 0:
+            return True
+        if _effects_grant_vouchers(e.get("ops") or e.get("effects")):
+            return True
+    return False
+
+SETTLEMENT_VOUCHERS = {
+    "E-PRO-05": "玛拉护送费结算必须发放商会券",
+}
+for nid, why in SETTLEMENT_VOUCHERS.items():
+    n = nodes.get(nid)
+    if not n:
+        sfail("missing settlement node", f"{nid}: {why}")
+        continue
+    ok = _effects_grant_vouchers(n.get("enter_effects"))
+    if not ok:
+        for c in n.get("choices") or []:
+            if _effects_grant_vouchers(c.get("effects")):
+                ok = True; break
+            for ce in c.get("cond_effects") or []:
+                if _effects_grant_vouchers(ce.get("ops") or ce.get("effects")):
+                    ok = True; break
+    if not ok:
+        sfail("settlement missing vouchers grant", f"{nid}: {why}")
+
 endings_reach = sorted(x for x in seen if nodes[x].get("kind") == "ending")
 total_leaks = sum(stats.values())
 print(f"lint {path.name}: {len(nodes)} nodes, schema={'v2' if any(is_v2(n) for n in nodes.values()) else 'v1'}")

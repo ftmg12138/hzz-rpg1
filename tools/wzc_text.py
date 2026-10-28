@@ -112,10 +112,34 @@ def parse_effects(s: str, cond_context: bool = False) -> list[dict]:
         ops.append({"op": "hp", "v": -int(m.group(1))})
     for m in re.finditer(r"(?:恢复|回复)\s*(\d+)\s*(?:HP|点体力)", t):
         ops.append({"op": "hp", "v": int(m.group(1))})
-    for m in re.finditer(r"(?<![花付需要交])(?:得到|获得|得|拿到|换得)\s*(\d+)\s*张?票据", t):
-        ops.append({"op": "add", "k": "vouchers", "v": int(m.group(1))})
-    for m in re.finditer(r"(?:花|付|支付|交出|花费)\s*(\d+)\s*张?票据", t):
-        ops.append({"op": "add", "k": "vouchers", "v": -int(m.group(1))})
+    # Arabic or Chinese numerals; 票据 / 商会券; also "给你二十八张…"
+    def _cn_int(s):
+        if s.isdigit():
+            return int(s)
+        table = {"零":0,"〇":0,"一":1,"二":2,"两":2,"三":3,"四":4,"五":5,"六":6,"七":7,"八":8,"九":9}
+        if s in table: return table[s]
+        if s.endswith("十") and len(s) <= 3:
+            body = s[:-1]
+            if not body: return 10
+            if len(body) == 1 and body in table: return table[body] * 10
+            if len(body) == 2 and body[0] in table and body[1] in table:
+                return table[body[0]] * 10 + table[body[1]]
+        if "十" in s:
+            a, _, b = s.partition("十")
+            tens = 1 if not a else table.get(a)
+            ones = 0 if not b else table.get(b)
+            if tens is not None and ones is not None:
+                return tens * 10 + ones
+        return None
+    num_rx = r"(\d+|[一二三四五六七八九十两零〇]{1,3})"
+    for m in re.finditer(rf"(?<![花付需要交])(?:得到|获得|得|拿到|换得|给你|数给你)\s*{num_rx}\s*张?(?:票据|商会券)", t):
+        v = _cn_int(m.group(1))
+        if v is not None:
+            ops.append({"op": "add", "k": "vouchers", "v": v})
+    for m in re.finditer(rf"(?:花|付|支付|交出|花费|留下)\s*{num_rx}\s*张?(?:票据|商会券)", t):
+        v = _cn_int(m.group(1))
+        if v is not None:
+            ops.append({"op": "add", "k": "vouchers", "v": -v})
     for m in re.finditer(r"诅咒阶段\s*([+-]\s*\d+)", t):
         ops.append({"op": "add", "k": "curse_stage", "v": int(m.group(1).replace(" ", ""))})
     for m in re.finditer(r"城市声望\s*([+-]\s*\d+)", t):

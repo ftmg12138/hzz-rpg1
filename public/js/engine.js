@@ -70,6 +70,13 @@
   function itemName(k) { return (META.item_names || {})[k] || null; }
   function apply(s, effects, toasts) {
     for (const e of effects || []) {
+      // Grouped conditional batch: {cond, ops:[...]} (same shape as choice.cond_effects)
+      if (e.ops || e.effects) {
+        if (e.cond && !test(s, e.cond)) continue;
+        apply(s, e.ops || e.effects, toasts);
+        continue;
+      }
+      if (e.cond && !test(s, e.cond)) continue;
       const k = e.k;
       switch (e.op) {
         case "add": {
