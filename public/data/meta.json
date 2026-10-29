@@ -1,6 +1,6 @@
 {
  "title": "雾钟城：第七声",
- "version": "2.2.1-fall-art",
+ "version": "2.2.2-fall-liriel",
  "node_count": 221,
  "characters": {
   "edric": {
@@ -631,6 +631,7 @@
    "END-FALL-THORIN"
   ],
   "notes": "Act2/3 density + fall endings + Liriel mid/late desire + 第七声 theming",
-  "fall_art": "commissioned_gen_2026-10-29"
+  "fall_art": "commissioned_gen_2026-10-29",
+  "fall_art_liriel": "kneel_bareback_collar_2026-10-29"
  }
 }
