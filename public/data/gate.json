@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "algo": "SHA-256",
+  "scheme": "pass = sha256(password); gate = sha256(password + '|' + patternDigits)",
+  "pattern": "dots 1-9 left-to-right top-to-bottom; min 4 unique dots",
+  "accounts": [
+    {
+      "id": "01",
+      "pass": "475aa1af21f24ddd23097d06b0692a179e2a4281b05097de2a0c97ebb885595c",
+      "gate": "ee5b694d5e106a3dafc689b059242b5910449e5887b2c83795e0a6bdd6699f79"
+    },
+    {
+      "id": "02",
+      "pass": "68e97726f4c8a87c538309a2b42b52d4f109dfbda67386a48090e4ec97ecb710",
+      "gate": "9577ee50ac7109ddf5830c2af9a09b949aad5c0a2ac3c744a7642b3ddacfbad3"
+    },
+    {
+      "id": "03",
+      "pass": "dd98965cec4bc5139c2276599927d3b3d3778a974b67701210ddbc2a02246c06",
+      "gate": "122605e531c364213378a6ed30286969dc2553b41f2bf804330f1dfa9a1544f8"
+    },
+    {
+      "id": "04",
+      "pass": "014a7ef8f8bfbe688f73d64d31849dc1ac0f710d80a0091de7c46b68c1a9d2ed",
+      "gate": "3ea53e8a0638167fe2d83fd7f93b97382dbb78b8466d3f344f6bc1b7d0ad3dfc"
+    },
+    {
+      "id": "05",
+      "pass": "7bbb82ffc4209233cfab15b13b5910aba964771793d6e8e31186ba127b120064",
+      "gate": "b7afc40bb712667a74266ab7f71c15a0d0149960b88d55ef6582d7882a8b3041"
+    },
+    {
+      "id": "06",
+      "pass": "97d8555b671bca299689a4c339260e9af3310404f85e27f972e01f823354d296",
+      "gate": "06df35e797809ba5f0b2914e803a86c64cb6c1c497f623ca42985e96bf146a92"
+    },
+    {
+      "id": "07",
+      "pass": "4d553e515437e520148e04cdba90e4cbfeb83b578344ffaea8b30257db2b4e54",
+      "gate": "870e0bae3601d84a59b3b922aa851346d6da9d49e938ff36d898d51584230f0e"
+    },
+    {
+      "id": "08",
+      "pass": "b866b2cb270a3ba69b70cc700461d689cf547f33e9286b8dcd3813df458dab81",
+      "gate": "e28f836d3b0ae96f1c36d8ac8e77311be0b1aa8d803a33feb66d2ab9c43831ae"
+    },
+    {
+      "id": "09",
+      "pass": "155bed897cb53e098aa06aeb3a455608f4669ca59880020dba81e714804dac94",
+      "gate": "bbea9f5e02d5c04ce7f593e9e7686360b337dc6c5c3fc229eb0c2e495fa8bcb7"
+    },
+    {
+      "id": "10",
+      "pass": "6b39e75d23502142829656a7d8347ad1bd8156cde24eec3f1dfd3d0be1133701",
+      "gate": "8121874029e2362915fec0a27a8b78e21c7acb909e3566e1c5d068453e6707d0"
+    }
+  ]
+}

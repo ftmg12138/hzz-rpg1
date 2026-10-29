@@ -10,3 +10,5 @@ dist/
 shots/
 .cache/
 __pycache__/
+private-delivery/
+rpg-gate-credentials*.txt

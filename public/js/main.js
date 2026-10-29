@@ -89,8 +89,12 @@
     start, setRng: (f) => WZCEngine.setRng(f),
   };
 
-  try { await loadData(); bind(); showTitle(); }
-  catch (err) {
+  try {
+    await WZCGate.requireUnlock();
+    await loadData();
+    bind();
+    showTitle();
+  } catch (err) {
     document.body.innerHTML = "<pre style='color:#c97a6a;padding:24px'>加载失败：" + String(err) + "</pre>";
   }
 })();
