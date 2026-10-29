@@ -8,6 +8,7 @@
       fetch("data/nodes.json", { cache: "no-cache" }).then((r) => r.json()),
     ]);
     meta = m; nodes = n; meta.debug = debug; meta._nodes = n;
+    window.WZCMeta = meta;
     WZCEngine.init(nodes, meta);
   }
 
@@ -73,6 +74,7 @@
     document.getElementById("overlay").addEventListener("click", (e) => { if (e.target.id === "overlay") WZCUI.closeModal(); });
     document.getElementById("btn-journal").onclick = () => WZCUI.renderJournal(state, meta);
     document.getElementById("btn-bag").onclick = () => WZCUI.renderBag(state, meta);
+    document.getElementById("btn-people").onclick = () => WZCUI.renderPeople(state, meta);
     document.getElementById("btn-save").onclick = openSave;
     document.getElementById("btn-menu").onclick = () => WZCUI.renderMenu({ onSave: openSave, onLoad: openLoad, onTitle: () => { state = null; showTitle(); } });
     document.addEventListener("keydown", (e) => {

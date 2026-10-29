@@ -1,11 +1,11 @@
 {
-  "generated": "2026-10-29T02:40:42.700Z",
-  "scanned": 44,
+  "generated": "2026-10-29T07:24:36.626Z",
+  "scanned": 48,
   "counts": {
-    "a_has_fold": 19,
+    "a_has_fold": 24,
     "b_surface_explicit": 0,
     "c_intimacy_no_fold": 0,
-    "d_no_intimacy": 25
+    "d_no_intimacy": 24
   },
   "required_folds": [
     "L-PRO-02",
@@ -35,6 +35,10 @@
       "L-PRO-08",
       "A1-TOWN-02",
       "A1-TOWN-04",
+      "A1-TOWN-08",
+      "A1-TOWN-09",
+      "A1-TOWN-10",
+      "CITY-01",
       "A2-MINE-07",
       "A2-MINE-09",
       "A3-SHRINE-03~2",
@@ -43,6 +47,7 @@
       "D-ALT",
       "END-01",
       "R-DES-01",
+      "R-DES-02",
       "R-DES-03",
       "R-DES-04",
       "R-DES-05",
@@ -59,7 +64,6 @@
       "L-PRO-09",
       "A1-TOWN-05",
       "A1-TOWN-06",
-      "A1-TOWN-09",
       "A1-TOWN-09~2",
       "SQ-CITY-01",
       "A2-MINE-01B",
@@ -68,12 +72,12 @@
       "A2-MINE-05~3",
       "A3-SHRINE-01",
       "A3-SHRINE-03",
+      "A3-SHRINE-07",
       "A3-SHRINE-08",
       "D-NPC-KAEL",
       "END-04",
       "END-05",
       "R-TRAVEL-07",
-      "R-DES-02",
       "CITY-AMBIENT-17",
       "FAIL-05",
       "C-07"
@@ -165,7 +169,7 @@
       "id": "A1-TOWN-02",
       "title": "白鸦旅店",
       "cls": "a",
-      "folds": 7,
+      "folds": 5,
       "required": true,
       "lirielish": true,
       "intimacy": true
@@ -198,10 +202,19 @@
       "intimacy": false
     },
     {
+      "id": "A1-TOWN-08",
+      "title": "第二次钟响",
+      "cls": "a",
+      "folds": 2,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
       "id": "A1-TOWN-09",
       "title": "东仓夜袭",
-      "cls": "d",
-      "folds": 0,
+      "cls": "a",
+      "folds": 1,
       "required": false,
       "lirielish": true,
       "intimacy": false
@@ -211,6 +224,24 @@
       "title": "东仓夜袭",
       "cls": "d",
       "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A1-TOWN-10",
+      "title": "火后诊断",
+      "cls": "a",
+      "folds": 4,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "CITY-01",
+      "title": "过桥入城",
+      "cls": "a",
+      "folds": 1,
       "required": false,
       "lirielish": true,
       "intimacy": false
@@ -315,6 +346,15 @@
       "intimacy": true
     },
     {
+      "id": "A3-SHRINE-07",
+      "title": "最终方案",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
       "id": "A3-SHRINE-08",
       "title": "最后一句",
       "cls": "d",
@@ -345,7 +385,7 @@
       "id": "D-ALT",
       "title": "未选主角的同伴对话",
       "cls": "a",
-      "folds": 5,
+      "folds": 9,
       "required": true,
       "lirielish": true,
       "intimacy": true
@@ -398,11 +438,11 @@
     {
       "id": "R-DES-02",
       "title": "镜中更好的脸",
-      "cls": "d",
-      "folds": 0,
+      "cls": "a",
+      "folds": 1,
       "required": false,
       "lirielish": true,
-      "intimacy": false
+      "intimacy": true
     },
     {
       "id": "R-DES-03",

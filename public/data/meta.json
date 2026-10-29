@@ -1,6 +1,6 @@
 {
  "title": "雾钟城：第七声",
- "version": "2.0.0",
+ "version": "2.1.0-revision",
  "node_count": 217,
  "characters": {
   "edric": {
@@ -38,7 +38,8 @@
    "fragment": "memory_ring",
    "fragment_name": "旧雨骨（铁戒指）",
    "private_goal": "secure_exit_writ",
-   "start": "E-PRO-01"
+   "start": "E-PRO-01",
+   "armor": "reinforced_leather"
   },
   "liriel": {
    "id": "liriel",
@@ -74,7 +75,8 @@
    "fragment": "desire_chain",
    "fragment_name": "饥月骨（银链）",
    "private_goal": "learn_outpost_truth",
-   "start": "L-PRO-01"
+   "start": "L-PRO-01",
+   "armor": "travel_clothes"
   },
   "thorin": {
    "id": "thorin",
@@ -110,7 +112,8 @@
    "fragment": "anger_watch",
    "fragment_name": "裂锤骨（怀表）",
    "private_goal": "obtain_delivery_seal",
-   "start": "T-PRO-01"
+   "start": "T-PRO-01",
+   "armor": "smith_apron"
   }
  },
  "time_labels": [
@@ -215,7 +218,11 @@
   "old_wooden_bowl": "与父亲旧碗相似的木碗",
   "improved_tools": "重做后的精良工具",
   "load_bearing_clasp": "布罗克的承重扣",
-  "bridge_deed": "两半小桥的地契"
+  "bridge_deed": "两半小桥的地契",
+  "reinforced_leather": "强化皮甲",
+  "travel_clothes": "旅行布袍",
+  "smith_apron": "铁匠围裙",
+  "shadow_leather": "暗影皮甲"
  },
  "epilogues": {
   "edric": [
@@ -419,5 +426,168 @@
  },
  "unknown_conditions": [],
  "fallback_texts": 227,
- "item_keys_without_name": []
+ "item_keys_without_name": [],
+ "gear": {
+  "border_sword": {
+   "slot": "weapon",
+   "power": 2,
+   "name": "边防长剑"
+  },
+  "hand_crossbow": {
+   "slot": "weapon",
+   "power": 2,
+   "name": "手弩"
+  },
+  "elf_rapier": {
+   "slot": "weapon",
+   "power": 2,
+   "name": "精灵细剑"
+  },
+  "old_hammer": {
+   "slot": "weapon",
+   "power": 3,
+   "name": "旧锤"
+  },
+  "rune_pick": {
+   "slot": "weapon",
+   "power": 2,
+   "name": "符文镐"
+  },
+  "reinforced_leather": {
+   "slot": "armor",
+   "power": 1,
+   "dr": 2,
+   "name": "强化皮甲"
+  },
+  "travel_clothes": {
+   "slot": "armor",
+   "power": 0,
+   "dr": 0,
+   "name": "旅行布袍"
+  },
+  "smith_apron": {
+   "slot": "armor",
+   "power": 1,
+   "dr": 1,
+   "name": "铁匠围裙"
+  },
+  "shadow_leather": {
+   "slot": "armor",
+   "power": 1,
+   "dr": 2,
+   "name": "暗影皮甲"
+  },
+  "desire_chain": {
+   "slot": "magic",
+   "power": 1,
+   "name": "银链（饥月骨）"
+  },
+  "memory_ring": {
+   "slot": "magic",
+   "power": 1,
+   "name": "铁戒指（旧雨骨）"
+  },
+  "anger_watch": {
+   "slot": "magic",
+   "power": 1,
+   "name": "怀表（裂锤骨）"
+  },
+  "chalk": {
+   "slot": "magic",
+   "power": 0,
+   "name": "粉笔"
+  }
+ },
+ "dossiers": {
+  "valen": {
+   "name": "“银舌”瓦伦",
+   "appear": "四十出头，笑脸常挂，袖口却总留着墨渍。三只空杯像替没来的人占座。",
+   "personality": "把情报当货卖；真疼的只有失踪的女儿艾拉。",
+   "history0": "灰桥消息贩子。你只知道他什么都肯谈——只要你付得起。",
+   "history1": "他要的不是钱，是米拉十年前送走的女孩下落。",
+   "history2": "艾拉改名阿莱娅，曾从帝国押运车逃出；瓦伦仍不敢相信自己配相认。"
+  },
+  "ysolde": {
+   "name": "伊索尔",
+   "appear": "五十岁上下，发丝被墨水染黑几绺，书墙把火炉隔成她的领地。",
+   "personality": "把一切当成可记录的样本；拒绝时她反而更尊重你。",
+   "history0": "自称中立学者，对你的残片容器兴趣大于对你本人。",
+   "history1": "她承认长誓钟七骨只是禁书假说之一，却已开始为你描摹铭文。",
+   "history2": "灰衣信使的死与她安排的偷窃有关；她称之为“低估风险”。"
+  },
+  "mira": {
+   "name": "米拉",
+   "appear": "四十二岁，妆只画一半，钥匙串从不离手。",
+   "personality": "欲望不是罪，拿走别人的回答才是。庇护矿工家属比接客优先。",
+   "history0": "红牡丹的主人，先问你是求庇护、卖消息还是找麻烦。",
+   "history1": "她组织排水渠撤人，也藏着艾拉的去向。",
+   "history2": "她一眼能看出银链的热，也拒绝为你找“不会说不的人”。"
+  },
+  "eilyn": {
+   "name": "艾琳修女",
+   "appear": "灰烛礼拜堂，烟熏黑镜前缝伤口的女人，眼睛比烛火更冷。",
+   "personality": "先救人再问立场；教会的“净化”让她私藏灰瓶。",
+   "history0": "今夜镜前躺着商队与矿工的伤员。",
+   "history1": "她用灰试过你的容器，并说出塞维兰残缺的名字。",
+   "history2": "她把三年前的秘密记录托你带给受害者家属。"
+  },
+  "edric": {
+   "name": "艾德里克",
+   "appear": "边境斥候的瘦高个子，斗篷边总沾着泥，木梳一类的小物件藏得很紧。",
+   "personality": "话少，观察多；保护妹妹的离境比任何大义都硬。",
+   "history0": "未选他时，他会作为持有旧雨骨的同伴出现。",
+   "history1": "戒指逼他看见父亲的雨夜；他既怕忘记，也怕再经历一次。",
+   "history2": "若沉沦加深，他会借酒把责任推开，连家人的名字都懒得再提。"
+  },
+  "liriel": {
+   "name": "莉瑞尔",
+   "appear": "半精灵流亡者，银链贴腕，领口下锁骨常有浅痕。",
+   "personality": "锋利自嘲，身体比嘴诚实；最恨别人替她决定“该不该想要”。",
+   "history0": "未选她时，她带着饥月骨与苔冠旧案的阴影进场。",
+   "history1": "银链放大欲望，也放大“被需要就证明自己还配活”的执念。",
+   "history2": "沉沦高时，她可能把同意偷换成命令，或把自己交进权贵的饲养。"
+  },
+  "thorin": {
+   "name": "索林",
+   "appear": "矮人工匠，虎口满茧，怀表链常绕在腰带上。",
+   "personality": "重承诺、厌空话；怒气来时像炉火失控。",
+   "history0": "未选他时，他为交货印与古剑修理被卷进共鸣。",
+   "history1": "裂锤骨让他有权说“不”，也诱他砸错对象。",
+   "history2": "沉沦高时暴怒成性，同伴会先护住自己的头，再听他说话。"
+  },
+  "kael": {
+   "name": "凯尔",
+   "appear": "宽肩、油渍围裙，柜台后永远擦着同一只杯子。",
+   "personality": "嘴硬心软；认得每一个常客的沉默。",
+   "history0": "灰桥旅人酒馆的老板。你刚踏进门他就用下巴点了点空位。",
+   "history1": "他默许瓦伦在角落做情报买卖，自己抽成极少。",
+   "history2": "他见过太多残片持有者——多数没有活着走出这座城。"
+  },
+  "mara": {
+   "name": "玛拉",
+   "appear": "皮手套、铜扣、笑里藏刀的短发女人。",
+   "personality": "一切皆可议价；翻脸比翻账本更快。",
+   "history0": "东仓区的商会面孔。她递来的不是善意，是合同。",
+   "history1": "她要你去抄仓库，名义是“清理异常回声”。",
+   "history2": "商会要的是残片容器的流向，不是你的命——除非你挡路。"
+  },
+  "garrick": {
+   "name": "加里克",
+   "appear": "铁盔压眉，嗓子像砂纸。",
+   "personality": "规章高于人情；偶尔会为“省事”放一马。",
+   "history0": "城门与仓区巡逻的伍长。",
+   "history1": "他收过商会的“加班费”，对异常钟鸣装聋。",
+   "history2": "若警报拉响，他会第一个封锁街口。"
+  },
+  "gromm": {
+   "name": "格罗姆",
+   "appear": "冷炉前的老矮人，门上写着“只修工具，不修英雄”。",
+   "personality": "固执、耻于英雄叙事；弟弟死于服从铭文。",
+   "history0": "灰桥钟楼后的铺子。",
+   "history1": "他参与过誓环复制件，如今只肯把工具交给承诺封存的人。",
+   "history2": "他能拓出旧雨、饥月、裂锤、照心的古称。"
+  }
+ },
+ "resonance_help": "共鸣：雾钟城水道与钟楼对你体内钟骨的同频压力。升高会让残片侵扰更频、逼近不可逆的连接；等待不会降低它。治疗与沉沦都不能免费清零倒计时。",
+ "fall_help": "沉沦：残片按你的性格把你往深处拖。莉瑞尔偏欲望奴隶化；艾德里克偏消极借酒；索林偏暴怒滥伤。与“腐化”（借残片支配他人）分开计算。"
 }

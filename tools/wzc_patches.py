@@ -125,6 +125,13 @@ def apply(N, epis):
     companion_liriel_intimacy(N)
     late_liriel_intimacy(N)
 
+    # 2026-10-29 design revision (equip/fall/folds/dossiers); idempotent
+    try:
+        import wzc_revision_pass
+        wzc_revision_pass.apply_to_nodes(N)
+    except Exception as e:
+        print('wzc_revision_pass skipped:', e)
+
 # ---------------------------------------------------------------- prologues
 def prologues(N):
     # ---- L-PRO-01: ruins hub, two careful searches before dark

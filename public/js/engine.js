@@ -12,6 +12,8 @@
   const VAR_TOASTS = {
     resonance: ["钟声在骨头里更响了", null],
     corruption: ["残片的低语离你更近了", "你推开了残片的低语"],
+    fall: ["沉沦又深了一寸", "你把沉沦按了回去"],
+    fragment_pressure: ["残片的压迫加重了", "残片的压迫松了一点"],
     curse_stage: ["回声病又加重了一层", "回声病稍稍退去"],
     truth: ["你离长誓钟的真相更近了一步", null],
     sanctuary_clues: ["你又找到一条通往初鸣庭的线索", null],
@@ -26,18 +28,35 @@
   function newState(pcId) {
     const ch = META.characters[pcId];
     const vars = { time: 0, resonance: 0, truth: 0, alarm_town: 0, alarm_mine: 0, city_actions: 0, city_rep: 0,
-      curse_stage: 1, sanctuary_clues: 0, mercy: 0, cruelty: 0, sacrifice: 0, corruption: 0, defiance: 0, vouchers: 0 };
+      curse_stage: 1, sanctuary_clues: 0, mercy: 0, cruelty: 0, sacrifice: 0, corruption: 0, defiance: 0,
+      fall: 0, fragment_pressure: 1, vouchers: 0,
+      alt_edric_dead: false, alt_liriel_dead: false, alt_thorin_dead: false, companion: null };
     const items = [];
+    const storage = [];
     for (const it of ch.carried || []) {
       const m = /^(\d+)_vouchers$/.exec(it);
       if (m) vars.vouchers += Number(m[1]); else items.push(it);
     }
+    for (const it of ch.storage || []) {
+      const m = /^(\d+)_vouchers$/.exec(it);
+      if (m) vars.vouchers += Number(m[1]); else storage.push(it);
+    }
     if (ch.fragment) items.push(ch.fragment);
     vars.private_goal = ch.private_goal;
+    const equip = { weapon: null, armor: ch.armor || null, magic: ch.fragment || null };
+    // auto-equip first matching gear from items
+    const gear = META.gear || {};
+    for (const it of items) {
+      const g = gear[it]; if (!g) continue;
+      if (g.slot === "weapon" && !equip.weapon) equip.weapon = it;
+      if (g.slot === "armor" && !equip.armor) equip.armor = it;
+      if (g.slot === "magic" && !equip.magic) equip.magic = it;
+    }
+    if (equip.armor && !items.includes(equip.armor) && equip.armor !== ch.fragment) items.push(equip.armor);
     return {
-      v: 2, pc: pcId, name: ch.name, stats: Object.assign({}, ch.stats), hp: ch.hp, max_hp: ch.max_hp || ch.hp,
-      vars, items, node: ch.start, stack: [], used: {}, seen: {}, travel: 0, adv: {}, dis: {},
-      journal: [`以${ch.name}的身份踏入雨夜。`], curse_done: [], extra_used: {}, ended: null,
+      v: 3, pc: pcId, name: ch.name, stats: Object.assign({}, ch.stats), hp: ch.hp, max_hp: ch.max_hp || ch.hp,
+      vars, items, storage, equip, node: ch.start, stack: [], used: {}, seen: {}, travel: 0, adv: {}, dis: {},
+      journal: [`以${ch.name}的身份踏入雨夜。`], curse_done: [], extra_used: {}, ended: null, resonance_explained: false,
     };
   }
 
@@ -83,6 +102,10 @@
           const before = num(s, k);
           s.vars[k] = before + Number(e.v || 0);
           toastVar(k, Number(e.v || 0), toasts);
+          if (k === "resonance" && Number(e.v || 0) > 0 && !s.resonance_explained) {
+            s.resonance_explained = true;
+            toasts.push({ t: "bad", text: "共鸣：城与钟骨同频的压力（菜单可查看说明）" });
+          }
           break;
         }
         case "set": s.vars[k] = e.v; break;
@@ -122,6 +145,7 @@
     }
     const m = VAR_TOASTS[k];
     if (m) { const txt = d > 0 ? m[0] : m[1]; if (txt) toasts.push({ t: d > 0 && k !== "city_rep" && k !== "truth" && k !== "sanctuary_clues" ? "bad" : "good", text: txt }); }
+
   }
 
   // ---------- 可见选项 ----------
@@ -229,7 +253,7 @@
     if (choice.check) {
       const ck = choice.check;
       const stats = ck.stats || [];
-      const adv = (ck.adv_if && test(s, ck.adv_if)) || s.adv["*"] || stats.some((x) => s.adv[x]);
+      const adv = (ck.adv_if && test(s, ck.adv_if)) || s.adv["*"] || stats.some((x) => s.adv[x]) || (ck.combat && combatPower(s) >= 4);
       const dis = s.dis["*"] || stats.some((x) => s.dis[x]);
       s.adv = {}; s.dis = {};
       const auto = ck.auto_if && test(s, ck.auto_if);
@@ -298,5 +322,70 @@
   }
   function timeLabel(s) { const t = META.time_labels || []; return t[Math.min(num(s, "time"), t.length - 1)] || ""; }
 
-  global.WZCEngine = { init, setRng, newState, test, apply, visibleChoices, visibleSubs, resolvePending, canAfford, displayLabel, choose, chooseSub, enter, hub, blocksFor, epilogue, timeLabel, num, REL_NAMES };
+
+  function gearOf(id) { return (META.gear || {})[id] || null; }
+  function combatPower(s) {
+    const g = META.gear || {};
+    let p = 0;
+    const eq = s.equip || {};
+    for (const slot of ["weapon", "armor", "magic"]) {
+      const id = eq[slot]; if (id && g[id]) p += Number(g[id].power || 0);
+    }
+    const str = Math.floor(((s.stats && s.stats.STR) || 10) - 10) / 2;
+    const dex = Math.floor(((s.stats && s.stats.DEX) || 10) - 10) / 2;
+    p += Math.max(0, Math.floor(str), Math.floor(dex));
+    return p;
+  }
+  function ensureBags(s) {
+    if (!s.storage) s.storage = [];
+    if (!s.equip) s.equip = { weapon: null, armor: null, magic: null };
+    if (typeof s.vars.fall !== "number") s.vars.fall = 0;
+  }
+  function equipItem(s, itemId) {
+    ensureBags(s);
+    const g = gearOf(itemId);
+    if (!g || !s.items.includes(itemId)) return { ok: false, text: "无法装备。" };
+    const prev = s.equip[g.slot];
+    s.equip[g.slot] = itemId;
+    return { ok: true, text: prev && prev !== itemId ? `已装备，卸下了先前的${(gearOf(prev)||{}).name || prev}` : `已装备${g.name || itemId}` };
+  }
+  function unequipSlot(s, slot) {
+    ensureBags(s);
+    const id = s.equip[slot];
+    if (!id) return { ok: false, text: "该槽位是空的。" };
+    if (slot === "magic" && META.characters[s.pc] && META.characters[s.pc].fragment === id)
+      return { ok: false, text: "残片容器无法卸下——它会自己回来。" };
+    s.equip[slot] = null;
+    return { ok: true, text: "已卸下。" };
+  }
+  function stashItem(s, itemId) {
+    ensureBags(s);
+    if (!s.items.includes(itemId)) return { ok: false, text: "行囊中没有这件。" };
+    const frag = META.characters[s.pc] && META.characters[s.pc].fragment;
+    if (itemId === frag) return { ok: false, text: "残片容器拒绝进入储物柜。" };
+    if ((s.storage.filter(Boolean).length) >= 12) return { ok: false, text: "安全点已满。" };
+    s.items = s.items.filter((x) => x !== itemId);
+    s.storage.push(itemId);
+    // unequip if stored
+    for (const slot of ["weapon", "armor", "magic"]) if (s.equip[slot] === itemId) s.equip[slot] = null;
+    s.vars[itemId] = false;
+    return { ok: true, text: "已存入安全点。" };
+  }
+  function takeStash(s, itemId) {
+    ensureBags(s);
+    if (!s.storage.includes(itemId)) return { ok: false, text: "安全点没有这件。" };
+    s.storage = s.storage.filter((x) => x !== itemId);
+    if (!s.items.includes(itemId)) s.items.push(itemId);
+    s.vars[itemId] = true;
+    return { ok: true, text: "已取回行囊。" };
+  }
+  function fallLabel(v) {
+    v = Number(v) || 0;
+    if (v <= 1) return "沉沦 浅";
+    if (v <= 3) return "沉沦 显";
+    if (v <= 5) return "沉沦 深";
+    return "沉沦 危";
+  }
+
+  global.WZCEngine = { init, setRng, newState, test, apply, visibleChoices, visibleSubs, resolvePending, canAfford, displayLabel, choose, chooseSub, enter, hub, blocksFor, epilogue, timeLabel, num, REL_NAMES, combatPower, equipItem, unequipSlot, stashItem, takeStash, fallLabel, gearOf, ensureBags };
 })(typeof window !== "undefined" ? window : globalThis);

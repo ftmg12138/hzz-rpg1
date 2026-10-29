@@ -68,14 +68,29 @@
   }
 
   function hud(s, nodes) {
+    const Eng = E();
+    if (Eng.ensureBags) Eng.ensureBags(s);
     const n = nodes[s.node] || {};
     $("hud-name").textContent = s.name;
     $("hud-loc").textContent = n.title || "";
-    $("hud-time").textContent = E().timeLabel(s);
+    $("hud-time").textContent = Eng.timeLabel(s);
     const hp = $("hud-hp"); hp.textContent = `体力 ${s.hp}/${s.max_hp}`; hp.className = s.hp <= Math.ceil(s.max_hp / 3) ? "warn" : "";
-    $("hud-vouchers").textContent = `商会券 ${E().num(s, "vouchers")}`;
-    const r = E().num(s, "resonance"); const rs = $("hud-resonance");
+    $("hud-vouchers").textContent = `商会券 ${Eng.num(s, "vouchers")}`;
+    const r = Eng.num(s, "resonance"); const rs = $("hud-resonance");
     rs.textContent = "共鸣 " + "●".repeat(Math.min(r, 6)) + "○".repeat(Math.max(0, 6 - r)); rs.className = r >= 4 ? "warn" : "";
+    rs.title = (global.WZCMeta && WZCMeta.resonance_help) || "共鸣：城与钟骨同频的压力";
+    const fallEl = $("hud-fall");
+    if (fallEl) {
+      const f = Eng.num(s, "fall");
+      fallEl.textContent = Eng.fallLabel ? Eng.fallLabel(f) : ("沉沦 " + f);
+      fallEl.title = ((global.WZCMeta && WZCMeta.fall_help) || "沉沦值") + `（当前 ${f}/6）`;
+      fallEl.className = f >= 4 ? "warn" : "";
+    }
+    const powEl = $("hud-power");
+    if (powEl && Eng.combatPower) {
+      powEl.textContent = "战力 " + Eng.combatPower(s);
+      powEl.title = "装备与属性合计；战力≥4 时战斗检定占优";
+    }
   }
 
   function choiceTag(c, s, nodes) {
@@ -159,9 +174,78 @@
   }
   function renderBag(s, meta) {
     if (!s) return;
+    const Eng = E();
+    if (Eng.ensureBags) Eng.ensureBags(s);
     const names = meta.item_names || {};
-    const items = s.items.filter((k) => names[k]).map((k) => `<li>${esc(names[k])}</li>`).join("") || "<li>空空如也</li>";
-    modal("行囊", `<p>商会券：${E().num(s, "vouchers")} 张</p><ul>${items}</ul>`);
+    const gear = meta.gear || {};
+    const frag = (meta.characters[s.pc] && meta.characters[s.pc].fragment) || null;
+    const slotLab = { weapon: "武器", armor: "护甲", magic: "魔具/残片" };
+
+    function row(html) { return `<div class="bag-row">${html}</div>`; }
+    function btn(label, action, id) {
+      return `<button type="button" class="btn tiny" data-act="${action}" data-id="${esc(id || "")}">${esc(label)}</button>`;
+    }
+
+    let html = "";
+    html += "<h4>装备</h4>";
+    for (const slot of ["weapon", "armor", "magic"]) {
+      const id = (s.equip || {})[slot];
+      const g = id && gear[id];
+      const name = g ? g.name : (names[id] || id || "（空）");
+      const pow = g && g.power ? ` · 战力+${g.power}` : "";
+      let acts = "";
+      if (id && !(slot === "magic" && id === frag)) acts += btn("卸下", "unequip", slot);
+      html += row(`<span>${slotLab[slot]}：${esc(name)}${pow}</span>${acts}`);
+    }
+    const pow = Eng.combatPower ? Eng.combatPower(s) : 0;
+    html += row(`<span class="muted">合计战力 ${pow}（≥4 时战斗占优）</span>`);
+
+    html += "<h4>行囊</h4>";
+    html += `<p>商会券：${Eng.num(s, "vouchers")} 张</p>`;
+    if (!(s.items || []).length) html += "<p class=\"muted\">（空）</p>";
+    (s.items || []).forEach((id) => {
+      const g = gear[id];
+      const name = g ? g.name : (names[id] || id);
+      const pow = g && g.power ? ` ·+${g.power}` : "";
+      let acts = "";
+      if (g && g.slot) acts += btn("装备", "equip", id);
+      if (id !== frag) acts += btn("存入安全点", "stash", id);
+      html += row(`<span>${esc(name)}${pow}</span>${acts}`);
+    });
+
+    html += "<h4>安全点库存</h4>";
+    if (!(s.storage || []).length) html += "<p class=\"muted\">（空）——可在东仓区安全点存取</p>";
+    (s.storage || []).forEach((id) => {
+      const g = gear[id];
+      const name = g ? g.name : (names[id] || id);
+      html += row(`<span>${esc(name)}</span>${btn("取回", "take", id)}`);
+    });
+
+    html += "<h4>状态</h4>";
+    const f = Eng.num(s, "fall");
+    html += row(`<span>${Eng.fallLabel ? Eng.fallLabel(f) : "沉沦"}（${f}/6）</span>`);
+    html += row(`<span>残片压迫 ${Eng.num(s, "fragment_pressure")} · 共鸣 ${Eng.num(s, "resonance")} · 真相 ${Eng.num(s, "truth")}</span>`);
+    if (s.vars.companion) html += row(`<span>同伴：${esc(String(s.vars.companion))}</span>`);
+
+    modal("行囊与装备", html);
+    document.querySelectorAll("#modal-body [data-act]").forEach((b) => {
+      b.onclick = () => {
+        const act = b.dataset.act, id = b.dataset.id;
+        let r;
+        if (act === "equip") r = Eng.equipItem(s, id);
+        else if (act === "unequip") r = Eng.unequipSlot(s, id);
+        else if (act === "stash") r = Eng.stashItem(s, id);
+        else if (act === "take") r = Eng.takeStash(s, id);
+        if (r) toast(r.text);
+        renderBag(s, meta);
+        // refresh HUD if game screen visible
+        const loc = $("hud-loc");
+        if (loc && global.WZC && WZC.state) {
+          /* paint via re-hud only — avoid full repaint stealing focus */
+          try { hud(WZC.state, WZC.nodes); } catch (e) {}
+        }
+      };
+    });
   }
   function renderEndings(meta, nodes) {
     const list = global.WZCSave.getUnlockedEndings();
@@ -175,11 +259,45 @@
     document.querySelectorAll("#modal-body [data-slot]").forEach((b) => (b.onclick = () => { onPick(Number(b.dataset.slot)); closeModal(); }));
   }
   function renderMenu(h) {
-    modal("菜单", `<div class="menu"><button type="button" class="btn" id="m-save">存档</button><button type="button" class="btn" id="m-load">读档</button><button type="button" class="btn ghost" id="m-title">回到标题</button></div><p class="hint">检定规则：掷一枚二十面骰，加上相应能力的修正，达到难度即成功。较易 10 · 中等 13 · 困难 16 · 极难 19。</p>`);
+    const rh = (global.WZCMeta && WZCMeta.resonance_help) || "共鸣是城与钟骨同频的压力。升得越高，残片侵扰越烈。";
+    const fh = (global.WZCMeta && WZCMeta.fall_help) || "沉沦记录你对残片的顺从与自我崩解。";
+    modal("菜单", `<div class="menu"><button type="button" class="btn" id="m-save">存档</button><button type="button" class="btn" id="m-load">读档</button><button type="button" class="btn ghost" id="m-help">共鸣与沉沦说明</button><button type="button" class="btn ghost" id="m-title">回到标题</button></div><p class="hint">检定规则：掷一枚二十面骰，加上相应能力的修正，达到难度即成功。较易 10 · 中等 13 · 困难 16 · 极难 19。</p>`);
     $("m-save").onclick = () => { closeModal(); h.onSave(); };
     $("m-load").onclick = () => { closeModal(); h.onLoad(); };
+    $("m-help").onclick = () => { modal("共鸣与沉沦", `<p>${esc(rh)}</p><p>${esc(fh)}</p><p class="muted">三位主角的残片压迫均可在正文中点击「▸ 残片侵扰」或「▸ 情欲描写」小箭头展开。</p>`); };
     $("m-title").onclick = () => { closeModal(); h.onTitle(); };
   }
 
-  global.WZCUI = { toast, renderTitle, renderChars, renderGame, renderJournal, renderBag, renderEndings, renderSaveLoad, renderMenu, closeModal };
+
+  function dossierDepth(s, id) {
+    const d = Number(s.vars["dossier_" + id + "_depth"] || 0);
+    if (s.pc === id) return Math.max(d, 1);
+    const met = s.vars["met_" + id] || s.vars[id + "_met"] || (id === "kael");
+    if (!met && id !== "kael") return -1;
+    return d;
+  }
+  function renderPeople(s, meta) {
+    if (!s) return;
+    const dossiers = meta.dossiers || {};
+    const order = ["edric","liriel","thorin","valen","kael","ysolde","mira","eilyn","mara","garrick","elara","serath","lyra","gromm"];
+    let html = "";
+    let shown = 0;
+    order.forEach((id) => {
+      const d = dossiers[id]; if (!d) return;
+      const depth = dossierDepth(s, id);
+      if (depth < 0) return;
+      shown++;
+      const hist = d["history" + Math.min(depth, 2)] || d.history0 || "";
+      html += `<details class="dossier"><summary>${esc(d.name)} · ${esc(d.role || d.appear && d.appear.slice(0, 12) || id)}</summary>` +
+        `<div class="dossier-body">` +
+        (d.appear ? `<p>${esc(d.appear)}</p>` : "") +
+        (d.personality ? `<p><em>${esc(d.personality)}</em></p>` : "") +
+        (d.blurb ? `<p>${esc(d.blurb)}</p>` : "") +
+        `<p class="muted">已知：${esc(hist || d.known || "初识。")}</p>` +
+        `</div></details>`;
+    });
+    if (!shown) html = "<p class=\"muted\">尚未结识足够的人。去酒馆或街口多开口。</p>";
+    modal("人物简介", html);
+  }
+  global.WZCUI = { toast, renderTitle, renderChars, renderGame, renderJournal, renderBag, renderPeople, renderEndings, renderSaveLoad, renderMenu, closeModal };
 })(typeof window !== "undefined" ? window : globalThis);

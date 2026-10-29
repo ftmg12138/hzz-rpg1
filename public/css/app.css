@@ -913,3 +913,15 @@ body.gate-locked .bgm-credit { color: #cbb892bb; }
   #bgm-dock { left: 10px; bottom: 10px; }
   .bgm-credit { font-size: 9px; max-width: 70vw; }
 }
+
+/* --- revision: bag / dossiers / fall --- */
+.bag-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 6px 0; border-bottom: 1px solid rgba(180,140,80,.15); font-size: 14px;
+}
+.bag-row .btn.tiny { padding: 2px 8px; font-size: 12px; margin-left: 4px; }
+.dossier { margin: 8px 0; border: 1px solid rgba(180,140,80,.25); border-radius: 6px; padding: 4px 10px; background: rgba(0,0,0,.2); }
+.dossier > summary { cursor: pointer; color: var(--brass-bright); font-family: var(--serif); padding: 6px 0; }
+.dossier-body { padding: 4px 0 10px; font-size: 14px; line-height: 1.55; }
+.dossier-body .muted, .muted { color: var(--muted); }
+#hud-fall.warn, #hud-power { }
