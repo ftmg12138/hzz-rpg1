@@ -47,14 +47,7 @@
           <img src="assets/gate/tome-desk.jpg" alt="" width="1502" height="1047" decoding="async" fetchpriority="high" />
         </picture>
         <div class="gate-shade"></div>
-        <div class="gate-light"></div>
-        <div class="gate-flame">
-          <span class="gate-flame-glow"></span>
-          <span class="gate-flame-outer"></span>
-          <span class="gate-flame-mid"></span>
-          <span class="gate-flame-core"></span>
-          <span class="gate-flame-wick"></span>
-        </div>
+        <div class="gate-light" aria-hidden="true"></div>
       </div>
       <div class="gate-plate">
         <p class="gate-eyebrow">尘封典籍</p>
