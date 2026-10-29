@@ -1,0 +1,487 @@
+{
+  "generated": "2026-10-29T02:40:42.700Z",
+  "scanned": 44,
+  "counts": {
+    "a_has_fold": 19,
+    "b_surface_explicit": 0,
+    "c_intimacy_no_fold": 0,
+    "d_no_intimacy": 25
+  },
+  "required_folds": [
+    "L-PRO-02",
+    "L-PRO-06",
+    "L-PRO-07",
+    "L-PRO-08",
+    "R-DES-01",
+    "R-DES-03",
+    "R-DES-04",
+    "R-DES-05",
+    "R-DES-06",
+    "A1-TOWN-04",
+    "D-ALT",
+    "A1-TOWN-02",
+    "D-NPC-MIRA",
+    "C-03",
+    "A2-MINE-07",
+    "A2-MINE-09",
+    "A3-SHRINE-06",
+    "END-01"
+  ],
+  "classified": {
+    "a": [
+      "L-PRO-02",
+      "L-PRO-06",
+      "L-PRO-07",
+      "L-PRO-08",
+      "A1-TOWN-02",
+      "A1-TOWN-04",
+      "A2-MINE-07",
+      "A2-MINE-09",
+      "A3-SHRINE-03~2",
+      "A3-SHRINE-06",
+      "D-NPC-MIRA",
+      "D-ALT",
+      "END-01",
+      "R-DES-01",
+      "R-DES-03",
+      "R-DES-04",
+      "R-DES-05",
+      "R-DES-06",
+      "C-03"
+    ],
+    "b": [],
+    "c": [],
+    "d": [
+      "L-PRO-01",
+      "L-PRO-03",
+      "L-PRO-04",
+      "L-PRO-05",
+      "L-PRO-09",
+      "A1-TOWN-05",
+      "A1-TOWN-06",
+      "A1-TOWN-09",
+      "A1-TOWN-09~2",
+      "SQ-CITY-01",
+      "A2-MINE-01B",
+      "A2-MINE-04",
+      "A2-MINE-04~2",
+      "A2-MINE-05~3",
+      "A3-SHRINE-01",
+      "A3-SHRINE-03",
+      "A3-SHRINE-08",
+      "D-NPC-KAEL",
+      "END-04",
+      "END-05",
+      "R-TRAVEL-07",
+      "R-DES-02",
+      "CITY-AMBIENT-17",
+      "FAIL-05",
+      "C-07"
+    ]
+  },
+  "inventory": [
+    {
+      "id": "L-PRO-01",
+      "title": "苔冠哨所",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "L-PRO-02",
+      "title": "银链",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "L-PRO-03",
+      "title": "少指的男人",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "L-PRO-04",
+      "title": "账簿第七码",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "L-PRO-05",
+      "title": "凯尔的箭",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "L-PRO-06",
+      "title": "路边的求救",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "L-PRO-07",
+      "title": "欲望的名字",
+      "cls": "a",
+      "folds": 5,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "L-PRO-08",
+      "title": "灰桥盘问",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "L-PRO-09",
+      "title": "旧名字进城",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A1-TOWN-02",
+      "title": "白鸦旅店",
+      "cls": "a",
+      "folds": 7,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "A1-TOWN-04",
+      "title": "红牡丹",
+      "cls": "a",
+      "folds": 2,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "A1-TOWN-05",
+      "title": "格罗姆的铺子",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A1-TOWN-06",
+      "title": "未了的私事",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A1-TOWN-09",
+      "title": "东仓夜袭",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A1-TOWN-09~2",
+      "title": "东仓夜袭",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "SQ-CITY-01",
+      "title": "倾斜的房子",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A2-MINE-01B",
+      "title": "托伦商道",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A2-MINE-04",
+      "title": "木栅囚牢",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A2-MINE-04~2",
+      "title": "木栅囚牢",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A2-MINE-05~3",
+      "title": "旧升降井",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A2-MINE-07",
+      "title": "三面石门",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "A2-MINE-09",
+      "title": "见证：你实际做过什么",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "A3-SHRINE-01",
+      "title": "裂隙桥",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A3-SHRINE-03",
+      "title": "誓环",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A3-SHRINE-03~2",
+      "title": "誓环",
+      "cls": "a",
+      "folds": 1,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "A3-SHRINE-06",
+      "title": "钟骨就位",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "A3-SHRINE-08",
+      "title": "最后一句",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "D-NPC-KAEL",
+      "title": "凯尔·晨星",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "D-NPC-MIRA",
+      "title": "“红牡丹”米拉",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "D-ALT",
+      "title": "未选主角的同伴对话",
+      "cls": "a",
+      "folds": 5,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "END-01",
+      "title": "白灰与记录",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "END-04",
+      "title": "有裂缝的誓言",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-05",
+      "title": "借来的身体",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "R-TRAVEL-07",
+      "title": "桥下的歌",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "R-DES-01",
+      "title": "一句留下",
+      "cls": "a",
+      "folds": 3,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "R-DES-02",
+      "title": "镜中更好的脸",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "R-DES-03",
+      "title": "免费的房间",
+      "cls": "a",
+      "folds": 3,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "R-DES-04",
+      "title": "凯尔的愧疚",
+      "cls": "a",
+      "folds": 2,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "R-DES-05",
+      "title": "被需要的人",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "R-DES-06",
+      "title": "受影响的追随者",
+      "cls": "a",
+      "folds": 3,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "CITY-AMBIENT-17",
+      "title": "一把修过七次的刀",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "FAIL-05",
+      "title": "回声线断裂",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "C-03",
+      "title": "炭棚营救",
+      "cls": "a",
+      "folds": 1,
+      "required": true,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "C-07",
+      "title": "科尔处置冲突",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    }
+  ],
+  "notes": [
+    "a = already has fold and surface is PG enough",
+    "b = has fold but surface still carries explicit lexemes (should move into fold)",
+    "c = intimacy markers without fold (gap)",
+    "d = liriel/银链/苔冠/魅惑 mention with no intimacy staging",
+    "Mid/late scripts (A2/A3/END) mostly lack dedicated sex scenes; R-DES pool fires across the run for liriel PC."
+  ]
+}

@@ -45,8 +45,9 @@ for (const [nid, needles] of Object.entries(MUST_HAVE)) {
 // Inventory nodes reviewed this pass
 const REVIEWED = [
   "L-PRO-02", "L-PRO-06", "L-PRO-07", "L-PRO-08",
-  "A1-TOWN-04", "D-NPC-MIRA", "D-ALT",
+  "A1-TOWN-02", "A1-TOWN-04", "D-NPC-MIRA", "D-ALT",
   "R-DES-01", "R-DES-02", "R-DES-03", "R-DES-04", "R-DES-05", "R-DES-06",
+  "C-03", "A2-MINE-07", "A2-MINE-09", "A3-SHRINE-06", "A3-SHRINE-03~2", "END-01",
 ];
 console.log("Reviewed:", REVIEWED.join(", "));
 if (failed) {
