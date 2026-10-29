@@ -9,17 +9,18 @@ const meta = JSON.parse(fs.readFileSync(path.join(root, "data/meta.json"), "utf8
 const E = globalThis.WZCEngine;
 E.init(nodes, meta);
 
-const map = { edric: "艾德里克作为同伴", liriel: "莉瑞尔作为同伴", thorin: "索林作为同伴" };
+const map = { edric: "与艾德里克深入交谈。", liriel: "与莉瑞尔深入交谈。", thorin: "与索林深入交谈。" };
 let fail = 0;
 for (const pc of Object.keys(map)) {
   const s = E.newState(pc);
   s.node = "D-ALT";
+  for (const other of Object.keys(map)) if (other !== pc) s.vars[`met_${other}`] = true;
   const labels = E.visibleChoices(s, "D-ALT").map((c) => c.label);
   if (labels.includes(map[pc])) {
     console.error(`FAIL: ${pc} still sees ${map[pc]}`, labels);
     fail++;
   } else {
-    console.log(`OK: ${pc} hidden self; visible=`, labels.filter((l) => /作为同伴/.test(l)));
+    console.log(`OK: ${pc} hidden self; visible=`, labels.filter((l) => /深入交谈/.test(l)));
   }
   for (const [other, lab] of Object.entries(map)) {
     if (other === pc) continue;

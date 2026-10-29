@@ -49,6 +49,7 @@ function satisfy(state, cond, wanted = true) {
     return;
   }
   if (cond.pc) state.pc = wanted ? cond.pc : ["edric", "liriel", "thorin"].find((pc) => pc !== cond.pc);
+  if (cond.eq) state.vars[cond.eq[0]] = wanted ? cond.eq[1] : "__different__";
   if (cond.flag) {
     state.vars[cond.flag] = wanted;
     if (!wanted) state.items = state.items.filter((item) => item !== cond.flag);

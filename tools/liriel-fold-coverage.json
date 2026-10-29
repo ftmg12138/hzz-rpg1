@@ -1,11 +1,11 @@
 {
-  "generated": "2026-10-29T08:25:29.975Z",
-  "scanned": 48,
+  "generated": "2026-10-29T23:51:37.528Z",
+  "scanned": 82,
   "counts": {
-    "a_has_fold": 24,
+    "a_has_fold": 34,
     "b_surface_explicit": 0,
     "c_intimacy_no_fold": 0,
-    "d_no_intimacy": 24
+    "d_no_intimacy": 48
   },
   "required_folds": [
     "L-PRO-02",
@@ -39,8 +39,15 @@
       "A1-TOWN-09",
       "A1-TOWN-10",
       "CITY-01",
+      "CITY-03",
+      "CITY-05",
+      "CITY-08",
+      "CITY-PEER-LIRIEL",
+      "SQ-CITY-02",
+      "A2-MINE-02",
       "A2-MINE-07",
       "A2-MINE-09",
+      "A3-SHRINE-01",
       "A3-SHRINE-03~2",
       "A3-SHRINE-06",
       "D-NPC-MIRA",
@@ -52,7 +59,10 @@
       "R-DES-04",
       "R-DES-05",
       "R-DES-06",
-      "C-03"
+      "C-03",
+      "END-FALL-LIRIEL",
+      "END-FALL-EDRIC",
+      "END-FALL-THORIN"
     ],
     "b": [],
     "c": [],
@@ -65,22 +75,46 @@
       "A1-TOWN-05",
       "A1-TOWN-06",
       "A1-TOWN-09~2",
+      "CITY-PEER-EDRIC",
+      "CITY-PEER-THORIN",
       "SQ-CITY-01",
+      "SQ-CITY-02~2",
       "A2-MINE-01B",
       "A2-MINE-04",
       "A2-MINE-04~2",
       "A2-MINE-05~3",
-      "A3-SHRINE-01",
+      "A2-MINE-10",
+      "A2-MINE-11",
       "A3-SHRINE-03",
       "A3-SHRINE-07",
       "A3-SHRINE-08",
       "D-NPC-KAEL",
+      "END-02",
+      "END-03",
       "END-04",
       "END-05",
+      "END-06",
+      "END-07",
+      "END-08",
+      "END-09",
+      "END-10",
+      "END-11",
+      "END-12",
+      "END-13",
+      "END-14",
+      "END-15",
+      "END-16",
+      "END-CURE-01",
+      "END-CURE-02",
+      "END-CURE-03",
+      "END-CURE-04",
       "R-TRAVEL-07",
       "CITY-AMBIENT-17",
       "FAIL-05",
-      "C-07"
+      "CITY-HUB",
+      "A2-MINE-00",
+      "C-07",
+      "A2-MINE-10B"
     ]
   },
   "inventory": [
@@ -169,7 +203,7 @@
       "id": "A1-TOWN-02",
       "title": "白鸦旅店",
       "cls": "a",
-      "folds": 16,
+      "folds": 15,
       "required": true,
       "lirielish": true,
       "intimacy": true
@@ -247,8 +281,80 @@
       "intimacy": false
     },
     {
+      "id": "CITY-03",
+      "title": "白塔拔除术",
+      "cls": "a",
+      "folds": 4,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "CITY-05",
+      "title": "河渠换命契",
+      "cls": "a",
+      "folds": 3,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "CITY-08",
+      "title": "六钟错拍",
+      "cls": "a",
+      "folds": 3,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "CITY-PEER-EDRIC",
+      "title": "雨停之前",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "CITY-PEER-LIRIEL",
+      "title": "银链与停词",
+      "cls": "a",
+      "folds": 1,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "CITY-PEER-THORIN",
+      "title": "锤柄的背面",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
       "id": "SQ-CITY-01",
       "title": "倾斜的房子",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "SQ-CITY-02",
+      "title": "无窗宅的晚宴",
+      "cls": "a",
+      "folds": 4,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "SQ-CITY-02~2",
+      "title": "无窗宅的晚宴",
       "cls": "d",
       "folds": 0,
       "required": false,
@@ -260,6 +366,15 @@
       "title": "托伦商道",
       "cls": "d",
       "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A2-MINE-02",
+      "title": "黑砧营地",
+      "cls": "a",
+      "folds": 2,
       "required": false,
       "lirielish": true,
       "intimacy": false
@@ -295,7 +410,7 @@
       "id": "A2-MINE-07",
       "title": "三面石门",
       "cls": "a",
-      "folds": 1,
+      "folds": 3,
       "required": true,
       "lirielish": true,
       "intimacy": true
@@ -304,19 +419,37 @@
       "id": "A2-MINE-09",
       "title": "见证：你实际做过什么",
       "cls": "a",
-      "folds": 1,
+      "folds": 6,
       "required": true,
       "lirielish": true,
       "intimacy": true
     },
     {
-      "id": "A3-SHRINE-01",
-      "title": "裂隙桥",
+      "id": "A2-MINE-10",
+      "title": "山腹裂开",
       "cls": "d",
       "folds": 0,
       "required": false,
       "lirielish": true,
       "intimacy": false
+    },
+    {
+      "id": "A2-MINE-11",
+      "title": "古水道岔口",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A3-SHRINE-01",
+      "title": "裂隙桥",
+      "cls": "a",
+      "folds": 4,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
     },
     {
       "id": "A3-SHRINE-03",
@@ -331,7 +464,7 @@
       "id": "A3-SHRINE-03~2",
       "title": "誓环",
       "cls": "a",
-      "folds": 1,
+      "folds": 3,
       "required": false,
       "lirielish": true,
       "intimacy": true
@@ -340,7 +473,7 @@
       "id": "A3-SHRINE-06",
       "title": "钟骨就位",
       "cls": "a",
-      "folds": 1,
+      "folds": 3,
       "required": true,
       "lirielish": true,
       "intimacy": true
@@ -400,6 +533,24 @@
       "intimacy": true
     },
     {
+      "id": "END-02",
+      "title": "断掉的命令",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-03",
+      "title": "雾钟新约",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
       "id": "END-04",
       "title": "有裂缝的誓言",
       "cls": "d",
@@ -411,6 +562,141 @@
     {
       "id": "END-05",
       "title": "借来的身体",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-06",
+      "title": "帝国黑库",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-07",
+      "title": "疤旗下的自治",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-08",
+      "title": "南行路",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-09",
+      "title": "埋住的选择",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-10",
+      "title": "四条路",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-11",
+      "title": "空出来的位置",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-12",
+      "title": "活着的四声冠",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-13",
+      "title": "合唱之王",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-14",
+      "title": "两个人共用一个名字",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-15",
+      "title": "山与城下",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-16",
+      "title": "长引信",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-CURE-01",
+      "title": "代祷者",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-CURE-02",
+      "title": "三天一剂",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-CURE-03",
+      "title": "二十张票据",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-CURE-04",
+      "title": "体内的齿轮",
       "cls": "d",
       "folds": 0,
       "required": false,
@@ -499,6 +785,24 @@
       "intimacy": false
     },
     {
+      "id": "CITY-HUB",
+      "title": "雾钟城",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A2-MINE-00",
+      "title": "去黑砧矿区的路",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
       "id": "C-03",
       "title": "炭棚营救",
       "cls": "a",
@@ -510,6 +814,42 @@
     {
       "id": "C-07",
       "title": "科尔处置冲突",
+      "cls": "d",
+      "folds": 0,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "END-FALL-LIRIEL",
+      "title": "项圈与饲养",
+      "cls": "a",
+      "folds": 1,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "END-FALL-EDRIC",
+      "title": "酒渍文书",
+      "cls": "a",
+      "folds": 1,
+      "required": false,
+      "lirielish": true,
+      "intimacy": true
+    },
+    {
+      "id": "END-FALL-THORIN",
+      "title": "裂锤不认人",
+      "cls": "a",
+      "folds": 1,
+      "required": false,
+      "lirielish": true,
+      "intimacy": false
+    },
+    {
+      "id": "A2-MINE-10B",
+      "title": "绳轮反咬",
       "cls": "d",
       "folds": 0,
       "required": false,

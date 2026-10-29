@@ -182,6 +182,7 @@
     const gear = meta.gear || {};
     const frag = (meta.characters[s.pc] && meta.characters[s.pc].fragment) || null;
     const slotLab = { weapon: "武器", armor: "护甲", magic: "魔具/残片" };
+    const atStorage = Eng.canUseStorage && Eng.canUseStorage(s);
 
     function row(html) { return `<div class="bag-row">${html}</div>`; }
     function btn(label, action, id) {
@@ -202,7 +203,10 @@
     const pow = Eng.combatPower ? Eng.combatPower(s) : 0;
     html += row(`<span class="muted">合计战力 ${pow}（≥4 时战斗占优）</span>`);
 
-    html += "<h4>行囊</h4>";
+    const carryMax = Eng.carryCapacity ? Eng.carryCapacity(s) : 8;
+    const storageMax = Eng.storageCapacity ? Eng.storageCapacity(s) : 6;
+    html += `<h4>行囊 ${s.items.length}/${carryMax}</h4>`;
+    if (s.items.length > carryMax) html += `<p class="muted">超载：战力 -2。把物品存入安全点可解除。</p>`;
     html += `<p>商会券：${Eng.num(s, "vouchers")} 张</p>`;
     if (!(s.items || []).length) html += "<p class=\"muted\">（空）</p>";
     (s.items || []).forEach((id) => {
@@ -211,23 +215,25 @@
       const pow = g && g.power ? ` ·+${g.power}` : "";
       let acts = "";
       if (g && g.slot) acts += btn("装备", "equip", id);
-      if (id !== frag) acts += btn("存入安全点", "stash", id);
+      if (atStorage && id !== frag) acts += btn("存入安全点", "stash", id);
       html += row(`<span>${esc(name)}${pow}</span>${acts}`);
     });
 
-    html += "<h4>安全点库存</h4>";
-    if (!(s.storage || []).length) html += "<p class=\"muted\">（空）——可在东仓区安全点存取</p>";
+    html += `<h4>安全点库存 ${(s.storage || []).length}/${storageMax}</h4>`;
+    if (!(s.storage || []).length) html += "<p class=\"muted\">（空）</p>";
     (s.storage || []).forEach((id) => {
       const g = gear[id];
       const name = g ? g.name : (names[id] || id);
-      html += row(`<span>${esc(name)}</span>${btn("取回", "take", id)}`);
+      html += row(`<span>${esc(name)}</span>${atStorage ? btn("取回", "take", id) : ""}`);
     });
+    if (!atStorage) html += `<p class="muted">存取需回到白鸦旅店安全点。</p>`;
+    if (s.node === "A1-STASH-01") html += `<p class="muted">东仓出发前已存 ${Eng.num(s, "warehouse_stashed")}/2 件。</p>`;
 
     html += "<h4>状态</h4>";
     const f = Eng.num(s, "fall");
     html += row(`<span>${Eng.fallLabel ? Eng.fallLabel(f) : "沉沦"}（${f}/6）</span>`);
     html += row(`<span>残片压迫 ${Eng.num(s, "fragment_pressure")} · 共鸣 ${Eng.num(s, "resonance")} · 真相 ${Eng.num(s, "truth")}</span>`);
-    if (s.vars.companion) html += row(`<span>同伴：${esc(String(s.vars.companion))}</span>`);
+    if (s.vars.companion) html += row(`<span>同伴：${esc((meta.characters[s.vars.companion] || {}).name || String(s.vars.companion))}</span>`);
 
     modal("行囊与装备", html);
     document.querySelectorAll("#modal-body [data-act]").forEach((b) => {
@@ -239,6 +245,7 @@
         else if (act === "stash") r = Eng.stashItem(s, id);
         else if (act === "take") r = Eng.takeStash(s, id);
         if (r) toast(r.text);
+        if (r && r.ok && global.WZCSave) global.WZCSave.autosave(s, meta);
         renderBag(s, meta);
         // refresh HUD if game screen visible
         const loc = $("hud-loc");
@@ -318,6 +325,7 @@
         (d.appear ? `<p><strong>外貌</strong> — ${esc(d.appear)}</p>` : "") +
         (d.personality ? `<p><strong>性格</strong> — <em>${esc(d.personality)}</em></p>` : "") +
         (d.blurb ? `<p>${esc(d.blurb)}</p>` : "") +
+        (id === "edric" || id === "liriel" || id === "thorin" ? `<p><strong>沉沦</strong> — ${esc(s.vars["fall_" + id] || 0)}/6</p>` : "") +
         `<p class="muted"><strong>已知经历</strong> — ${esc(hist || d.known || "初识。")}</p>` +
         `</div></details>`;
     });

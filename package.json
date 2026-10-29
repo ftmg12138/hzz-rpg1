@@ -4,7 +4,7 @@
   "description": "雾钟城：第七声 — static text RPG for rpg.xyzhzz.com",
   "scripts": {
     "parse": "python3 tools/parse-script.py && python3 tools/synthesize-extra.py",
-    "audit": "python3 tools/lint-nodes.py public/data/nodes.json && python3 tools/audit-rewards.py && node tools/test-epro05-settlement.js && node tools/test-foldouts.js && node tools/test-liriel-desire-pass.js && node tools/test-all-choices.js",
+    "audit": "python3 tools/lint-nodes.py public/data/nodes.json && python3 tools/audit-rewards.py && node tools/test-epro05-settlement.js && node tools/test-phase1-systems.js && node tools/test-dalt-companion-gate.js && node tools/test-phase2.js && node tools/test-revision-regressions.js && node tools/test-phase3-companions.js && node tools/test-foldouts.js && node tools/test-liriel-desire-pass.js && node tools/test-all-choices.js",
     "test": "npm run parse && npm run audit && node tools/sim.js 5000",
     "deploy": "bash scripts/deploy.sh",
     "push": "bash scripts/push.sh"

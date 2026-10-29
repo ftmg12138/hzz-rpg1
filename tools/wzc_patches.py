@@ -145,6 +145,9 @@ def apply(N, epis):
     except Exception as e:
         print('wzc_phase2_pass skipped:', e)
 
+    import wzc_phase3_pass as _p3
+    _p3.apply_to_nodes(N)
+
 # ---------------------------------------------------------------- prologues
 def prologues(N):
     # ---- L-PRO-01: ruins hub, two careful searches before dark
@@ -1978,4 +1981,6 @@ def meta(N):
         _p2.patch_meta(m, N)
     except Exception as e:
         print("phase2 meta skipped:", e)
+    import wzc_phase3_pass as _p3
+    _p3.patch_meta(m)
     return m

@@ -741,7 +741,7 @@ def main():
     wzc_patches.apply(nodes, epilogues())
     finalize(nodes)
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "nodes.json").write_text(json.dumps(nodes, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    (OUT / "nodes.json").write_text(json.dumps(nodes, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     meta = wzc_patches.meta(nodes)
     unresolved = set()
     for node in nodes.values():
@@ -776,10 +776,10 @@ def finalize(nodes):
                 fix(s, False)
         for c in n["choices"]:
             fix(c)
-        if not n["routes"]:
-            n.pop("routes")
-        if not n["enter_effects"]:
-            n.pop("enter_effects")
+        if not n.get("routes"):
+            n.pop("routes", None)
+        if not n.get("enter_effects"):
+            n.pop("enter_effects", None)
 
 if __name__ == "__main__":
     main()

@@ -99,7 +99,7 @@ for m in re.finditer(r"^###\s+(R-[\w-]+)\s+(.+)$", text08, re.M):
 
 meta["node_count"] = len(nodes)
 (ROOT / "public/data/nodes.json").write_text(
-    json.dumps(nodes, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
+    json.dumps(nodes, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
 )
 (ROOT / "public/data/meta.json").write_text(
     json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8"

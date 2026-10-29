@@ -33,7 +33,7 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "玛拉立刻让车队靠树停下，亲手压低最后一盏灯。汤姆跟着你望向泥路尽头，第一次明白斥候的沉默也是一条命令。"
      }
     ],
     "effects": [
@@ -43,8 +43,7 @@
       "v": 1
      }
     ],
-    "next": "E-PRO-02",
-    "fallback": true
+    "next": "E-PRO-02"
    },
    {
     "id": "s1c2",
@@ -287,12 +286,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "汤姆听见你答应会回来，肩膀松了一寸；他仍把邮袋攥得死紧，像怕你拿这句话哄他。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -301,12 +299,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "汤姆张了张嘴，最后只点头。他把车夫和驮马重新数了一遍，开始做你不能替他做的事。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      }
     ]
@@ -981,7 +978,7 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "汤姆本想辩解自己并非全程害怕，看到你手上的血，终于认真听你讲怎样看风向和脚印。"
      }
     ],
     "effects": [
@@ -992,7 +989,6 @@
      }
     ],
     "next": "E-PRO-06",
-    "fallback": true,
     "cond": {
      "flag": "tom_alive"
     }
@@ -1003,7 +999,7 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "汤姆把那张文书的条件重复了一遍，郑重得像在宣誓。他欠你的不是一句英雄话，是进城后要办成的一件事。"
      }
     ],
     "effects": [
@@ -1019,7 +1015,6 @@
      }
     ],
     "next": "E-PRO-06",
-    "fallback": true,
     "cond": {
      "flag": "tom_alive"
     }
@@ -1030,12 +1025,11 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "汤姆找出干纸，把疤脸徽记的弯钩照你说的方向画了三次。最后一笔仍在抖，但报告能用了。"
      }
     ],
     "effects": [],
     "next": "E-PRO-06",
-    "fallback": true,
     "cond": {
      "flag": "tom_alive"
     },
@@ -3724,16 +3718,15 @@
    },
    {
     "id": "s1c4",
-    "label": "正常登记“苔冠哨所幸存者”：，但名字会送到哈兰桌上。",
+    "label": "以苔冠哨所幸存者身份登记。",
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "你写下真名。登记吏的笔停了一瞬，把苔冠幸存者单独抄在红边纸上；那张纸会先到哈兰桌上。"
      }
     ],
     "effects": [],
     "next": "L-PRO-09",
-    "fallback": true,
     "group": "可用方式"
    },
    {
@@ -5370,10 +5363,6 @@
    {
     "t": "p",
     "text": "你扶着桥柱停了停。耳鸣里有极细的钟声——不是镇上那座楼，是你随身的那一声。残片的异常从今晚开始变得更不客气：它要你把路走完，哪怕用眩晕和出血来赶工。"
-   },
-   {
-    "t": "p",
-    "text": "你扶着桥柱停了停。耳鸣里有极细的钟声——不是镇上那座楼，是你随身的那一声。残片的异常从今晚开始变得更不客气：它要你把路走完，哪怕用眩晕和出血来赶工。"
    }
   ],
   "choices": [
@@ -5439,6 +5428,18 @@
    }
   ],
   "default_next": null,
+  "enter_effects": [
+   {
+    "op": "max",
+    "k": "fragment_pressure",
+    "v": 2
+   },
+   {
+    "op": "max",
+    "k": "resonance",
+    "v": 1
+   }
+  ],
   "stay_choices": true,
   "hub": {
    "counter": "town_deep",
@@ -5466,19 +5467,7 @@
     ],
     "text": "你决定再挤出一点时间。可等你出来时，东仓的夜袭恐怕已经开始了。"
    }
-  },
-  "enter_effects": [
-   {
-    "op": "max",
-    "k": "fragment_pressure",
-    "v": 2
-   },
-   {
-    "op": "max",
-    "k": "resonance",
-    "v": 1
-   }
-  ]
+  }
  },
  "A1-TOWN-02": {
   "id": "A1-TOWN-02",
@@ -5707,7 +5696,8 @@
         "v": 1
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      },
      {
       "id": "t4_ed_watch",
@@ -5757,7 +5747,8 @@
         }
        ],
        "next": null
-      }
+      },
+      "once": true
      },
      {
       "id": "t4_ed_ally",
@@ -5783,7 +5774,7 @@
        },
        {
         "t": "note",
-        "text": "已记下：短期同盟（莉瑞尔）。可在稍后「与另一位残片持有者深谈」继续。"
+        "text": "你与莉瑞尔约定同行到矿区。稍后可以再与她深谈。"
        }
       ],
       "effects": [
@@ -5803,7 +5794,8 @@
         "v": true
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      },
      {
       "id": "t4_ed_take",
@@ -5844,7 +5836,8 @@
         "v": 1
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      }
     ]
    },
@@ -5956,7 +5949,8 @@
         "v": 1
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      },
      {
       "id": "t4_li_watch",
@@ -6006,7 +6000,8 @@
         }
        ],
        "next": null
-      }
+      },
+      "once": true
      },
      {
       "id": "t4_li_ally",
@@ -6032,7 +6027,7 @@
        },
        {
         "t": "note",
-        "text": "已记下：短期同盟（艾德里克）。深谈入口已解锁。"
+        "text": "你与艾德里克约定同行到矿区。稍后可以再与他深谈。"
        }
       ],
       "effects": [
@@ -6052,7 +6047,8 @@
         "v": true
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      },
      {
       "id": "t4_li_take",
@@ -6093,7 +6089,8 @@
         "v": 1
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      }
     ]
    },
@@ -6205,7 +6202,8 @@
         "v": 1
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      },
      {
       "id": "t4_th_watch",
@@ -6255,7 +6253,8 @@
         }
        ],
        "next": null
-      }
+      },
+      "once": true
      },
      {
       "id": "t4_th_ally",
@@ -6281,7 +6280,7 @@
        },
        {
         "t": "note",
-        "text": "已记下：短期同盟（艾德里克）。深谈入口已解锁。"
+        "text": "你与艾德里克约定同行到矿区。稍后可以再与他深谈。"
        }
       ],
       "effects": [
@@ -6301,7 +6300,8 @@
         "v": true
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      },
      {
       "id": "t4_th_take",
@@ -6342,49 +6342,10 @@
         "v": 1
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      }
     ]
-   },
-   {
-    "id": "t4_th_l",
-    "label": "与莉瑞尔：在暗桌旁点头致意",
-    "result": [
-     {
-      "t": "p",
-      "text": "莉瑞尔抬眼扫过你满是茧的手，又落到眼睛上。银链轻响。你们没有深谈，却都知道彼此不是普通人。"
-     },
-     {
-      "t": "fold",
-      "label": "情欲描写",
-      "blocks": [
-       {
-        "t": "p",
-        "text": "她的呼吸乱了一拍，低声说：“矮人的规矩我懂——先量，再敲。别让它替我量你。”膝在桌下轻轻碰上你的腿甲。"
-       }
-      ],
-      "cond": {
-       "pc": "thorin"
-      }
-     }
-    ],
-    "effects": [
-     {
-      "op": "set",
-      "k": "met_liriel",
-      "v": true
-     },
-     {
-      "op": "add",
-      "k": "rel.alt_b",
-      "v": 1
-     }
-    ],
-    "next": "__SELF__",
-    "once": true,
-    "cond": {
-     "pc": "thorin"
-    }
    },
    {
     "id": "t4_th_l",
@@ -7047,19 +7008,55 @@
     "cond": {
      "any": [
       {
-       "flag": "met_edric"
+       "all": [
+        {
+         "not": {
+          "pc": "edric"
+         }
+        },
+        {
+         "flag": "met_edric"
+        },
+        {
+         "not": {
+          "flag": "alt_edric_dead"
+         }
+        }
+       ]
       },
       {
-       "flag": "met_liriel"
+       "all": [
+        {
+         "not": {
+          "pc": "liriel"
+         }
+        },
+        {
+         "flag": "met_liriel"
+        },
+        {
+         "not": {
+          "flag": "alt_liriel_dead"
+         }
+        }
+       ]
       },
       {
-       "flag": "met_thorin"
-      },
-      {
-       "flag": "met_alt"
-      },
-      {
-       "flag": "shared_fragment_truth"
+       "all": [
+        {
+         "not": {
+          "pc": "thorin"
+         }
+        },
+        {
+         "flag": "met_thorin"
+        },
+        {
+         "not": {
+          "flag": "alt_thorin_dead"
+         }
+        }
+       ]
       }
      ]
     }
@@ -7075,29 +7072,6 @@
      {
       "t": "note",
       "text": "点上方「人物」可展开已结识者的简介。尚未深谈的人，档案只会留下浅浅一笔。"
-     }
-    ],
-    "effects": [
-     {
-      "op": "set",
-      "k": "hint_dossier_ui",
-      "v": true
-     }
-    ],
-    "next": "__SELF__",
-    "once": false
-   },
-   {
-    "id": "dossier_here",
-    "label": "打量在场的人（人物简介）。",
-    "result": [
-     {
-      "t": "p",
-      "text": "你把目光逐一投向在场的人。你记得的外貌、脾气，以及目前听来的私情，在脑中短暂排好——像斥候做的那种无声点名。"
-     },
-     {
-      "t": "p",
-      "text": "〔打开上方「人物」可查看已结识者的简介。若尚未深谈，档案只会留下浅浅一笔。〕"
      }
     ],
     "effects": [
@@ -9036,12 +9010,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "哈兰没有反驳。他把爆破令翻过来，露出背面尚未填好的撤离栏：“给我人名，我可以再拖一班车。”"
        }
       ],
       "effects": [],
-      "next": "A1-TOWN-01",
-      "fallback": true
+      "next": "A1-TOWN-01"
      },
      {
       "id": "s1c5.2",
@@ -9049,12 +9022,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "哈兰要你留下可核对的原件，而不是只靠愤怒指控。他签了副本，名字写得很慢；这会让上级先找他。"
        }
       ],
       "effects": [],
-      "next": "A1-TOWN-01",
-      "fallback": true
+      "next": "A1-TOWN-01"
      },
      {
       "id": "s1c5.3",
@@ -9182,6 +9154,9 @@
          }
         },
         {
+         "flag": "met_edric"
+        },
+        {
          "not": {
           "flag": "alt_edric_dead"
          }
@@ -9221,6 +9196,9 @@
          "not": {
           "pc": "liriel"
          }
+        },
+        {
+         "flag": "met_liriel"
         },
         {
          "not": {
@@ -9264,6 +9242,9 @@
          }
         },
         {
+         "flag": "met_thorin"
+        },
+        {
          "not": {
           "flag": "alt_thorin_dead"
          }
@@ -9283,7 +9264,8 @@
       "effects": [],
       "next": "A1-TOWN-09"
      }
-    ]
+    ],
+    "once": true
    },
    {
     "id": "prep_drain",
@@ -9342,7 +9324,8 @@
       }
      ],
      "next": null
-    }
+    },
+    "once": true
    },
    {
     "id": "prep_stash",
@@ -9435,13 +9418,6 @@
    {
     "t": "p",
     "text": "三方短暂对峙后，抄写员点燃了中央货架。"
-   },
-   {
-    "t": "note",
-    "text": "你来晚了一步：敌人已占货架与河门，开场更难。",
-    "cond": {
-     "flag": "warehouse_enemy_advantage"
-    }
    },
    {
     "t": "note",
@@ -9820,7 +9796,83 @@
     "result": [
      {
       "t": "p",
-      "text": "艾德里克咬着字：“先保住还能走的人。”莉瑞尔笑得不好听：“你是说先保住你的离境文书。”索林把锤子搁在膝盖上：“我修得动的东西我修。修不动的，别拿大话压我。”他们没有自动组成拯救小队——每人的私人目标仍在，残片只是把路叠在一起。"
+      "text": "火后，各人对治病的办法各有主张。你先确认还有谁愿意留在河岸说话。"
+     },
+     {
+      "t": "say",
+      "who": "艾德里克",
+      "text": "“先保住还能走的人。”",
+      "cond": {
+       "any": [
+        {
+         "pc": "edric"
+        },
+        {
+         "all": [
+          {
+           "flag": "met_edric"
+          },
+          {
+           "not": {
+            "flag": "alt_edric_dead"
+           }
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "t": "say",
+      "who": "莉瑞尔",
+      "text": "“保人，还是保你那张离境文书？先说清楚。”",
+      "cond": {
+       "any": [
+        {
+         "pc": "liriel"
+        },
+        {
+         "all": [
+          {
+           "flag": "met_liriel"
+          },
+          {
+           "not": {
+            "flag": "alt_liriel_dead"
+           }
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "t": "say",
+      "who": "索林",
+      "text": "“我修得动的东西我修。修不动的，别拿大话压我。”",
+      "cond": {
+       "any": [
+        {
+         "pc": "thorin"
+        },
+        {
+         "all": [
+          {
+           "flag": "met_thorin"
+          },
+          {
+           "not": {
+            "flag": "alt_thorin_dead"
+           }
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "t": "p",
+      "text": "他们没有自动组成拯救小队。每人的私人目标仍在，残片只是把路叠在一起。"
      },
      {
       "t": "fold",
@@ -9866,16 +9918,6 @@
      {
       "op": "set",
       "k": "peer_therapy_argument",
-      "v": true
-     },
-     {
-      "op": "add",
-      "k": "truth",
-      "v": 0
-     },
-     {
-      "op": "set",
-      "k": "met_alt",
       "v": true
      }
     ],
@@ -10112,6 +10154,108 @@
     ],
     "effects": [],
     "next": "CITY-02"
+   },
+   {
+    "id": "opt-6",
+    "num": 6,
+    "label": "漫步锚门广场",
+    "condition": null,
+    "check": null,
+    "effects": [],
+    "success_text": "",
+    "fail_text": "",
+    "success_effects": [],
+    "fail_effects": [],
+    "cost_effects": [],
+    "next": "LOC-ANCHOR",
+    "subchoices": null,
+    "flavor": [],
+    "raw_block": ""
+   },
+   {
+    "id": "opt-7",
+    "num": 7,
+    "label": "进入白塔区",
+    "condition": null,
+    "check": null,
+    "effects": [],
+    "success_text": "",
+    "fail_text": "",
+    "success_effects": [],
+    "fail_effects": [],
+    "cost_effects": [],
+    "next": "LOC-WHITETOWER",
+    "subchoices": null,
+    "flavor": [],
+    "raw_block": ""
+   },
+   {
+    "id": "opt-8",
+    "num": 8,
+    "label": "进入书吏区",
+    "condition": null,
+    "check": null,
+    "effects": [],
+    "success_text": "",
+    "fail_text": "",
+    "success_effects": [],
+    "fail_effects": [],
+    "cost_effects": [],
+    "next": "LOC-SCRIBE",
+    "subchoices": null,
+    "flavor": [],
+    "raw_block": ""
+   },
+   {
+    "id": "opt-9",
+    "num": 9,
+    "label": "进入河渠区",
+    "condition": null,
+    "check": null,
+    "effects": [],
+    "success_text": "",
+    "fail_text": "",
+    "success_effects": [],
+    "fail_effects": [],
+    "cost_effects": [],
+    "next": "LOC-CANAL",
+    "subchoices": null,
+    "flavor": [],
+    "raw_block": ""
+   },
+   {
+    "id": "opt-10",
+    "num": 10,
+    "label": "走上环区",
+    "condition": null,
+    "check": null,
+    "effects": [],
+    "success_text": "",
+    "fail_text": "",
+    "success_effects": [],
+    "fail_effects": [],
+    "cost_effects": [],
+    "next": "LOC-UPPER",
+    "subchoices": null,
+    "flavor": [],
+    "raw_block": ""
+   },
+   {
+    "id": "opt-11",
+    "num": 11,
+    "label": "前往西炉区",
+    "condition": null,
+    "check": null,
+    "effects": [],
+    "success_text": "",
+    "fail_text": "",
+    "success_effects": [],
+    "fail_effects": [],
+    "cost_effects": [],
+    "next": "LOC-WESTFORGE",
+    "subchoices": null,
+    "flavor": [],
+    "raw_block": ""
    }
   ],
   "default_next": "CITY-02"
@@ -11098,7 +11242,7 @@
     "result": [
      {
       "t": "p",
-      "text": "萨芮眯眼：“能。但那不是治疗，是把饥渴写入别人的骨头。我按自愿计价。”"
+      "text": "萨芮眯眼：“能。但那不是治疗，是把饥渴刻进别人的骨头。我按自愿计价。”"
      },
      {
       "t": "fold",
@@ -11183,7 +11327,10 @@
        }
       ],
       "next": "__SELF__",
-      "once": true
+      "once": true,
+      "cost": {
+       "vouchers": 1
+      }
      },
      {
       "id": "c05_res",
@@ -11780,6 +11927,315 @@
   ],
   "choices": [],
   "default_next": "A3-SHRINE-00"
+ },
+ "CITY-SAFE-01": {
+  "id": "CITY-SAFE-01",
+  "title": "白鸦旅店·城中分号",
+  "source": "phase3",
+  "kind": "scene",
+  "blocks": [
+   {
+    "t": "p",
+    "text": "掌柜把旧钥匙放在你面前，柜门后的油布包与灰桥寄存时一样。行囊里可存放或取回非残片物品；卸下装备会立刻影响战力。"
+   },
+   {
+    "t": "p",
+    "text": "靠街的窗户有六声钟的回响。第七声只存在于你骨头里：你还不能确定它是解药、陷阱，还是某个活人尚未说出的拒绝。"
+   },
+   {
+    "t": "note",
+    "text": "打开「行囊」进行存取和装备。这里没有东仓倒计时。"
+   }
+  ],
+  "choices": [
+   {
+    "id": "safe_return",
+    "label": "收好钥匙，回城里。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你锁上柜门，记下封签编号。下一次回来，东西仍会在这里。"
+     }
+    ],
+    "effects": [],
+    "next": "CITY-HUB"
+   }
+  ],
+  "default_next": null
+ },
+ "CITY-PEER-EDRIC": {
+  "id": "CITY-PEER-EDRIC",
+  "title": "雨停之前",
+  "source": "phase3",
+  "kind": "scene",
+  "blocks": [
+   {
+    "t": "p",
+    "text": "艾德里克没有先谈钟。他把一张皱纸摊开：边境撤离名单上，最后三人的名字都写在同一行。他记得自己当时说过『等下一辆车』。那辆车没有来。"
+   },
+   {
+    "t": "p",
+    "text": "你是莉瑞尔时，他不再把你的银链当危险物展示，只问你是否也有一个不能读完的名字。你说起父亲的旧誓，他没有替你原谅任何人。",
+    "cond": {
+     "pc": "liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "你是索林时，他承认自己曾把工程损失写成战损；你把被抹掉的矿工姓名补在纸边，问他是否敢在新的报告里照抄。",
+    "cond": {
+     "pc": "thorin"
+    }
+   },
+   {
+    "t": "say",
+    "who": "艾德里克",
+    "text": "“旧雨骨最会许诺：再喝一杯，就不用记得那辆没来的车。我知道它在撒谎，也知道自己有时愿意信。”"
+   },
+   {
+    "t": "p",
+    "text": "远处的酒馆开门。他盯了一眼招牌，没站起来。你可以留住这片刻，也可以利用他的软处。"
+   }
+  ],
+  "choices": [
+   {
+    "id": "edric_listen",
+    "label": "陪他把名单上的名字读完。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你没有说『这不是你的错』。你们逐个读完名字，最后一行由他自己收起。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "rel.alt_a",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "peer_supported_edric",
+      "v": true
+     }
+    ],
+    "next": "CITY-HUB"
+   },
+   {
+    "id": "edric_press",
+    "label": "说他若敢再喝，就不配谈救人。",
+    "result": [
+     {
+      "t": "p",
+      "text": "他没有争辩，只把名单折得更小。夜里他还是去了酒馆；你听见椅脚划过石地的声音。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "fall_edric",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "corruption",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "peer_wounded_edric",
+      "v": true
+     }
+    ],
+    "next": "CITY-HUB"
+   }
+  ],
+  "default_next": null
+ },
+ "CITY-PEER-LIRIEL": {
+  "id": "CITY-PEER-LIRIEL",
+  "title": "银链与停词",
+  "source": "phase3",
+  "kind": "scene",
+  "blocks": [
+   {
+    "t": "p",
+    "text": "莉瑞尔把袖口卷到腕骨。银链留下细痕，却没有勒紧。她说饥月骨会把注意、欲望和服从都伪装成同一种温暖；最可怕的是，她并非每次都想推开。"
+   },
+   {
+    "t": "p",
+    "text": "你是艾德里克时，她问你是否曾把保护当成不容拒绝的命令。你想起撤离名单上自己替别人做过的决定，没有立刻回答。",
+    "cond": {
+     "pc": "edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "你是索林时，你把锤子放到两人够不着的地方。她笑你谨慎，又承认这让她敢说一句真话：她想被渴望，也想保留说停的权利。",
+    "cond": {
+     "pc": "thorin"
+    }
+   },
+   {
+    "t": "say",
+    "who": "莉瑞尔",
+    "text": "“别把我看成病，也别把我看成奖赏。我可以靠近你，也可以在下一秒离开。这两句话得同时是真的。”"
+   },
+   {
+    "t": "fold",
+    "label": "情欲描写",
+    "blocks": [
+     {
+      "t": "p",
+      "text": "她的指腹沿银链慢慢滑到锁骨，呼吸乱了一拍。你没有替她完成这个动作；她也没有向你索取一个答案。"
+     }
+    ]
+   }
+  ],
+  "choices": [
+   {
+    "id": "liriel_boundary",
+    "label": "和她约好停词；把她的选择交还给她。",
+    "result": [
+     {
+      "t": "p",
+      "text": "她选了一个再普通不过的词。你复述一遍。银链没有松，但她的肩终于松了。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "rel.alt_a",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "peer_supported_liriel",
+      "v": true
+     },
+     {
+      "op": "set",
+      "k": "liriel_stopword_shared",
+      "v": true
+     }
+    ],
+    "next": "CITY-HUB"
+   },
+   {
+    "id": "liriel_bargain",
+    "label": "问她能否用这种依恋换取情报。",
+    "result": [
+     {
+      "t": "p",
+      "text": "她把袖口拉下去：『你听懂了，却还是想把我当钥匙。』你得到她知道的钟律暗号，却失去今晚的信任。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "fall_liriel",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "sanctuary_clues",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "peer_wounded_liriel",
+      "v": true
+     }
+    ],
+    "next": "CITY-HUB"
+   }
+  ],
+  "default_next": null
+ },
+ "CITY-PEER-THORIN": {
+  "id": "CITY-PEER-THORIN",
+  "title": "锤柄的背面",
+  "source": "phase3",
+  "kind": "scene",
+  "blocks": [
+   {
+    "t": "p",
+    "text": "索林把修井锤翻过来给你看。背面刻着死去矿工的工号，最后一排是他自己的空格。『我该被记进去。那道闸是我砸错的。』"
+   },
+   {
+    "t": "p",
+    "text": "你是艾德里克时，听得出他在用认罪代替下一次的判断。你把撤离名单放在锤旁：名字可以留着，但今夜有人还等他修桥。",
+    "cond": {
+     "pc": "edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "你是莉瑞尔时，裂锤骨的热与你银链的热几乎同拍。你提醒他，把怒火交给锤子和把意愿交给项圈，是同一种省事。",
+    "cond": {
+     "pc": "liriel"
+    }
+   },
+   {
+    "t": "say",
+    "who": "索林",
+    "text": "“我每次说『只砸该砸的』，它都替我找到一个更像敌人的人。你若见我举锤没报名字，先喊停。”"
+   }
+  ],
+  "choices": [
+   {
+    "id": "thorin_name",
+    "label": "陪他逐个念工号，约好先报名字再动锤。",
+    "result": [
+     {
+      "t": "p",
+      "text": "他念到最后一个工号时声音发涩。锤头依然沉，握柄的人却肯再听一次『停』。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "rel.alt_a",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "peer_supported_thorin",
+      "v": true
+     }
+    ],
+    "next": "CITY-HUB"
+   },
+   {
+    "id": "thorin_target",
+    "label": "把上环议员的名字写成下一块『该砸的东西』。",
+    "result": [
+     {
+      "t": "p",
+      "text": "他没有擦去那个名字。你知道自己利用了他最易失控的部分。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "fall_thorin",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "cruelty",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "peer_wounded_thorin",
+      "v": true
+     }
+    ],
+    "next": "CITY-HUB"
+   }
+  ],
+  "default_next": null
  },
  "SQ-CITY-01": {
   "id": "SQ-CITY-01",
@@ -14399,31 +14855,9 @@
     "t": "say",
     "who": "艾德里克",
     "cond": {
-     "all": [
-      {
-       "not": {
-        "pc": "edric"
-       }
-      },
-      {
-       "not": {
-        "flag": "alt_edric_dead"
-       }
-      },
-      {
-       "any": [
-        {
-         "flag": "companion"
-        },
-        {
-         "cmp": [
-          "rel.alt_a",
-          ">=",
-          0
-         ]
-        }
-       ]
-      }
+     "eq": [
+      "companion",
+      "edric"
      ]
     },
     "text": "“先数还能走的人。箱子和铭文都排后面——我见过把人当耗材的账本。”"
@@ -14433,17 +14867,9 @@
     "t": "say",
     "who": "莉瑞尔",
     "cond": {
-     "all": [
-      {
-       "not": {
-        "pc": "liriel"
-       }
-      },
-      {
-       "not": {
-        "flag": "alt_liriel_dead"
-       }
-      }
+     "eq": [
+      "companion",
+      "liriel"
      ]
     },
     "text": "“护卫盯的不是矿工，是井口。谁先眨眼，谁先变成托伦的借口。”银链在她腕间轻轻一跳，她把它按进袖里。"
@@ -14453,17 +14879,9 @@
     "t": "say",
     "who": "索林",
     "cond": {
-     "all": [
-      {
-       "not": {
-        "pc": "thorin"
-       }
-      },
-      {
-       "not": {
-        "flag": "alt_thorin_dead"
-       }
-      }
+     "eq": [
+      "companion",
+      "thorin"
      ]
     },
     "text": "“主轴裂纹我认得。再拖半个时辰，绞盘会吃人。别让我用锤子跟护卫讲理——讲理用扳手。”"
@@ -15211,7 +15629,7 @@
    },
    {
     "id": "s2c2",
-    "label": "阿瑟妲从胸口剥下一片金鳞",
+    "label": "看清古龙剥下金鳞的那一刻。",
     "result": [
      {
       "t": "p",
@@ -15223,20 +15641,19 @@
    },
    {
     "id": "s2c3",
-    "label": "穿无徽灰袍的人在内圈刻入一行更小的命令：“被见证者服从见证者。”",
+    "label": "追看灰袍人在内环刻下的命令。",
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "灰袍人在内环刻下那行小字时，旁边的工匠放下了凿子。他想说不，却只说出一声不属于自己的赞同。"
      }
     ],
     "effects": [],
-    "next": "A2-MINE-05~3",
-    "fallback": true
+    "next": "A2-MINE-05~3"
    },
    {
     "id": "s2c4",
-    "label": "古龙用爪击碎晶体",
+    "label": "看古龙为何击碎钟心。",
     "result": [
      {
       "t": "p",
@@ -15590,7 +16007,7 @@
    {
     "id": "comp_mine07_party",
     "t": "p",
-    "text": "三面石门合拢前，在场的持有者彼此对视。齐全时，低鸣会短暂齐成接近第七声的轮廓——随即裂开，因为还缺“可撤回”的那一拍。若有人已死或未至，空位会像缺齿，假齐声更危险。"
+    "text": "三面石门合拢前，你回头确认谁还在场。持有者齐全时，低鸣会短暂齐成接近第七声的轮廓——随即裂开，因为还缺“可撤回”的那一拍。若有人已死或未至，空位会像缺齿，假齐声更危险。"
    },
    {
     "id": "absent_mine07",
@@ -16100,12 +16517,11 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "照心骨把你的承认留在众人面前，没有替你找借口。同伴看你的眼神变了，却没有转身；这比赦免更难承受。"
      }
     ],
     "effects": [],
     "next": "A2-MINE-10",
-    "fallback": true,
     "group": "第三段：你不肯承认的愿望"
    },
    {
@@ -16114,12 +16530,11 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "你让画面继续，却指出它剪掉了你救人的那一刻。照心骨没有反驳，只把缺失的片段补回去。"
      }
     ],
     "effects": [],
     "next": "A2-MINE-10",
-    "fallback": true,
     "group": "第三段：你不肯承认的愿望"
    },
    {
@@ -16128,12 +16543,11 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "你问它为何只挑最容易让人跪下的失败。光幕迟疑，第二环背后的黑纹第一次暴露在众人眼前。"
      }
     ],
     "effects": [],
     "next": "A2-MINE-10",
-    "fallback": true,
     "group": "第三段：你不肯承认的愿望"
    },
    {
@@ -16311,6 +16725,153 @@
     "cond": {
      "pc": "liriel"
     }
+   },
+   {
+    "id": "witness_delegate_edric",
+    "label": "让艾德里克替你承受一段见证。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你把照心骨转向艾德里克，明知它会把人最不肯承认的愿望放大。艾德里克没有来得及同意，画面就已经把旧伤撕开。你获得了线索，也听见一声很轻的『为什么是我』。"
+     },
+     {
+      "t": "note",
+      "text": "艾德里克的沉沦 +2；你得到一条真相，但失去一部分信任。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "fall_edric",
+      "v": 2
+     },
+     {
+      "op": "add",
+      "k": "truth",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "corruption",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "rel.alt_a",
+      "v": -1
+     },
+     {
+      "op": "set",
+      "k": "peer_wounded_edric",
+      "v": true
+     }
+    ],
+    "next": "__SELF__",
+    "cond": {
+     "eq": [
+      "companion",
+      "edric"
+     ]
+    },
+    "once": true
+   },
+   {
+    "id": "witness_delegate_liriel",
+    "label": "让莉瑞尔替你承受一段见证。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你把照心骨转向莉瑞尔，明知它会把人最不肯承认的愿望放大。莉瑞尔没有来得及同意，画面就已经把旧伤撕开。你获得了线索，也听见一声很轻的『为什么是我』。"
+     },
+     {
+      "t": "note",
+      "text": "莉瑞尔的沉沦 +2；你得到一条真相，但失去一部分信任。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "fall_liriel",
+      "v": 2
+     },
+     {
+      "op": "add",
+      "k": "truth",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "corruption",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "rel.alt_a",
+      "v": -1
+     },
+     {
+      "op": "set",
+      "k": "peer_wounded_liriel",
+      "v": true
+     }
+    ],
+    "next": "__SELF__",
+    "cond": {
+     "eq": [
+      "companion",
+      "liriel"
+     ]
+    },
+    "once": true
+   },
+   {
+    "id": "witness_delegate_thorin",
+    "label": "让索林替你承受一段见证。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你把照心骨转向索林，明知它会把人最不肯承认的愿望放大。索林没有来得及同意，画面就已经把旧伤撕开。你获得了线索，也听见一声很轻的『为什么是我』。"
+     },
+     {
+      "t": "note",
+      "text": "索林的沉沦 +2；你得到一条真相，但失去一部分信任。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "fall_thorin",
+      "v": 2
+     },
+     {
+      "op": "add",
+      "k": "truth",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "corruption",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "rel.alt_a",
+      "v": -1
+     },
+     {
+      "op": "set",
+      "k": "peer_wounded_thorin",
+      "v": true
+     }
+    ],
+    "next": "__SELF__",
+    "cond": {
+     "eq": [
+      "companion",
+      "thorin"
+     ]
+    },
+    "once": true
    }
   ],
   "default_next": "A2-MINE-10"
@@ -16339,9 +16900,21 @@
     "text": "这句话把雾钟城变成强线索，却仍不证明塞维兰可信。墙上的矮人测绘刻痕独立指向相同方向；有格罗姆或伊索尔知识时，你可验证矿山与城市地下确实由古水道相连。"
    },
    {
+    "t": "h",
+    "text": "绳轮反咬：同行者的生死"
+   },
+   {
+    "t": "p",
+    "text": "进矿前必须明确点名艾德里克、莉瑞尔、索林中的一位已相识且存活者同行，或选择独行。灰桥东仓选过的人不默认跟到黑砧。第一项撤离分配仅在确有同行者时出现。前四项撤离方案都会到达绳轮反咬；独自逃离绕开救援。上方三次敲击、两次停顿是矿工求救信号。绳轮反向咬住安全索，同行者一手攥着矿工扣环，一手吊在裂口边。艾德里克听见边境那辆没来的车；莉瑞尔把银链上的热与真正的求救分开；索林把锤头倒转，以木柄卡齿轮。如果城市深谈中曾支持这位同伴，主角能想起其本人说过的界限；曾利用其脆弱则会看见伤口在这里发作。城里白鸦分号有跨城封签柜，你可存取非残片物品。同行选择不改变随身装备，出发前仍须自己在行囊中装备。此场景不需要随机掷骰：知道代价后选择是否松手。"
+   },
+   {
     "id": "p2_A2-MINE-10",
     "t": "p",
     "text": "山腹裂开时，谁先被推上救生绳，谁被留作支撑——同伴会记住你的手。缺席者的名字会被活着的人骂出来。"
+   },
+   {
+    "t": "p",
+    "text": "上方传来三次敲击、两次停顿：这是矿工的求救信号，不是钟律。绞盘正在把最后一批人拖向裂缝。你可以先决定撤离方向；真正要不要放开同行者的手，还得在下一刻回答。"
    }
   ],
   "choices": [
@@ -16351,7 +16924,7 @@
     "result": [
      {
       "t": "p",
-      "text": "你获得最快的城市地下入口。"
+      "text": "你让同行者带矿工上井。绳轮突然反咬，负责压住刹车的人被拖向裂口。"
      }
     ],
     "effects": [
@@ -16359,22 +16932,41 @@
       "op": "add",
       "k": "sacrifice",
       "v": 1
+     },
+     {
+      "op": "set",
+      "k": "mine_exit_plan",
+      "v": "escort"
      }
     ],
-    "next": "A2-MINE-11",
-    "group": "撤离分配"
+    "next": "A2-MINE-10B",
+    "group": "撤离分配",
+    "cond": {
+     "not": {
+      "eq": [
+       "companion",
+       null
+      ]
+     }
+    }
    },
    {
     "id": "s1c2",
-    "label": "全队沿古水道回城，交给后援撤人。",
+    "label": "沿古水道带队撤离，后援负责最后一批矿工。",
     "result": [
      {
       "t": "p",
-      "text": "你带着所有人沿古水道撤回城里，把剩下的撤离交给了后援。"
+      "text": "你把队伍带向古水道。最后一辆矿车翻进裂口，回头的人被绳索拽住。"
      }
     ],
-    "effects": [],
-    "next": "A2-MINE-11",
+    "effects": [
+     {
+      "op": "set",
+      "k": "mine_exit_plan",
+      "v": "together"
+     }
+    ],
+    "next": "A2-MINE-10B",
     "fallback": true,
     "group": "撤离分配"
    },
@@ -16384,7 +16976,7 @@
     "result": [
      {
       "t": "p",
-      "text": "否则是胁迫。"
+      "text": "矿工们在你的命令下冲向古水道。绳轮反咬时，他们先看你要救谁。"
      }
     ],
     "effects": [
@@ -16392,9 +16984,14 @@
       "op": "add",
       "k": "cruelty",
       "v": 1
+     },
+     {
+      "op": "set",
+      "k": "mine_exit_plan",
+      "v": "forced"
      }
     ],
-    "next": "A2-MINE-11",
+    "next": "A2-MINE-10B",
     "group": "撤离分配"
    },
    {
@@ -16403,7 +17000,7 @@
     "result": [
      {
       "t": "p",
-      "text": "所有人无条件执行，撤离效率最高。你开始听不见别人说“不同意”的语气。"
+      "text": "临时核心让撤离动作整齐得可怕；绳轮却没有因此停下。有人仍被拖向裂口。"
      }
     ],
     "effects": [
@@ -16411,9 +17008,14 @@
       "op": "add",
       "k": "corruption",
       "v": 1
+     },
+     {
+      "op": "set",
+      "k": "mine_exit_plan",
+      "v": "core"
      }
     ],
-    "next": "A2-MINE-11",
+    "next": "A2-MINE-10B",
     "cond": {
      "flag": "temporary_core"
     },
@@ -16428,9 +17030,86 @@
       "text": "进入；托伦、帝国和其他持有者全数追击。"
      }
     ],
-    "effects": [],
+    "effects": [
+     {
+      "op": "set",
+      "k": "mine_deserted",
+      "v": true
+     },
+     {
+      "op": "set",
+      "k": "companion",
+      "v": null
+     }
+    ],
     "next": "A3-SHRINE-01",
     "group": "撤离分配"
+   },
+   {
+    "id": "s2c1",
+    "label": "救同行者。",
+    "result": [
+     {
+      "t": "p",
+      "text": "同伴存活，其个人沉沦若大于零，减一。救命不会使其成为主角的附属，后续仍有拒绝权。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "hp",
+      "v": -2
+     },
+     {
+      "op": "add",
+      "k": "sacrifice",
+      "v": 1
+     }
+    ],
+    "next": "A2-MINE-11",
+    "group": "绳轮反咬：同行者的生死"
+   },
+   {
+    "id": "s2c2",
+    "label": "松开绳索。",
+    "result": [
+     {
+      "t": "p",
+      "text": "同伴把矿工安全扣抛上来后坠入井底。誓环不能代其追认。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "set",
+      "k": "companion",
+      "v": true
+     },
+     {
+      "op": "add",
+      "k": "fall",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "cruelty",
+      "v": 1
+     }
+    ],
+    "next": "A2-MINE-11",
+    "group": "绳轮反咬：同行者的生死"
+   },
+   {
+    "id": "s2c3",
+    "label": "独行者。",
+    "result": [
+     {
+      "t": "p",
+      "text": "绳下是一名年轻矿工。可受伤救他，或独自走进水道；不会凭空生成一个同伴。"
+     }
+    ],
+    "effects": [],
+    "next": "A2-MINE-11",
+    "group": "绳轮反咬：同行者的生死"
    }
   ],
   "default_next": "A2-MINE-11",
@@ -16613,6 +17292,53 @@
     "id": "p2_A2-MINE-11",
     "t": "p",
     "text": "古水道岔口回声很长。有人说这水道连着初鸣庭的排流，连着那一下真假难辨的第七声。"
+   },
+   {
+    "t": "p",
+    "text": "若你救回了同伴，对方会在城里再和你争一次。若绳索已经松开，城里的誓环只会保留一个空位；别人不能替死者追认。",
+    "cond": {
+     "any": [
+      {
+       "flag": "peer_saved_edric"
+      },
+      {
+       "flag": "peer_saved_liriel"
+      },
+      {
+       "flag": "peer_saved_thorin"
+      },
+      {
+       "flag": "alt_edric_dead"
+      },
+      {
+       "flag": "alt_liriel_dead"
+      },
+      {
+       "flag": "alt_thorin_dead"
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克没能走出矿井。你携带的不是一个抽象损失，而是他交回来的安全扣。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔没能走出矿井。你携带的不是一个抽象损失，而是她交回来的安全扣。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林没能走出矿井。你携带的不是一个抽象损失，而是他交回来的安全扣。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
    }
   ],
   "choices": [
@@ -16898,6 +17624,31 @@
     "id": "comp_shrine01_ask",
     "t": "p",
     "text": "问同伴看见什么时，答案按人而异：艾德里克看见雨；莉瑞尔看见未说出口的欲；索林看见该砸与不该砸的界线。若某人已死，幻象会用他的嗓音说话——那是陷阱。"
+   },
+   {
+    "t": "p",
+    "text": "在入口等候的幸存持有者各有来路：与你同行的人从古水道到了；留在灰桥或城里的，则凭伊索尔的拓片和六座错拍的钟找到这里。他们能够作证，不等于他们同意你的计划。"
+   },
+   {
+    "t": "p",
+    "text": "誓环的第1个刻位空着。艾德里克死在黑砧绳轮下，无法在这里补一声『我愿意』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "誓环的第2个刻位空着。莉瑞尔死在黑砧绳轮下，无法在这里补一声『我愿意』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "誓环的第3个刻位空着。索林死在黑砧绳轮下，无法在这里补一声『我愿意』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
    }
   ],
   "choices": [
@@ -17046,6 +17797,9 @@
          }
         },
         {
+         "flag": "met_edric"
+        },
+        {
          "not": {
           "flag": "alt_edric_dead"
          }
@@ -17056,13 +17810,16 @@
      {
       "t": "say",
       "who": "莉瑞尔",
-      "text": "“我看见我想要的。我想要的不一定该立刻得到。”银链亮了一下又暗下去。",
+      "text": "“我看见我想要的。但我还可以让它等一等。”银链亮了一下又暗下去。",
       "cond": {
        "all": [
         {
          "not": {
           "pc": "liriel"
          }
+        },
+        {
+         "flag": "met_liriel"
         },
         {
          "not": {
@@ -17082,6 +17839,9 @@
          "not": {
           "pc": "thorin"
          }
+        },
+        {
+         "flag": "met_thorin"
         },
         {
          "not": {
@@ -17571,6 +18331,10 @@
     "text": "可承诺的代价"
    },
    {
+    "t": "p",
+    "text": "每人偏好：执行时先确认是谁在说话。主角若是艾德里克、莉瑞尔或索林，对应代价由自己决定；不能把自己的誓言误锁为“只能请同伴”。其他持有者必须此前相识且仍存活，未结识的人不在誓环边凭空出现。缺席者的声音只能作为残片幻象。"
+   },
+   {
     "id": "seventh_oath",
     "t": "p",
     "text": "誓环的每一道齿都在问同一件事：你记得什么、想要什么、在何处拒绝。答全的人，才有资格参与真的第七声；用魅力或怒火替别人答，都会把和声锻成服从。"
@@ -17667,13 +18431,14 @@
     ],
     "next": "A3-SHRINE-04",
     "cond": {
-     "all": [
+     "any": [
+      {
+       "pc": "edric"
+      },
       {
        "all": [
         {
-         "not": {
-          "pc": "edric"
-         }
+         "flag": "met_edric"
         },
         {
          "not": {
@@ -17681,11 +18446,6 @@
          }
         }
        ]
-      },
-      {
-       "not": {
-        "flag": "alt_edric_dead"
-       }
       }
      ]
     }
@@ -17713,13 +18473,14 @@
     "next": "A3-SHRINE-04",
     "fallback": true,
     "cond": {
-     "all": [
+     "any": [
+      {
+       "pc": "liriel"
+      },
       {
        "all": [
         {
-         "not": {
-          "pc": "liriel"
-         }
+         "flag": "met_liriel"
         },
         {
          "not": {
@@ -17727,11 +18488,6 @@
          }
         }
        ]
-      },
-      {
-       "not": {
-        "flag": "alt_liriel_dead"
-       }
       }
      ]
     }
@@ -17749,13 +18505,14 @@
     "next": "A3-SHRINE-04",
     "fallback": true,
     "cond": {
-     "all": [
+     "any": [
+      {
+       "pc": "thorin"
+      },
       {
        "all": [
         {
-         "not": {
-          "pc": "thorin"
-         }
+         "flag": "met_thorin"
         },
         {
          "not": {
@@ -17763,11 +18520,6 @@
          }
         }
        ]
-      },
-      {
-       "not": {
-        "flag": "alt_thorin_dead"
-       }
       }
      ]
     }
@@ -18010,7 +18762,7 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "塞维兰朝你伸手，仿佛终于遇到理解他的人。你看见那只手后面的人都没有机会说不；环上的空拍也随之冷了。"
      }
     ],
     "effects": [
@@ -18026,7 +18778,6 @@
      }
     ],
     "next": "A3-SHRINE-05",
-    "fallback": true,
     "group": "回应"
    },
    {
@@ -18481,43 +19232,6 @@
       }
      },
      {
-      "id": "p1c",
-      "label": "请一位同伴自愿留下。",
-      "result": [
-       {
-        "t": "p",
-        "text": "你没有替对方决定代价。对方自己走了进去。"
-       }
-      ],
-      "effects": [
-       {
-        "op": "set",
-        "k": "ending",
-        "v": "END-02"
-       }
-      ],
-      "next": "A3-SHRINE-08",
-      "cond": {
-       "any": [
-        {
-         "not": {
-          "flag": "alt_edric_dead"
-         }
-        },
-        {
-         "not": {
-          "flag": "alt_liriel_dead"
-         }
-        },
-        {
-         "not": {
-          "flag": "alt_thorin_dead"
-         }
-        }
-       ]
-      }
-     },
-     {
       "id": "p1d",
       "label": "用临时核心逼某个人进去。",
       "result": [
@@ -18539,6 +19253,195 @@
        }
       ],
       "next": "A3-SHRINE-08"
+     },
+     {
+      "id": "p1c_edric",
+      "label": "请艾德里克自愿留在内环。",
+      "result": [
+       {
+        "t": "p",
+        "text": "你把代价说到最具体：以后可能失去触觉、记忆，甚至不能再辨认自己的愿望。艾德里克听完，自己走进内环。你没有代他说『愿意』。"
+       }
+      ],
+      "effects": [
+       {
+        "op": "set",
+        "k": "ending",
+        "v": "END-02"
+       },
+       {
+        "op": "set",
+        "k": "inner_ring_peer",
+        "v": "edric"
+       }
+      ],
+      "next": "A3-SHRINE-08",
+      "cond": {
+       "all": [
+        {
+         "all": [
+          {
+           "not": {
+            "pc": "edric"
+           }
+          },
+          {
+           "flag": "met_edric"
+          },
+          {
+           "not": {
+            "flag": "alt_edric_dead"
+           }
+          }
+         ]
+        },
+        {
+         "flag": "four_bones_present"
+        },
+        {
+         "any": [
+          {
+           "not": {
+            "cmp": [
+             "fall_edric",
+             ">=",
+             4
+            ]
+           }
+          },
+          {
+           "flag": "peer_supported_edric"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "id": "p1c_liriel",
+      "label": "请莉瑞尔自愿留在内环。",
+      "result": [
+       {
+        "t": "p",
+        "text": "你把代价说到最具体：以后可能失去触觉、记忆，甚至不能再辨认自己的愿望。莉瑞尔听完，自己走进内环。你没有代他说『愿意』。"
+       }
+      ],
+      "effects": [
+       {
+        "op": "set",
+        "k": "ending",
+        "v": "END-02"
+       },
+       {
+        "op": "set",
+        "k": "inner_ring_peer",
+        "v": "liriel"
+       }
+      ],
+      "next": "A3-SHRINE-08",
+      "cond": {
+       "all": [
+        {
+         "all": [
+          {
+           "not": {
+            "pc": "liriel"
+           }
+          },
+          {
+           "flag": "met_liriel"
+          },
+          {
+           "not": {
+            "flag": "alt_liriel_dead"
+           }
+          }
+         ]
+        },
+        {
+         "flag": "four_bones_present"
+        },
+        {
+         "any": [
+          {
+           "not": {
+            "cmp": [
+             "fall_liriel",
+             ">=",
+             4
+            ]
+           }
+          },
+          {
+           "flag": "peer_supported_liriel"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "id": "p1c_thorin",
+      "label": "请索林自愿留在内环。",
+      "result": [
+       {
+        "t": "p",
+        "text": "你把代价说到最具体：以后可能失去触觉、记忆，甚至不能再辨认自己的愿望。索林听完，自己走进内环。你没有代他说『愿意』。"
+       }
+      ],
+      "effects": [
+       {
+        "op": "set",
+        "k": "ending",
+        "v": "END-02"
+       },
+       {
+        "op": "set",
+        "k": "inner_ring_peer",
+        "v": "thorin"
+       }
+      ],
+      "next": "A3-SHRINE-08",
+      "cond": {
+       "all": [
+        {
+         "all": [
+          {
+           "not": {
+            "pc": "thorin"
+           }
+          },
+          {
+           "flag": "met_thorin"
+          },
+          {
+           "not": {
+            "flag": "alt_thorin_dead"
+           }
+          }
+         ]
+        },
+        {
+         "flag": "four_bones_present"
+        },
+        {
+         "any": [
+          {
+           "not": {
+            "cmp": [
+             "fall_thorin",
+             ">=",
+             4
+            ]
+           }
+          },
+          {
+           "flag": "peer_supported_thorin"
+          }
+         ]
+        }
+       ]
+      }
      }
     ],
     "once": true
@@ -18766,7 +19669,7 @@
       "result": [
        {
         "t": "p",
-        "text": "每个人都明白自己带走的是什么。"
+        "text": "你逐个说清守护的年限、隔离与退出办法。若同行者不够，城里获你救助的人替你找来愿意签名的守护者。没人靠『英雄』两字就被送上路。"
        }
       ],
       "effects": [
@@ -18776,7 +19679,132 @@
         "v": "END-10"
        }
       ],
-      "next": "A3-SHRINE-08"
+      "next": "A3-SHRINE-08",
+      "cond": {
+       "any": [
+        {
+         "cmp": [
+          "city_rep",
+          ">=",
+          2
+         ]
+        },
+        {
+         "all": [
+          {
+           "all": [
+            {
+             "not": {
+              "pc": "edric"
+             }
+            },
+            {
+             "flag": "met_edric"
+            },
+            {
+             "not": {
+              "flag": "alt_edric_dead"
+             }
+            }
+           ]
+          },
+          {
+           "all": [
+            {
+             "not": {
+              "pc": "liriel"
+             }
+            },
+            {
+             "flag": "met_liriel"
+            },
+            {
+             "not": {
+              "flag": "alt_liriel_dead"
+             }
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "all": [
+          {
+           "all": [
+            {
+             "not": {
+              "pc": "edric"
+             }
+            },
+            {
+             "flag": "met_edric"
+            },
+            {
+             "not": {
+              "flag": "alt_edric_dead"
+             }
+            }
+           ]
+          },
+          {
+           "all": [
+            {
+             "not": {
+              "pc": "thorin"
+             }
+            },
+            {
+             "flag": "met_thorin"
+            },
+            {
+             "not": {
+              "flag": "alt_thorin_dead"
+             }
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "all": [
+          {
+           "all": [
+            {
+             "not": {
+              "pc": "liriel"
+             }
+            },
+            {
+             "flag": "met_liriel"
+            },
+            {
+             "not": {
+              "flag": "alt_liriel_dead"
+             }
+            }
+           ]
+          },
+          {
+           "all": [
+            {
+             "not": {
+              "pc": "thorin"
+             }
+            },
+            {
+             "flag": "met_thorin"
+            },
+            {
+             "not": {
+              "flag": "alt_thorin_dead"
+             }
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
      },
      {
       "id": "p5b",
@@ -18797,6 +19825,11 @@
         "op": "set",
         "k": "ending",
         "v": "END-10"
+       },
+       {
+        "op": "set",
+        "k": "forced_guardian",
+        "v": true
        }
       ],
       "next": "A3-SHRINE-08"
@@ -19224,7 +20257,8 @@
        "pc": "thorin"
       }
      }
-    ]
+    ],
+    "once": true
    }
   ],
   "default_next": null
@@ -20112,12 +21146,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "格罗姆停下锉刀：“三十息够我确认那东西会杀人，也够我决定先救谁。我两个决定都慢了。”他没有接受你的宽恕。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -20126,12 +21159,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "格罗姆把裂开的农镰递给你：“是，我本可以更快。你若只想找一个该骂的人，就别把这把镰交给等它的人。”"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -20279,12 +21311,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "凯尔认了这份责任，把追踪的路线摊给你看。他仍坚持有人必须去追，哪怕追到的是曾经的自己。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -20293,12 +21324,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "凯尔摸了摸弓弦，想起被他放走的人：“活着确实还能改。但改错的人也可能先害别人。”你们都没有赢下这句争论。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -20307,12 +21337,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "凯尔看了你一眼：“怕沾血可以说。别让被保护的人误以为你替他们担了风险。”"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      }
     ],
@@ -21103,12 +22132,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "汤姆慢慢松开邮袋：“我害怕时也能把名字记全。”他把今晚看见的徽记从头复述，没有漏掉最小的钩。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -21117,12 +22145,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "汤姆脸红了，却没有躲开。他问下次若腿还发软，应该先拖伤员，还是先报信；你们把顺序说清楚。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -21131,12 +22158,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "汤姆望着自己的新军靴：“若军队教的是不问为什么，我宁可先害怕。”这句回答让你重新看了他一眼。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      }
     ],
@@ -21166,12 +22192,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "汤姆在错误的报告边上补了一行自己的署名。他不求你替他擦掉，只问还能把谁带回来。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -21193,12 +22218,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "汤姆把制服袖章解下来，却没有立刻逃。他先把军营里还没收到警告的两个人名字告诉你。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      }
     ],
@@ -21348,12 +22372,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "灰袍人用你的嗓音重复这句话。话音太平整了，像有人预先替所有灰桥人准备好同一个答案。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -21362,12 +22385,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "它说出了同伴的名字，却说不出那人何时同意、何时可以撤回。你听见伪造的第七声里缺了一拍。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -21376,12 +22398,11 @@
       "result": [
        {
         "t": "p",
-        "text": "你把话说出口，对方沉默片刻，记下了。"
+        "text": "它替你数出每一种牺牲，却始终不说自己将承受什么。你把这个空白记下来，准备让它在誓环前回答。"
        }
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      }
     ],
@@ -21412,13 +22433,13 @@
   "blocks": [
    {
     "t": "p",
-    "text": "另一位残片持有者注意到了你，停下了手里的事。"
+    "text": "你只和已经结识、仍能回应的持有者谈话。深谈不会自动让对方进矿；同行需在出发前明确邀请。"
    }
   ],
   "choices": [
    {
     "id": "t1",
-    "label": "艾德里克作为同伴",
+    "label": "与艾德里克深入交谈。",
     "result": [
      {
       "t": "p",
@@ -21448,10 +22469,16 @@
       "result": [
        {
         "t": "p",
-        "text": "“你可以问，但不能替我回答。”他答应了，只是要先把父亲的军信交给莉莉。"
+        "text": "艾德里克回答：『你可以问，不能替我答。我若留内环，先把父亲的军信交给莉莉。』他还没有作出承诺。"
        }
       ],
-      "effects": [],
+      "effects": [
+       {
+        "op": "set",
+        "k": "edric_memory_oath_pending",
+        "v": true
+       }
+      ],
       "next": "__SELF__",
       "once": true
      },
@@ -21461,10 +22488,41 @@
       "result": [
        {
         "t": "p",
-        "text": "他拒绝并离队。"
+        "text": "他拒绝；若原本同行则离队。"
        }
       ],
-      "effects": [],
+      "effects": [
+       {
+        "op": "add",
+        "k": "fall_edric",
+        "v": 1
+       },
+       {
+        "op": "add",
+        "k": "rel.alt_a",
+        "v": -2
+       },
+       {
+        "op": "set",
+        "k": "edric_refused_command",
+        "v": true
+       },
+       {
+        "cond": {
+         "eq": [
+          "companion",
+          "edric"
+         ]
+        },
+        "ops": [
+         {
+          "op": "set",
+          "k": "companion",
+          "v": null
+         }
+        ]
+       }
+      ],
       "next": "__SELF__",
       "once": true
      },
@@ -21477,7 +22535,22 @@
         "text": "他把木梳交给你保管，只说了句“万一”。"
        }
       ],
-      "effects": [],
+      "effects": [
+       {
+        "op": "item",
+        "k": "lily_comb"
+       },
+       {
+        "op": "add",
+        "k": "rel.alt_a",
+        "v": 1
+       },
+       {
+        "op": "set",
+        "k": "peer_supported_edric",
+        "v": true
+       }
+      ],
       "next": "__SELF__",
       "once": true
      },
@@ -21512,7 +22585,8 @@
         "v": true
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      },
      {
       "id": "s1_drink",
@@ -21536,7 +22610,7 @@
       "effects": [
        {
         "op": "add",
-        "k": "fall",
+        "k": "fall_edric",
         "v": 1
        },
        {
@@ -21552,19 +22626,32 @@
         ">=",
         0
        ]
-      }
+      },
+      "once": true
      }
     ],
     "once": true,
     "cond": {
-     "not": {
-      "pc": "edric"
-     }
+     "all": [
+      {
+       "not": {
+        "pc": "edric"
+       }
+      },
+      {
+       "flag": "met_edric"
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
     }
    },
    {
     "id": "t2",
-    "label": "莉瑞尔作为同伴",
+    "label": "与莉瑞尔深入交谈。",
     "result": [
      {
       "t": "p",
@@ -21619,7 +22706,6 @@
       ],
       "effects": [],
       "next": "__SELF__",
-      "fallback": true,
       "once": true
      },
      {
@@ -21628,11 +22714,7 @@
       "result": [
        {
         "t": "p",
-        "text": "你要莉瑞尔用银链迷倒守卫。她盯着你看了很久，拇指摩过银片。"
-       },
-       {
-        "t": "p",
-        "text": "若守卫危险且另有退路，她会摇头拒绝；你尊重这句拒绝时，她眼里会多一点真的信任。若她照做：守卫跟着进暗巷，她用银链换过路，出来时银链发烫，她不看你。"
+        "text": "你要莉瑞尔用银链迷倒守卫。她先说不，你又拿病情和同伴安危压她。她最后照做，换到了过路暗号；出来时银链发烫，她不看你。那句拒绝被你听见过，所以不能把结果写成她自愿。"
        },
        {
         "t": "fold",
@@ -21640,12 +22722,33 @@
         "blocks": [
          {
           "t": "p",
-          "text": "拒绝时她会说：“我可以自己挨刀。别让我再替别人决定他想不想硬着鸡巴跟上来。”照做时：声音放软，守卫瞳孔一散；门后是急促的解带声与压抑呻吟。出来时她只丢下一句：“下次你自己骑上去。”"
+          "text": "饥月骨在她眼前摆出交合的幻象，逼她把守卫的目光当成邀请。她实际只让守卫在暗巷睡去，没有碰他；可身体仍被幻象点热。她把银链勒进掌心，直到那股热不再像一句命令。"
          }
         ]
        }
       ],
-      "effects": [],
+      "effects": [
+       {
+        "op": "add",
+        "k": "fall_liriel",
+        "v": 1
+       },
+       {
+        "op": "add",
+        "k": "corruption",
+        "v": 1
+       },
+       {
+        "op": "add",
+        "k": "rel.alt_a",
+        "v": -1
+       },
+       {
+        "op": "set",
+        "k": "liriel_compelled_guard",
+        "v": true
+       }
+      ],
       "next": "__SELF__",
       "once": true
      },
@@ -21668,7 +22771,23 @@
         ]
        }
       ],
-      "effects": [],
+      "effects": [
+       {
+        "op": "add",
+        "k": "rel.alt_a",
+        "v": 1
+       },
+       {
+        "op": "set",
+        "k": "peer_supported_liriel",
+        "v": true
+       },
+       {
+        "op": "set",
+        "k": "liriel_anchor_mark",
+        "v": true
+       }
+      ],
       "next": "__SELF__",
       "once": true
      },
@@ -21710,11 +22829,6 @@
         "op": "set",
         "k": "liriel_shared_night",
         "v": true
-       },
-       {
-        "op": "add",
-        "k": "fall",
-        "v": 1
        }
       ],
       "next": "__SELF__",
@@ -21748,33 +22862,37 @@
       ],
       "next": "__SELF__",
       "cond": {
-       "all": [
-        {
-         "cmp": [
-          "fall",
-          ">=",
-          4
-         ]
-        },
-        {
-         "not": {
-          "pc": "liriel"
-         }
-        }
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
        ]
-      }
+      },
+      "once": true
      }
     ],
     "once": true,
     "cond": {
-     "not": {
-      "pc": "liriel"
-     }
+     "all": [
+      {
+       "not": {
+        "pc": "liriel"
+       }
+      },
+      {
+       "flag": "met_liriel"
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
     }
    },
    {
     "id": "t3",
-    "label": "索林作为同伴",
+    "label": "与索林深入交谈。",
     "result": [
      {
       "t": "p",
@@ -21804,10 +22922,26 @@
       "result": [
        {
         "t": "p",
-        "text": "他会先问谁下去、谁上来。救矿工时愿意；只为阵营抢残片时拒绝。"
+        "text": "索林先问谁下井、谁上来。你只说需要他守住绞盘，却拒绝交代救的是矿工还是残片。他没有答应；怀表却把你的催促放大成了对所有人的怒意。"
        }
       ],
-      "effects": [],
+      "effects": [
+       {
+        "op": "add",
+        "k": "fall_thorin",
+        "v": 1
+       },
+       {
+        "op": "add",
+        "k": "rel.alt_a",
+        "v": -1
+       },
+       {
+        "op": "set",
+        "k": "thorin_pressured_winch",
+        "v": true
+       }
+      ],
       "next": "__SELF__",
       "once": true
      },
@@ -21817,10 +22951,21 @@
       "result": [
        {
         "t": "p",
-        "text": "且能直接救人时愿意，之后仍会悲伤和担心父母，不把牺牲演成痛快。"
+        "text": "索林说，若毁订单真能直接救人，他愿意做；但父母与工棚会一起承担后果。他要先看清谁在下令。"
        }
       ],
-      "effects": [],
+      "effects": [
+       {
+        "op": "add",
+        "k": "rel.alt_a",
+        "v": 1
+       },
+       {
+        "op": "set",
+        "k": "thorin_order_doubt",
+        "v": true
+       }
+      ],
       "next": "__SELF__",
       "once": true
      },
@@ -21830,10 +22975,25 @@
       "result": [
        {
         "t": "p",
-        "text": "他替你把武器握柄重缠，颜色很丑但牢固。该武器本篇第一次损坏时可免除。"
+        "text": "索林替你把武器握柄重缠。手工很丑，却抓得更稳；下次出手时，湿木不再从掌心滑开。"
        }
       ],
-      "effects": [],
+      "effects": [
+       {
+        "op": "adv",
+        "k": "*"
+       },
+       {
+        "op": "add",
+        "k": "rel.alt_a",
+        "v": 1
+       },
+       {
+        "op": "set",
+        "k": "peer_supported_thorin",
+        "v": true
+       }
+      ],
       "next": "__SELF__",
       "once": true
      },
@@ -21863,14 +23023,27 @@
         "v": 1
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      }
     ],
     "once": true,
     "cond": {
-     "not": {
-      "pc": "thorin"
-     }
+     "all": [
+      {
+       "not": {
+        "pc": "thorin"
+       }
+      },
+      {
+       "flag": "met_thorin"
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
     }
    },
    {
@@ -21938,6 +23111,108 @@
     "cond": {
      "pc": "liriel"
     }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -21963,11 +23238,28 @@
    },
    {
     "t": "p",
-    "text": "最后一个字裂开，冲击把你掀进内环。四种回声同时穿过身体：你记得所有人的失去，渴望所有人的愿望，为所有人的不公愤怒，又无法停止照见代价。你按照承诺付出了自己的一部分。你的半边身体从此对冷热迟钝。"
+    "text": "最后一个字裂开，冲击把你掀进内环。四种回声同时穿过身体：你记得所有人的失去，渴望所有人的愿望，为所有人的不公愤怒，又无法停止照见代价。你按照承诺付出了自己的一部分。你的半边身体从此对冷热迟钝。",
+    "cond": {
+     "all": [
+      {
+       "not": {
+        "flag": "three_voice_break"
+       }
+      },
+      {
+       "not": {
+        "flag": "inner_ring_peer"
+       }
+      }
+     ]
+    }
    },
    {
     "t": "p",
-    "text": "照心骨没有到场。前三种声音仍然扯断了命令，却没人看得清余波落向何处。你的身体留下了再也养不好的伤，城中一处没来得及疏散的街区承受了共鸣。史书只记下灾害突然停止，却没有留下足以证明塞维兰罪行的完整记录。"
+    "text": "照心骨没有到场。前三种声音仍然扯断了命令，却没人看得清余波落向何处。你的身体留下了再也养不好的伤，城中一处没来得及疏散的街区承受了共鸣。史书只记下灾害突然停止，却没有留下足以证明塞维兰罪行的完整记录。",
+    "cond": {
+     "flag": "three_voice_break"
+    }
    },
    {
     "t": "p",
@@ -21980,6 +23272,138 @@
    {
     "t": "p",
     "text": "《能够说不》"
+   },
+   {
+    "t": "p",
+    "text": "最后一个字剥落时，艾德里克独自站在内环。你负责外环，把拒绝的路径留给城里的人。四种回声划过他的身体；余生会有一部分感官迟钝。你们都知道这不是你替艾德里克选的，却仍要一起承担后果。",
+    "cond": {
+     "eq": [
+      "inner_ring_peer",
+      "edric"
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "最后一个字剥落时，莉瑞尔独自站在内环。你负责外环，把拒绝的路径留给城里的人。四种回声划过她的身体；余生会有一部分感官迟钝。你们都知道这不是你替莉瑞尔选的，却仍要一起承担后果。",
+    "cond": {
+     "eq": [
+      "inner_ring_peer",
+      "liriel"
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "最后一个字剥落时，索林独自站在内环。你负责外环，把拒绝的路径留给城里的人。四种回声划过他的身体；余生会有一部分感官迟钝。你们都知道这不是你替索林选的，却仍要一起承担后果。",
+    "cond": {
+     "eq": [
+      "inner_ring_peer",
+      "thorin"
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22030,6 +23454,108 @@
    {
     "t": "p",
     "text": "《未合拢的圆》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22068,6 +23594,108 @@
    {
     "t": "p",
     "text": "《明天还要再问》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22106,6 +23734,108 @@
    {
     "t": "p",
     "text": "《所有人都同意》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22140,6 +23870,108 @@
    {
     "t": "p",
     "text": "《四把钥匙》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22174,6 +24006,108 @@
    {
     "t": "p",
     "text": "《离山更近的王》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22208,6 +24142,108 @@
    {
     "t": "p",
     "text": "《活着离开的人》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22242,6 +24278,108 @@
    {
     "t": "p",
     "text": "《石头不会回答》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22263,19 +24401,143 @@
   "blocks": [
    {
     "t": "p",
-    "text": "黎明前，四个人从雾钟城四座门离开。没有告别仪式，因为聚在一起太久会让共鸣重新升高。每人只知道下一位的大致方向，不知道藏处。"
+    "text": "黎明前，四个人从雾钟城四座门离开。没有告别仪式，因为聚在一起太久会让共鸣重新升高。每人只知道下一位的大致方向，不知道藏处。",
+    "cond": {
+     "not": {
+      "flag": "forced_guardian"
+     }
+    }
    },
    {
     "t": "p",
-    "text": "当下危机结束，塞维兰被拉成四段互相听不清的声音。代价是四名守护者此后不能在同一座城相见。"
+    "text": "当下危机结束，塞维兰被拉成四段互相听不清的声音。代价是四名守护者此后不能在同一座城相见。",
+    "cond": {
+     "not": {
+      "flag": "forced_guardian"
+     }
+    }
    },
    {
     "t": "p",
-    "text": "城市把他们传成“四位英雄”，实际出发时有人害怕、有人后悔、有人只是没有更好选择。多年后，一封信未按约送达，剩下三人必须决定是寻找失踪者，还是尊重他可能撤回守护的权利。"
+    "text": "城市把他们传成“四位英雄”，实际出发时有人害怕、有人后悔、有人只是没有更好选择。多年后，一封信未按约送达，剩下三人必须决定是寻找失踪者，还是尊重他可能撤回守护的权利。",
+    "cond": {
+     "not": {
+      "flag": "forced_guardian"
+     }
+    }
    },
    {
     "t": "p",
     "text": "《互不相见的守护者》"
+   },
+   {
+    "t": "p",
+    "text": "你把一枚钟骨交给了毫不知情的人。四路封存暂时止住共鸣，但被挑中的守护者直到夜里病发才懂得自己带走了什么。他撕掉了你留的说明，选择回城。第七声没有出现：你借别人的身体完成的沉默，不是可以撤回的承诺。",
+    "cond": {
+     "flag": "forced_guardian"
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22302,6 +24564,108 @@
    {
     "t": "p",
     "text": "《王座不会保持空白》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22336,6 +24700,108 @@
    {
     "t": "p",
     "text": "《只命令一次》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22370,6 +24836,108 @@
    {
     "t": "p",
     "text": "《没有杂音的歌》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22404,6 +24972,108 @@
    {
     "t": "p",
     "text": "《复数的我》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22438,6 +25108,108 @@
    {
     "t": "p",
     "text": "《最后的第七声》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22472,6 +25244,108 @@
    {
     "t": "p",
     "text": "《跑在火前面》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22502,6 +25376,108 @@
    {
     "t": "p",
     "text": "《被接走的病》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22532,6 +25508,108 @@
    {
     "t": "p",
     "text": "《每三天留下什么》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22562,6 +25640,108 @@
    {
     "t": "p",
     "text": "《代价换了名字》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -22596,6 +25776,108 @@
    {
     "t": "p",
     "text": "《无法再丢掉的自己》"
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -23204,12 +26486,11 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "费恩先看了看街口的巡兵，又看你：“你知道跟我走会被当成同谋吗？”他伸手时仍在发抖，但没把手收回。"
      }
     ],
     "effects": [],
     "next": "__SELF__",
-    "fallback": true,
     "once": true
    },
    {
@@ -23390,12 +26671,11 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "拉德克把茶杯放下，给你写出副本藏放的位置。他要你答应先保护莱欧娜留下的人，而不是先替死者赢一场辩论。"
      }
     ],
     "effects": [],
     "next": "__SELF__",
-    "fallback": true,
     "once": true
    },
    {
@@ -25388,12 +28668,11 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "陌生士兵回头，尴尬地问你是不是认错了人。你承认了错认，也从他的口音里听见一条通往旧战场的线索。"
      }
     ],
     "effects": [],
-    "next": "__RETURN__",
-    "fallback": true
+    "next": "__RETURN__"
    },
    {
     "id": "s0c4",
@@ -25597,11 +28876,11 @@
    },
    {
     "id": "s0c2",
-    "label": "回答“有，我只是不愿付另一个代价”：。",
+    "label": "承认自己不愿付另一种代价。",
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "你把那笔代价说给同伴听。旧雨骨仍在耳边下雨，但这次没有替你删去最难说的半句。"
      }
     ],
     "effects": [
@@ -25611,8 +28890,7 @@
       "v": true
      }
     ],
-    "next": "__RETURN__",
-    "fallback": true
+    "next": "__RETURN__"
    },
    {
     "id": "s0c3",
@@ -25951,11 +29229,11 @@
    },
    {
     "id": "s0c2",
-    "label": "识别她从不用“永远”：自动破除。",
+    "label": "指出莉莉从不用“永远”威胁你。",
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "你指出幻象从不肯说“永远”。它沉默后退，露出身后真正的路；你的心跳过了很久才慢下来。"
      }
     ],
     "effects": [
@@ -25965,8 +29243,7 @@
       "v": -1
      }
     ],
-    "next": "__RETURN__",
-    "fallback": true
+    "next": "__RETURN__"
    },
    {
     "id": "s0c3",
@@ -27166,7 +30443,7 @@
     "blocks": [
      {
       "t": "p",
-      "text": "拖延的每一秒都像有人用钝锉磨你的牙。裂锤骨把等待翻译成羞辱，把羞辱翻译成动手许可。"
+      "text": "拖延的每一秒都像有人用钝锉磨你的牙。裂锤骨把等待翻译成羞辱，再催你向人动手。"
      }
     ]
    }
@@ -27282,11 +30559,11 @@
   "choices": [
    {
     "id": "s0c1",
-    "label": "回答“给我一个具体反对理由”：，压力下降。",
+    "label": "请同伴说出具体反对理由。",
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "你让对方给出具体反对理由。怀表仍在催你挥锤，但那个理由有名字、有时间，怒意终于找不到空处落下。"
      }
     ],
     "effects": [
@@ -27301,8 +30578,7 @@
       "v": -1
      }
     ],
-    "next": "__RETURN__",
-    "fallback": true
+    "next": "__RETURN__"
    },
    {
     "id": "s0c2",
@@ -27608,11 +30884,11 @@
    },
    {
     "id": "s0c2",
-    "label": "回答“真正的父亲会当面说”：。",
+    "label": "指出父亲若有话会当面说。",
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "你说真正的父亲会当面反对。回声里的嗓音立刻变薄，剩下的只是怀表贴着掌心乱跳。"
      }
     ],
     "effects": [
@@ -27622,8 +30898,7 @@
       "v": 1
      }
     ],
-    "next": "__RETURN__",
-    "fallback": true
+    "next": "__RETURN__"
    },
    {
     "id": "s0c3",
@@ -28041,12 +31316,11 @@
     "result": [
      {
       "t": "p",
-      "text": "你把话说出口，对方沉默片刻，记下了。"
+      "text": "你当众指出哭声是商会雇来的。围观的人先笑，随后看见真正失去亲人的妇人就在队伍后面；笑声一点点停了。"
      }
     ],
     "effects": [],
-    "next": "__RETURN__",
-    "fallback": true
+    "next": "__RETURN__"
    },
    {
     "id": "s0c4",
@@ -29576,9 +32850,25 @@
    {
     "t": "p",
     "text": "每深入一处，回声病都会往前走一步。别把时间都花在犹豫上。"
+   },
+   {
+    "t": "p",
+    "text": "河渠旁有白鸦旅店的城中分号。两地共用封签账本：灰桥寄存的箱子已随商队送到，柜钥仍在你手里。城里也许有办法只稳住病、不替钟承担任何使命；你可以为此继续查。"
    }
   ],
   "choices": [
+   {
+    "id": "city_safe",
+    "label": "去白鸦旅店城中分号整理行囊。",
+    "result": [
+     {
+      "t": "p",
+      "text": "掌柜对照封签，把箱子搬上柜台。你终于能在不赶路的时候清点武器、衣物和药瓶。"
+     }
+    ],
+    "effects": [],
+    "next": "CITY-SAFE-01"
+   },
    {
     "id": "fall6_collapse",
     "label": "沉沦已至极限——停下，走进为你准备好的结局。",
@@ -29697,7 +32987,8 @@
         "v": true
        }
       ],
-      "next": "__SELF__"
+      "next": "__SELF__",
+      "once": true
      }
     ]
    },
@@ -30002,104 +33293,94 @@
     }
    },
    {
-    "id": "peer_city_event",
-    "label": "与仍在世的另一位持有者短谈——互为主角，不是差事。",
+    "id": "peer_city_edric",
+    "label": "在钟楼背面找艾德里克谈谈。",
     "result": [
      {
       "t": "p",
-      "text": "街角风很大。你们不谈任务编号，只谈各自残片今晚想让你们变成谁。"
-     },
-     {
-      "t": "fold",
-      "label": "情欲描写",
-      "blocks": [
-       {
-        "t": "p",
-        "text": "若对方是莉瑞尔，银链会在话音间发热；边界与停词仍要当面确认。"
-       }
-      ],
-      "cond": {
-       "all": [
-        {
-         "not": {
-          "pc": "liriel"
-         }
-        },
-        {
-         "not": {
-          "flag": "alt_liriel_dead"
-         }
-        }
-       ]
-      }
-     },
-     {
-      "t": "fold",
-      "label": "残片侵扰",
-      "blocks": [
-       {
-        "t": "p",
-        "text": "若对方是艾德里克，雨会无故倾下来一分钟；你们一起等它停。"
-       }
-      ],
-      "cond": {
-       "all": [
-        {
-         "not": {
-          "pc": "edric"
-         }
-        },
-        {
-         "not": {
-          "flag": "alt_edric_dead"
-         }
-        }
-       ]
-      }
-     },
-     {
-      "t": "fold",
-      "label": "残片侵扰",
-      "blocks": [
-       {
-        "t": "p",
-        "text": "若对方是索林，他会把锤子横在膝上，要你先报数再说话。"
-       }
-      ],
-      "cond": {
-       "all": [
-        {
-         "not": {
-          "pc": "thorin"
-         }
-        },
-        {
-         "not": {
-          "flag": "alt_thorin_dead"
-         }
-        }
-       ]
-      }
-     },
-     {
-      "t": "note",
-      "text": " mutual 关系微调。"
+      "text": "你看见艾德里克独坐檐下，手边是雨披下那张未写完的名单。这次你先问他是否愿意说话。"
      }
     ],
-    "effects": [
+    "effects": [],
+    "next": "CITY-PEER-EDRIC",
+    "once": true,
+    "cond": {
+     "all": [
+      {
+       "not": {
+        "pc": "edric"
+       }
+      },
+      {
+       "flag": "met_edric"
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "id": "peer_city_liriel",
+    "label": "在钟楼背面找莉瑞尔谈谈。",
+    "result": [
      {
-      "op": "add",
-      "k": "rel.alt_a",
-      "v": 1
-     },
-     {
-      "op": "set",
-      "k": "peer_city_talk",
-      "v": true
+      "t": "p",
+      "text": "你看见莉瑞尔独坐檐下，手边是袖口下发烫的银链。这次你先问她是否愿意说话。"
      }
     ],
-    "next": "__SELF__",
-    "once": true
+    "effects": [],
+    "next": "CITY-PEER-LIRIEL",
+    "once": true,
+    "cond": {
+     "all": [
+      {
+       "not": {
+        "pc": "liriel"
+       }
+      },
+      {
+       "flag": "met_liriel"
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "id": "peer_city_thorin",
+    "label": "在钟楼背面找索林谈谈。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你看见索林独坐檐下，手边是膝上的修井锤。这次你先问他是否愿意说话。"
+     }
+    ],
+    "effects": [],
+    "next": "CITY-PEER-THORIN",
+    "once": true,
+    "cond": {
+     "all": [
+      {
+       "not": {
+        "pc": "thorin"
+       }
+      },
+      {
+       "flag": "met_thorin"
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "default_next": null,
@@ -30125,39 +33406,271 @@
    {
     "t": "p",
     "text": "黑砧矿区在雾钟城西边的山腹里。帝国封了官道，可进山的路不止一条。"
+   },
+   {
+    "t": "p",
+    "text": "进山前，同行者必须由你点名。灰桥东仓曾与你并肩的人不会自动出现在矿道里；若让对方离队，之后的危险只由你承担。"
+   },
+   {
+    "t": "p",
+    "text": "艾德里克走在你身侧。你知道若井架断裂，要付代价的会是这个具体的人。",
+    "cond": {
+     "eq": [
+      "companion",
+      "edric"
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔走在你身侧。你知道若井架断裂，要付代价的会是这个具体的人。",
+    "cond": {
+     "eq": [
+      "companion",
+      "liriel"
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林走在你身侧。你知道若井架断裂，要付代价的会是这个具体的人。",
+    "cond": {
+     "eq": [
+      "companion",
+      "thorin"
+     ]
+    }
    }
   ],
   "choices": [
+   {
+    "id": "party_thorin",
+    "label": "请索林陪你进入矿区。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你当面说明塌方与残片的危险。索林听完仍决定与你同行；这不是一句随叫随到的差事。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "set",
+      "k": "companion",
+      "v": "thorin"
+     },
+     {
+      "op": "set",
+      "k": "mine_party_fixed",
+      "v": true
+     }
+    ],
+    "next": "__SELF__",
+    "cond": {
+     "all": [
+      {
+       "all": [
+        {
+         "not": {
+          "pc": "thorin"
+         }
+        },
+        {
+         "flag": "met_thorin"
+        },
+        {
+         "not": {
+          "flag": "alt_thorin_dead"
+         }
+        }
+       ]
+      },
+      {
+       "not": {
+        "flag": "mine_party_fixed"
+       }
+      }
+     ]
+    },
+    "once": true
+   },
+   {
+    "id": "party_liriel",
+    "label": "请莉瑞尔陪你进入矿区。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你当面说明塌方与残片的危险。莉瑞尔听完仍决定与你同行；这不是一句随叫随到的差事。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "set",
+      "k": "companion",
+      "v": "liriel"
+     },
+     {
+      "op": "set",
+      "k": "mine_party_fixed",
+      "v": true
+     }
+    ],
+    "next": "__SELF__",
+    "cond": {
+     "all": [
+      {
+       "all": [
+        {
+         "not": {
+          "pc": "liriel"
+         }
+        },
+        {
+         "flag": "met_liriel"
+        },
+        {
+         "not": {
+          "flag": "alt_liriel_dead"
+         }
+        }
+       ]
+      },
+      {
+       "not": {
+        "flag": "mine_party_fixed"
+       }
+      }
+     ]
+    },
+    "once": true
+   },
+   {
+    "id": "party_edric",
+    "label": "请艾德里克陪你进入矿区。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你当面说明塌方与残片的危险。艾德里克听完仍决定与你同行；这不是一句随叫随到的差事。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "set",
+      "k": "companion",
+      "v": "edric"
+     },
+     {
+      "op": "set",
+      "k": "mine_party_fixed",
+      "v": true
+     }
+    ],
+    "next": "__SELF__",
+    "cond": {
+     "all": [
+      {
+       "all": [
+        {
+         "not": {
+          "pc": "edric"
+         }
+        },
+        {
+         "flag": "met_edric"
+        },
+        {
+         "not": {
+          "flag": "alt_edric_dead"
+         }
+        }
+       ]
+      },
+      {
+       "not": {
+        "flag": "mine_party_fixed"
+       }
+      }
+     ]
+    },
+    "once": true
+   },
+   {
+    "id": "party_solo",
+    "label": "这段路独自走。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你把同行者留在安全处。矿井里没人会替你接住第一根断绳。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "set",
+      "k": "companion",
+      "v": null
+     },
+     {
+      "op": "set",
+      "k": "mine_party_fixed",
+      "v": true
+     }
+    ],
+    "next": "__SELF__",
+    "cond": {
+     "not": {
+      "flag": "mine_party_fixed"
+     }
+    },
+    "once": true
+   },
    {
     "id": "a",
     "label": "走官道，过帝国检查站。",
     "result": [],
     "effects": [],
-    "next": "A2-MINE-01A"
+    "next": "A2-MINE-01A",
+    "cond": {
+     "flag": "mine_party_fixed"
+    }
    },
    {
     "id": "b",
     "label": "走托伦的私人商道。",
     "result": [],
     "effects": [],
-    "next": "A2-MINE-01B"
+    "next": "A2-MINE-01B",
+    "cond": {
+     "flag": "mine_party_fixed"
+    }
    },
    {
     "id": "c",
     "label": "钻旧排水渠，跟着米拉留下的红布走。",
     "result": [],
     "effects": [],
-    "next": "A2-MINE-01C"
+    "next": "A2-MINE-01C",
+    "cond": {
+     "flag": "mine_party_fixed"
+    }
    },
    {
     "id": "d",
     "label": "跟凯尔走山脊上的猎道。",
     "result": [],
     "effects": [],
-    "next": "A2-MINE-01D"
+    "next": "A2-MINE-01D",
+    "cond": {
+     "flag": "mine_party_fixed"
+    }
    }
   ],
-  "default_next": null
+  "default_next": null,
+  "enter_effects": [
+   {
+    "op": "set",
+    "k": "companion",
+    "v": null
+   }
+  ]
  },
  "A2-MINE-02X": {
   "id": "A2-MINE-02X",
@@ -31110,13 +34623,6 @@
    {
     "t": "p",
     "text": "灰手抄写员塞恩站在货架中间，指挥两个火油客往箱子上泼油。中央货架已经在吱呀作响——留给你的时间不多了。"
-   },
-   {
-    "t": "note",
-    "text": "你来晚了一步：敌人已占货架与河门，开场更难。",
-    "cond": {
-     "flag": "warehouse_enemy_advantage"
-    }
    },
    {
     "t": "note",
@@ -33477,59 +36983,53 @@
   "choices": [
    {
     "id": "stash_quick_weapon",
-    "label": "把备用武器先存进柜子（若有）。",
+    "label": "试着把一件武器存进柜子。",
     "result": [
      {
       "t": "p",
-      "text": "你把一件趁手的武器推进柜格。手轻了，心却沉了一寸——东仓那边不会等你。"
+      "text": "你检查柜格。是否真的存下物品，以刚才的存放提示为准。"
      }
     ],
     "effects": [
      {
       "op": "stash_slot",
       "v": "weapon"
-     },
-     {
-      "op": "set",
-      "k": "warehouse_enemy_advantage",
-      "v": true
-     },
-     {
-      "op": "set",
-      "k": "stash_quick_weapon",
-      "v": true
      }
     ],
     "next": "__SELF__",
-    "once": true
+    "once": true,
+    "cond": {
+     "cmp": [
+      "warehouse_stashed",
+      "<",
+      2
+     ]
+    }
    },
    {
     "id": "stash_quick_misc",
-    "label": "再塞一件杂物进柜（若有）。",
+    "label": "再塞一件护甲或杂物进柜（若有）。",
     "result": [
      {
       "t": "p",
-      "text": "第二格合上。钥匙还温着。柜门一锁，你就得接受开场落了下风。"
+      "text": "你检查柜格。是否真的存下物品，以刚才的存放提示为准。"
      }
     ],
     "effects": [
      {
       "op": "stash_slot",
-      "v": "armor"
-     },
-     {
-      "op": "set",
-      "k": "warehouse_enemy_advantage",
-      "v": true
-     },
-     {
-      "op": "set",
-      "k": "stash_quick_misc",
-      "v": true
+      "v": "misc"
      }
     ],
     "next": "__SELF__",
-    "once": true
+    "once": true,
+    "cond": {
+     "cmp": [
+      "warehouse_stashed",
+      "<",
+      2
+     ]
+    }
    },
    {
     "id": "stash_done",
@@ -33537,7 +37037,7 @@
     "result": [
      {
       "t": "p",
-      "text": "柜门锁上。你轻了两分，也晚了两分。东仓方向的蓝火已经压过屋脊。"
+      "text": "柜门锁上。你赶往东仓；蓝火已经压过屋脊。存过的东西留在柜中，身上装备以行囊为准。"
      }
     ],
     "effects": [
@@ -33557,21 +37057,33 @@
    },
    {
     "id": "stash_cancel",
-    "label": "什么都不存，立刻返回。",
+    "label": "结束整理，立刻赶往东仓。",
     "result": [
      {
       "t": "p",
-      "text": "你甩上柜门，原物带回。至少开场不会落到下风。"
+      "text": "你甩上柜门，朝蓝火跑去。若已放入物品，它们仍留在柜中；耽搁的时间也追不回来。"
      }
     ],
-    "effects": [
-     {
-      "op": "set",
-      "k": "warehouse_enemy_advantage",
-      "v": false
-     }
-    ],
+    "effects": [],
     "next": "A1-TOWN-09",
+    "cond_effects": [
+     {
+      "cond": {
+       "cmp": [
+        "warehouse_stashed",
+        "==",
+        0
+       ]
+      },
+      "ops": [
+       {
+        "op": "set",
+        "k": "warehouse_enemy_advantage",
+        "v": false
+       }
+      ]
+     }
+    ],
     "call": "C-04"
    }
   ],
@@ -33606,12 +37118,106 @@
     "text": "同伴的信到不了这间厅。艾德里克的名字变成酒渍；索林的锤子变成传言。你有时还会想起初鸣庭缺席的那一声——真的第七声需要知情、自愿、可撤回；你把“可撤回”卖了，换一口热食与门锁。"
    },
    {
-    "t": "note",
-    "text": "沉沦结局：莉瑞尔 · 欲望奴隶 / 权贵宠物。后日谈已写入本页。"
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
    },
    {
     "t": "p",
-    "text": "【后日谈】一年后，商会册上多了一条匿名捐赠：孤儿院、矿工遗孀、以及一名曾被你魅惑过的守门兵的医药费。项圈仍在。你学会在许可的缝里藏一点点自己的名字——不够自由，却还没被磨成空白。"
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -33623,9 +37229,7 @@
     "next": "__TITLE__"
    }
   ],
-  "default_next": null,
-  "routes": [],
-  "enter_effects": []
+  "default_next": null
  },
  "END-FALL-EDRIC": {
   "id": "END-FALL-EDRIC",
@@ -33656,12 +37260,106 @@
     "text": "莉瑞尔的信你读了一半；索林的交货印你揉成团。私人目标没有失败——它被你主动放下，像放下一块太烫的铁。"
    },
    {
-    "t": "note",
-    "text": "沉沦结局：艾德里克 · 酒溃放弃。后日谈已写入本页。"
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
    },
    {
     "t": "p",
-    "text": "【后日谈】有人在灰桥看见一个像你的醉汉，把一枚空的铁戒指塞进募捐箱。箱子稍后被偷。没有人核对指纹。妹妹最终靠别人的文书离境——那人不是你。"
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -33673,9 +37371,7 @@
     "next": "__TITLE__"
    }
   ],
-  "default_next": null,
-  "routes": [],
-  "enter_effects": []
+  "default_next": null
  },
  "END-FALL-THORIN": {
   "id": "END-FALL-THORIN",
@@ -33706,12 +37402,106 @@
     "text": "自治的旗被人扯下来。托伦笑你可用；帝国通缉你可用。你把自己锻成一把谁都能借的锤——直到没有人敢借。"
    },
    {
-    "t": "note",
-    "text": "沉沦结局：索林 · 狂怒失控。后日谈已写入本页。"
+    "t": "p",
+    "text": "后来有人问起艾德里克为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_edric_dead"
+    }
    },
    {
     "t": "p",
-    "text": "【后日谈】西炉区的学徒们改唱一首短谣：锤子认铁不认人。谣传你还活着，在更西的矿脉替人砸门。谣传停在“别报他的名字”。"
+    "text": "艾德里克活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_edric"
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_edric_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起莉瑞尔为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_liriel_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把她变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_liriel"
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_liriel_dead"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "后来有人问起索林为什么没回来。你只能从黑砧那根断绳讲起；无论结局如何，这个名字不能被写成『自愿缺席』。",
+    "cond": {
+     "flag": "alt_thorin_dead"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林活着走出了矿井。你们仍会争吵、仍会彼此拒绝；救命没有把他变成你的附属。",
+    "cond": {
+     "flag": "peer_saved_thorin"
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林还活着，但残片留下的习惯没有随终局一起消失。你们必须继续面对那条已深的沉沦线，不能把一次胜利当成对人格的自动治疗。",
+    "cond": {
+     "all": [
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      {
+       "not": {
+        "flag": "alt_thorin_dead"
+       }
+      }
+     ]
+    }
    }
   ],
   "choices": [
@@ -33723,8 +37513,641 @@
     "next": "__TITLE__"
    }
   ],
-  "default_next": null,
-  "routes": [],
-  "enter_effects": []
+  "default_next": null
+ },
+ "A2-MINE-10B": {
+  "id": "A2-MINE-10B",
+  "title": "绳轮反咬",
+  "source": "phase3",
+  "kind": "scene",
+  "blocks": [
+   {
+    "t": "p",
+    "text": "井架木梁在头顶一节节折断。你听见有人喊『拉』，也有人喊『松』。这一刻不是钟在替你决定；你的手正在决定另一个人会不会活到城里。"
+   },
+   {
+    "t": "p",
+    "text": "你独自进矿，绳下是一个不认识的年轻矿工。他把半截工作牌扔到你脚边，求你记住他的名字。",
+    "cond": {
+     "eq": [
+      "companion",
+      null
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克吊在断绳尽头，另一只手还攥着矿工的安全扣。旧雨骨把绳索变成边境那辆迟迟不来的车。艾德里克说『别松』，声音却越来越轻。",
+    "cond": {
+     "eq": [
+      "companion",
+      "edric"
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "你想起在城里听艾德里克说过的真话。那一晚不是一张关系票；此刻它决定你能否听出求救和残片的命令。",
+    "cond": {
+     "all": [
+      {
+       "eq": [
+        "companion",
+        "edric"
+       ]
+      },
+      {
+       "flag": "peer_supported_edric"
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克先前的伤口在此刻发作。你说过的话也在绳上添了重量。",
+    "cond": {
+     "all": [
+      {
+       "eq": [
+        "companion",
+        "edric"
+       ]
+      },
+      {
+       "flag": "peer_wounded_edric"
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔吊在断绳尽头，另一只手还攥着矿工的安全扣。饥月骨要莉瑞尔把救命变成一场服从测试。她扯开银链，喊出你们约好的停词——若你们真的约过。",
+    "cond": {
+     "eq": [
+      "companion",
+      "liriel"
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "你想起在城里听莉瑞尔说过的真话。那一晚不是一张关系票；此刻它决定你能否听出求救和残片的命令。",
+    "cond": {
+     "all": [
+      {
+       "eq": [
+        "companion",
+        "liriel"
+       ]
+      },
+      {
+       "flag": "peer_supported_liriel"
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔先前的伤口在此刻发作。你说过的话也在绳上添了重量。",
+    "cond": {
+     "all": [
+      {
+       "eq": [
+        "companion",
+        "liriel"
+       ]
+      },
+      {
+       "flag": "peer_wounded_liriel"
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林吊在断绳尽头，另一只手还攥着矿工的安全扣。裂锤骨催索林一锤砸断缆索，省去选择。他把锤子反过来，以木柄卡住齿轮。",
+    "cond": {
+     "eq": [
+      "companion",
+      "thorin"
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "你想起在城里听索林说过的真话。那一晚不是一张关系票；此刻它决定你能否听出求救和残片的命令。",
+    "cond": {
+     "all": [
+      {
+       "eq": [
+        "companion",
+        "thorin"
+       ]
+      },
+      {
+       "flag": "peer_supported_thorin"
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林先前的伤口在此刻发作。你说过的话也在绳上添了重量。",
+    "cond": {
+     "all": [
+      {
+       "eq": [
+        "companion",
+        "thorin"
+       ]
+      },
+      {
+       "flag": "peer_wounded_thorin"
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "艾德里克的残片已经把这次坠落写成某种必然。你若拉他，必须多挡一块石头；危险不再只是绳索。",
+    "cond": {
+     "all": [
+      {
+       "eq": [
+        "companion",
+        "edric"
+       ]
+      },
+      {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "莉瑞尔的残片已经把这次坠落写成某种必然。你若拉她，必须多挡一块石头；危险不再只是绳索。",
+    "cond": {
+     "all": [
+      {
+       "eq": [
+        "companion",
+        "liriel"
+       ]
+      },
+      {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "t": "p",
+    "text": "索林的残片已经把这次坠落写成某种必然。你若拉他，必须多挡一块石头；危险不再只是绳索。",
+    "cond": {
+     "all": [
+      {
+       "eq": [
+        "companion",
+        "thorin"
+       ]
+      },
+      {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "choices": [
+   {
+    "id": "rescue_worker",
+    "label": "咬牙拉住矿工，自己承受落石。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你用肩撑住绳轮。矿工滚过安全线，反过来把你拖出裂口；你们都记住了他的工号。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "hp",
+      "v": -2
+     },
+     {
+      "op": "add",
+      "k": "mercy",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "mine_worker_saved",
+      "v": true
+     }
+    ],
+    "next": "A2-MINE-11",
+    "cond": {
+     "eq": [
+      "companion",
+      null
+     ]
+    }
+   },
+   {
+    "id": "leave_worker",
+    "label": "松开绳子，独自冲进古水道。",
+    "result": [
+     {
+      "t": "p",
+      "text": "工作牌在石面上跳了两下，掉进缝里。你还活着，却把那声『拉』带进了水道。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "add",
+      "k": "fall",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "cruelty",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "mine_worker_lost",
+      "v": true
+     }
+    ],
+    "next": "A2-MINE-11",
+    "cond": {
+     "eq": [
+      "companion",
+      null
+     ]
+    }
+   },
+   {
+    "id": "rescue_edric",
+    "label": "抓住艾德里克，用自己挡住坠石。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你喊艾德里克的名字，扑向绳轮。石块砸在背上；他被你拖过安全线，反手又拉出最后一名矿工。"
+     },
+     {
+      "t": "p",
+      "text": "艾德里克没有说谢谢，只把手留在你肩上，直到你能自己站稳。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "hp",
+      "v": -2
+     },
+     {
+      "op": "add",
+      "k": "sacrifice",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "peer_saved_edric",
+      "v": true
+     },
+     {
+      "cond": {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        4
+       ]
+      },
+      "ops": [
+       {
+        "op": "hp",
+        "v": -1
+       }
+      ]
+     },
+     {
+      "cond": {
+       "cmp": [
+        "fall_edric",
+        ">=",
+        1
+       ]
+      },
+      "ops": [
+       {
+        "op": "add",
+        "k": "fall_edric",
+        "v": -1
+       }
+      ]
+     }
+    ],
+    "next": "A2-MINE-11",
+    "cond": {
+     "eq": [
+      "companion",
+      "edric"
+     ]
+    }
+   },
+   {
+    "id": "abandon_edric",
+    "label": "松开艾德里克的绳索，保住残片和自己。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你松了手。艾德里克没有诅咒你，只把安全扣抛上来。扣环落地时，矿道深处已经没有回应。"
+     },
+     {
+      "t": "p",
+      "text": "同行者的死因很具体：不是『不够人手』，而是你在这一秒选择了放开。之后任何誓环都不能替艾德里克说话。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "set",
+      "k": "alt_edric_dead",
+      "v": true
+     },
+     {
+      "op": "set",
+      "k": "companion",
+      "v": null
+     },
+     {
+      "op": "set",
+      "k": "mine_left_edric",
+      "v": true
+     },
+     {
+      "op": "add",
+      "k": "fall",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "cruelty",
+      "v": 1
+     }
+    ],
+    "next": "A2-MINE-11",
+    "cond": {
+     "eq": [
+      "companion",
+      "edric"
+     ]
+    }
+   },
+   {
+    "id": "rescue_liriel",
+    "label": "抓住莉瑞尔，用自己挡住坠石。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你喊莉瑞尔的名字，扑向绳轮。石块砸在背上；她被你拖过安全线，反手又拉出最后一名矿工。"
+     },
+     {
+      "t": "p",
+      "text": "莉瑞尔没有说谢谢，只把手留在你肩上，直到你能自己站稳。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "hp",
+      "v": -2
+     },
+     {
+      "op": "add",
+      "k": "sacrifice",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "peer_saved_liriel",
+      "v": true
+     },
+     {
+      "cond": {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        4
+       ]
+      },
+      "ops": [
+       {
+        "op": "hp",
+        "v": -1
+       }
+      ]
+     },
+     {
+      "cond": {
+       "cmp": [
+        "fall_liriel",
+        ">=",
+        1
+       ]
+      },
+      "ops": [
+       {
+        "op": "add",
+        "k": "fall_liriel",
+        "v": -1
+       }
+      ]
+     }
+    ],
+    "next": "A2-MINE-11",
+    "cond": {
+     "eq": [
+      "companion",
+      "liriel"
+     ]
+    }
+   },
+   {
+    "id": "abandon_liriel",
+    "label": "松开莉瑞尔的绳索，保住残片和自己。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你松了手。莉瑞尔没有诅咒你，只把安全扣抛上来。扣环落地时，矿道深处已经没有回应。"
+     },
+     {
+      "t": "p",
+      "text": "同行者的死因很具体：不是『不够人手』，而是你在这一秒选择了放开。之后任何誓环都不能替莉瑞尔说话。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "set",
+      "k": "alt_liriel_dead",
+      "v": true
+     },
+     {
+      "op": "set",
+      "k": "companion",
+      "v": null
+     },
+     {
+      "op": "set",
+      "k": "mine_left_liriel",
+      "v": true
+     },
+     {
+      "op": "add",
+      "k": "fall",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "cruelty",
+      "v": 1
+     }
+    ],
+    "next": "A2-MINE-11",
+    "cond": {
+     "eq": [
+      "companion",
+      "liriel"
+     ]
+    }
+   },
+   {
+    "id": "rescue_thorin",
+    "label": "抓住索林，用自己挡住坠石。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你喊索林的名字，扑向绳轮。石块砸在背上；他被你拖过安全线，反手又拉出最后一名矿工。"
+     },
+     {
+      "t": "p",
+      "text": "索林没有说谢谢，只把手留在你肩上，直到你能自己站稳。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "hp",
+      "v": -2
+     },
+     {
+      "op": "add",
+      "k": "sacrifice",
+      "v": 1
+     },
+     {
+      "op": "set",
+      "k": "peer_saved_thorin",
+      "v": true
+     },
+     {
+      "cond": {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        4
+       ]
+      },
+      "ops": [
+       {
+        "op": "hp",
+        "v": -1
+       }
+      ]
+     },
+     {
+      "cond": {
+       "cmp": [
+        "fall_thorin",
+        ">=",
+        1
+       ]
+      },
+      "ops": [
+       {
+        "op": "add",
+        "k": "fall_thorin",
+        "v": -1
+       }
+      ]
+     }
+    ],
+    "next": "A2-MINE-11",
+    "cond": {
+     "eq": [
+      "companion",
+      "thorin"
+     ]
+    }
+   },
+   {
+    "id": "abandon_thorin",
+    "label": "松开索林的绳索，保住残片和自己。",
+    "result": [
+     {
+      "t": "p",
+      "text": "你松了手。索林没有诅咒你，只把安全扣抛上来。扣环落地时，矿道深处已经没有回应。"
+     },
+     {
+      "t": "p",
+      "text": "同行者的死因很具体：不是『不够人手』，而是你在这一秒选择了放开。之后任何誓环都不能替索林说话。"
+     }
+    ],
+    "effects": [
+     {
+      "op": "set",
+      "k": "alt_thorin_dead",
+      "v": true
+     },
+     {
+      "op": "set",
+      "k": "companion",
+      "v": null
+     },
+     {
+      "op": "set",
+      "k": "mine_left_thorin",
+      "v": true
+     },
+     {
+      "op": "add",
+      "k": "fall",
+      "v": 1
+     },
+     {
+      "op": "add",
+      "k": "cruelty",
+      "v": 1
+     }
+    ],
+    "next": "A2-MINE-11",
+    "cond": {
+     "eq": [
+      "companion",
+      "thorin"
+     ]
+    }
+   }
+  ],
+  "default_next": null
  }
 }

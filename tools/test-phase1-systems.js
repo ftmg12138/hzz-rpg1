@@ -80,6 +80,7 @@ function assert(cond, msg) { if (!cond) { console.error("FAIL:", msg); process.e
 // --- stash_slot ---
 {
   const s = E.newState("edric");
+  s.node = "A1-STASH-01";
   const beforeItems = s.items.slice();
   const toasts = [];
   const weapon = s.equip.weapon;

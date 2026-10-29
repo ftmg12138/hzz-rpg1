@@ -29,7 +29,8 @@
     const ch = META.characters[pcId];
     const vars = { time: 0, resonance: 0, truth: 0, alarm_town: 0, alarm_mine: 0, city_actions: 0, city_rep: 0,
       curse_stage: 1, sanctuary_clues: 0, mercy: 0, cruelty: 0, sacrifice: 0, corruption: 0, defiance: 0,
-      fall: 0, fragment_pressure: 1, vouchers: 0,
+      fall: 0, fall_edric: 0, fall_liriel: 0, fall_thorin: 0, fragment_pressure: 1, vouchers: 0,
+      warehouse_stashed: 0,
       alt_edric_dead: false, alt_liriel_dead: false, alt_thorin_dead: false, companion: null };
     const items = [];
     const storage = [];
@@ -68,6 +69,7 @@
     if (!c) return true;
     if (c.else) return true;
     if (c.pc) return s.pc === c.pc;
+    if (c.eq) return s.vars[c.eq[0]] === c.eq[1];
     if (c.flag) return !!s.vars[c.flag] || s.items.includes(c.flag);
     if (c.seen) return !!s.seen[c.seen];
     if (c.ending) return s.vars.ending === c.ending;
@@ -101,6 +103,7 @@
         case "add": {
           const before = num(s, k);
           s.vars[k] = before + Number(e.v || 0);
+          if (k === "fall") s.vars["fall_" + s.pc] = s.vars[k];
           toastVar(k, Number(e.v || 0), toasts);
           if (k === "resonance" && Number(e.v || 0) > 0 && !s.resonance_explained) {
             s.resonance_explained = true;
@@ -146,6 +149,7 @@
         case "item": {
           if (e.v === false) {
             s.items = s.items.filter((x) => x !== k);
+            for (const slot of ["weapon", "armor", "magic"]) if (s.equip && s.equip[slot] === k) s.equip[slot] = null;
             s.vars[k] = false;
             const n = itemName(k);
             if (n) toasts.push({ t: "bad", text: `失去：「${n}」` });
@@ -310,7 +314,8 @@
       const ck = choice.check;
       const stats = ck.stats || [];
       const adv = (ck.adv_if && test(s, ck.adv_if)) || s.adv["*"] || stats.some((x) => s.adv[x]) || (ck.combat && combatPower(s) >= 4);
-      const dis = s.dis["*"] || stats.some((x) => s.dis[x]);
+      const dis = s.dis["*"] || stats.some((x) => s.dis[x]) ||
+        (nodeId === "C-04" && !!s.vars.warehouse_enemy_advantage);
       s.adv = {}; s.dis = {};
       const auto = ck.auto_if && test(s, ck.auto_if);
       const info = C().roll(s.stats, ck, { adv, dis, auto });
@@ -380,22 +385,39 @@
 
 
   function gearOf(id) { return (META.gear || {})[id] || null; }
+  function owned(s, id) { return (s.items || []).includes(id) || (s.storage || []).includes(id); }
+  function carryCapacity(s) { return 8 + (owned(s, "sewn_pack_strap") ? 2 : 0); }
+  function storageCapacity(s) {
+    return 6 + (owned(s, "free_storage_token") ? 1 : 0) + (owned(s, "merchant_storage_token") ? 3 : 0);
+  }
   function combatPower(s) {
     const g = META.gear || {};
     let p = 0;
     const eq = s.equip || {};
     for (const slot of ["weapon", "armor", "magic"]) {
-      const id = eq[slot]; if (id && g[id]) p += Number(g[id].power || 0);
+      const id = eq[slot]; if (id && s.items.includes(id) && g[id]) p += Number(g[id].power || 0);
     }
     const strMod = Math.floor((((s.stats && s.stats.STR) || 10) - 10) / 2);
     const dexMod = Math.floor((((s.stats && s.stats.DEX) || 10) - 10) / 2);
     p += Math.max(0, strMod, dexMod);
+    if ((s.items || []).length > carryCapacity(s)) p -= 2;
     return p;
   }
   function ensureBags(s) {
     if (!s.storage) s.storage = [];
     if (!s.equip) s.equip = { weapon: null, armor: null, magic: null };
     if (typeof s.vars.fall !== "number") s.vars.fall = 0;
+    if (typeof s.vars.warehouse_stashed !== "number") s.vars.warehouse_stashed = 0;
+    if (s.vars.companion === undefined || s.vars.companion === "") s.vars.companion = null;
+    if (s.vars.companion && s.vars[`alt_${s.vars.companion}_dead`]) s.vars.companion = null;
+    if (s.node && s.node.startsWith("A2-MINE") && !s.vars.mine_party_fixed) s.vars.companion = null;
+    for (const role of ["edric", "liriel", "thorin"]) {
+      const key = "fall_" + role;
+      if (typeof s.vars[key] !== "number") s.vars[key] = role === s.pc ? s.vars.fall : 0;
+    }
+  }
+  function canUseStorage(s) {
+    return s.node === "A1-TOWN-02" || s.node === "A1-STASH-01" || s.node === "CITY-SAFE-01";
   }
   function equipItem(s, itemId) {
     ensureBags(s);
@@ -416,20 +438,29 @@
   }
   function stashItem(s, itemId) {
     ensureBags(s);
+    if (!canUseStorage(s)) return { ok: false, text: "只能在旅店安全点存放物品。" };
+    if (s.node === "A1-STASH-01" && s.vars.warehouse_stashed >= 2)
+      return { ok: false, text: "东仓出发前只能再整理两件物品。" };
     if (!s.items.includes(itemId)) return { ok: false, text: "行囊中没有这件。" };
     const frag = META.characters[s.pc] && META.characters[s.pc].fragment;
     if (itemId === frag) return { ok: false, text: "残片容器拒绝进入储物柜。" };
-    if ((s.storage.filter(Boolean).length) >= 12) return { ok: false, text: "安全点已满。" };
+    if ((s.storage.filter(Boolean).length) >= storageCapacity(s)) return { ok: false, text: "安全点已满；仓储牌可增加容量。" };
     s.items = s.items.filter((x) => x !== itemId);
     s.storage.push(itemId);
     // unequip if stored
     for (const slot of ["weapon", "armor", "magic"]) if (s.equip[slot] === itemId) s.equip[slot] = null;
     s.vars[itemId] = false;
+    if (s.node === "A1-STASH-01") {
+      s.vars.warehouse_stashed += 1;
+      s.vars.warehouse_enemy_advantage = true;
+    }
     return { ok: true, text: "已存入安全点。" };
   }
   function takeStash(s, itemId) {
     ensureBags(s);
+    if (!canUseStorage(s)) return { ok: false, text: "只能在旅店安全点取回物品。" };
     if (!s.storage.includes(itemId)) return { ok: false, text: "安全点没有这件。" };
+    if (s.items.length >= carryCapacity(s)) return { ok: false, text: "行囊已满；扩容背带可增加两个槽位。" };
     s.storage = s.storage.filter((x) => x !== itemId);
     if (!s.items.includes(itemId)) s.items.push(itemId);
     s.vars[itemId] = true;
@@ -456,5 +487,5 @@
     return "沉沦 危";
   }
 
-  global.WZCEngine = { init, setRng, newState, test, apply, visibleChoices, visibleSubs, resolvePending, canAfford, displayLabel, choose, chooseSub, enter, hub, blocksFor, epilogue, timeLabel, num, REL_NAMES, combatPower, equipItem, unequipSlot, stashItem, takeStash, fallLabel, gearOf, ensureBags, equipSummary };
+  global.WZCEngine = { init, setRng, newState, test, apply, visibleChoices, visibleSubs, resolvePending, canAfford, displayLabel, choose, chooseSub, enter, hub, blocksFor, epilogue, timeLabel, num, REL_NAMES, combatPower, carryCapacity, storageCapacity, equipItem, unequipSlot, stashItem, takeStash, canUseStorage, fallLabel, gearOf, ensureBags, equipSummary };
 })(typeof window !== "undefined" ? window : globalThis);

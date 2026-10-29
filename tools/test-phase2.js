@@ -37,14 +37,15 @@ function countFolds(n) {
   return nF;
 }
 
-assert(/^2\.2\.\d/.test(meta.version), "version " + meta.version);
+assert(/^2\.[23]\.\d/.test(meta.version), "version " + meta.version);
 assert(meta.phase2 && meta.phase2.fall_endings.length === 3, "phase2 meta");
 
 for (const id of ["END-FALL-LIRIEL", "END-FALL-EDRIC", "END-FALL-THORIN"]) {
   assert(nodes[id] && nodes[id].kind === "ending", id + " ending node");
   assert(fs.existsSync(path.join(root, "assets/endings", id + ".jpg")), id + " art");
   assert(fs.statSync(path.join(root, "assets/endings", id + ".jpg")).size > 250000, id + " art size");
-  assert(nodes[id].blocks.some((b) => /后日谈/.test(b.text || "")), id + " epilogue text");
+  const pc = id.split("-").at(-1).toLowerCase();
+  assert((meta.epilogues[pc] || []).some((e) => /沉沦/.test(e.label || "") && e.text), id + " epilogue text");
 }
 
 // fall>=6 toast + hub choice visible

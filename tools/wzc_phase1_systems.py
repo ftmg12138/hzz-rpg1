@@ -74,19 +74,19 @@ ALLY = {
         P("莉瑞尔考虑片刻，把酒盏转了半圈：“到矿区为止。私人的账，我们各算各的。”"),
         P("她伸出手指在桌面上划了一条线：“线这边是合作。线那边——别假装你懂我的欲望或我的罪。”"),
         FOLD("情欲描写", "划线时她的指尖擦过你手背，银链热了一下。那不是邀请上床，是确认你敢不敢被拒绝。"),
-        NOTE("已记下：短期同盟（莉瑞尔）。可在稍后「与另一位残片持有者深谈」继续。"),
+        NOTE("你与莉瑞尔约定同行到矿区。稍后可以再与她深谈。"),
     ],
     "t4_li_ally": [
         P("艾德里克考虑片刻：“到矿区为止。私人的账，我们各算各的。”"),
         P("他补了一句：“我断后，你别为箱子把命留下。妹妹的文书比任何铭文都硬。”"),
         FOLD("残片侵扰", "他说“断后”时，旧雨骨塞给你一张陌生哨兵的脸——你眨掉它，才把同伴认回来。"),
-        NOTE("已记下：短期同盟（艾德里克）。深谈入口已解锁。"),
+        NOTE("你与艾德里克约定同行到矿区。稍后可以再与他深谈。"),
     ],
     "t4_th_ally": [
         P("艾德里克考虑片刻：“到矿区为止。私人的账，我们各算各的。”"),
         P("他看着你满是茧的手：“你砸门，我掩护。别让怀表替你选人。”"),
         FOLD("残片侵扰", "裂锤骨想把“同盟”理解成“可以砸的名单”。你把拇指按进掌心，直到疼意压过它。"),
-        NOTE("已记下：短期同盟（艾德里克）。深谈入口已解锁。"),
+        NOTE("你与艾德里克约定同行到矿区。稍后可以再与他深谈。"),
     ],
 }
 
@@ -215,20 +215,25 @@ def patch_stash_actions(N):
     if not find_choice(choices, "stash_quick_weapon"):
         choices.insert(0, {
             "id": "stash_quick_weapon",
-            "label": "把备用武器先存进柜子（若有）。",
-            "result": [P("你把一件趁手的武器推进柜格。手轻了，心却沉了一寸——东仓那边不会等你。")],
-            "effects": [setf("stash_quick_weapon", True), setf("warehouse_enemy_advantage", True)],
+            "label": "试着把一件武器存进柜子。",
+            "result": [P("你检查武器格。柜门能否合上，以行囊与存放提示为准。")],
+            "effects": [{"op": "stash_slot", "v": "weapon"}],
             "next": "__SELF__",
             "once": True,
         })
         choices.insert(1, {
             "id": "stash_quick_misc",
-            "label": "再塞一件杂物进柜（若有）。",
-            "result": [P("第二格合上。钥匙还温着。柜门一锁，你就得接受开场落了下风。")],
-            "effects": [setf("stash_quick_misc", True), setf("warehouse_enemy_advantage", True)],
+            "label": "再塞一件护甲或杂物进柜（若有）。",
+            "result": [P("你检查杂物格。若没有能存的东西，钥匙仍留在手里。")],
+            "effects": [{"op": "stash_slot", "v": "misc"}],
             "next": "__SELF__",
             "once": True,
         })
+    for cid, slot in (("stash_quick_weapon", "weapon"), ("stash_quick_misc", "misc")):
+        c = find_choice(choices, cid)
+        c["effects"] = [{"op": "stash_slot", "v": slot}]
+        c["cond"] = {"cmp": ["warehouse_stashed", "<", 2]}
+        c["result"] = [P("你检查柜格。是否真的存下物品，以刚才的存放提示为准。")]
 
 def patch_meta(meta):
     meta["stats_help"] = {

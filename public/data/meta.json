@@ -1,7 +1,7 @@
 {
  "title": "雾钟城：第七声",
- "version": "2.2.2-fall-liriel",
- "node_count": 221,
+ "version": "2.3.0-companions",
+ "node_count": 226,
  "characters": {
   "edric": {
    "id": "edric",
@@ -445,9 +445,6 @@
   "INS": "洞察",
   "WIL": "意志"
  },
- "unknown_conditions": [],
- "fallback_texts": 227,
- "item_keys_without_name": [],
  "gear": {
   "border_sword": {
    "slot": "weapon",
@@ -623,15 +620,16 @@
  "power_help": "战力：武器+护甲+魔具/残片的战力加值，再加上力量或敏捷修正的较高者。战力≥4 时战斗检定占优。",
  "vouchers_help": "商会券：雾钟城流通的记账票据。买通、雇佣、部分情报与疗伤需要它。",
  "hp_help": "体力：归零会进入伤势失败。战斗、压抑残片、强行赶路都会扣它。",
- "ui_revision": "phase2-act23-fall-2026-10-29",
+ "ui_revision": "phase3-party-rescue-2026-10-30",
  "phase2": {
   "fall_endings": [
    "END-FALL-LIRIEL",
    "END-FALL-EDRIC",
    "END-FALL-THORIN"
   ],
-  "notes": "Act2/3 density + fall endings + Liriel mid/late desire + 第七声 theming",
-  "fall_art": "commissioned_gen_2026-10-29",
-  "fall_art_liriel": "kneel_bareback_collar_2026-10-29"
- }
+  "notes": "Act2/3 density + fall endings + Liriel mid/late desire + 第七声 theming"
+ },
+ "unknown_conditions": [],
+ "fallback_texts": 227,
+ "item_keys_without_name": []
 }

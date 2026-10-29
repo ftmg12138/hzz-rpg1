@@ -42,11 +42,14 @@ export GITHUB_BACKUP_TOKEN=...
 - `script/` 剧本 Markdown 源文件
 - `tools/parse-script.py` 转录为 `public/data/nodes.json`
 - `tools/wzc_patches.py` 为原剧本补充可执行条件、奖励与状态变更
+- `tools/wzc_phase3_pass.py` 生成城市双主角深谈、矿区同行/救援、结局状态变体
 - `tools/audit-rewards.py` 核对剧情承诺与实际奖励
 - `tools/test-all-choices.js` 穷举全部选项的引擎回归测试
 - `public/` 静态站点（vanilla JS，无 CDN）
 - `public/assets/characters/` 三位主角的独立肖像
 - `public/assets/endings/` 每个结局对应的独立象征画
+
+目前是可玩的持续修订版。完整剧本 Markdown 约 9.3 万汉字；“数十万字”的文本目标尚未完成。自动测试覆盖选项执行与状态回归，尚需按角色进行浏览器人工通关和剧情润色。
 
 ## 说明
 

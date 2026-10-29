@@ -235,7 +235,7 @@ ANG_FOLDS = {
         "军官的后脑成为最清晰的靶心。怀表滴答变成擂鼓：拖出去、按下去、让队伍恢复“正确”。"
         "你知道那会变成暴行，怒意却把“正确”两个字焊在喉头。"),
     "R-ANG-03": ("残片侵扰",
-        "拖延的每一秒都像有人用钝锉磨你的牙。裂锤骨把等待翻译成羞辱，把羞辱翻译成动手许可。"),
+        "拖延的每一秒都像有人用钝锉磨你的牙。裂锤骨把等待翻译成羞辱，再催你向人动手。"),
     "R-ANG-04": ("残片侵扰",
         "谎言的气味比炉烟更冲。你想像验铁一样验这张嘴——敲碎，看里面是不是空的。"),
     "R-ANG-05": ("残片侵扰",
@@ -349,7 +349,7 @@ def patch_tavern(N):
     if not n: return
     # Fix recognition choice into three PC-conditional choices
     choices = n.get("choices") or []
-    choices = [c for c in choices if not (c.get("id") == "t4" or "第一次相认" in c.get("label", "") or "另一位主角" in c.get("label", ""))]
+    choices = [c for c in choices if c.get("id") not in {"t4_th_l", "dossier_here"} and not (c.get("id") == "t4" or "第一次相认" in c.get("label", "") or "另一位主角" in c.get("label", ""))]
 
     def recog(cid, pc, other_id, other_name, label):
         return C(
@@ -445,7 +445,11 @@ def patch_tavern(N):
                 c["result"] = [P("伊索尔头也不抬：“你回来了。先说症状有没有变。”——没有寒暄。")]
         if c.get("id") == "talk_D-ALT":
             c["label"] = "与另一位残片持有者深谈。"
-            c["cond"] = ANY(flag("met_edric"), flag("met_liriel"), flag("met_thorin"), flag("met_alt"), flag("shared_fragment_truth"))
+            c["cond"] = ANY(
+                ALL(NOT({"pc": "edric"}), flag("met_edric"), NOT(flag("alt_edric_dead"))),
+                ALL(NOT({"pc": "liriel"}), flag("met_liriel"), NOT(flag("alt_liriel_dead"))),
+                ALL(NOT({"pc": "thorin"}), flag("met_thorin"), NOT(flag("alt_thorin_dead"))),
+            )
             if not c.get("result"):
                 c["result"] = [P("你们找了个不太吵的角落。这一次不是相认，是算账——彼此的目标、底线，以及残片正在如何改写你们。")]
         if c.get("id") == "talk_D-NPC-KAEL":
@@ -456,7 +460,7 @@ def patch_tavern(N):
     choices.append(C(
         "dossier_here", "打量在场的人（人物简介）。", "__SELF__",
         [P("你把目光逐一投向在场的人。你记得的外貌、脾气，以及目前听来的私情，在脑中短暂排好——像斥候做的那种无声点名。"),
-         P("〔打开上方「人物」可查看已结识者的简介。若尚未深谈，档案只会留下浅浅一笔。〕")],
+         P("点上方「人物」可查看已结识者的简介。若尚未深谈，档案只会留下浅浅一笔。")],
         [setf("hint_dossier_ui")], once=False,
     ))
 
@@ -469,11 +473,6 @@ def patch_tavern(N):
     ]:
         d = N.get(nid)
         if not d: continue
-        for c in d.get("choices") or []:
-            if c.get("id") in first_ids:
-                # hide first greet if already talked via town hub
-                c["cond"] = NOT(flag("talked_" + metflag.split("_", 1)[-1])) if False else c.get("cond")
-                # clearer: if talked_valen, hide t1
         for c in d.get("choices") or []:
             if c.get("id") == "t1":
                 key = "talked_valen" if "VALEN" in nid else "talked_ysolde"
@@ -540,12 +539,13 @@ def patch_warehouse(N):
         ],
         "choices": [
             C("stash_done", "锁上柜子，奔向东仓。", "A1-TOWN-09",
-              [P("柜门锁上。你轻了两分，也晚了两分。东仓方向的蓝火已经压过屋脊。")],
+              [P("柜门锁上。你赶往东仓；蓝火已经压过屋脊。存过的东西留在柜中，身上装备以行囊为准。")],
               [setf("stash_used_pre_warehouse", True), setf("warehouse_enemy_advantage", True)],
               call="C-04"),
-            C("stash_cancel", "什么都不存，立刻返回。", "A1-TOWN-09",
-              [P("你甩上柜门，原物带回。至少开场不会落到下风。")],
-              [{"op": "set", "k": "warehouse_enemy_advantage", "v": False}],
+            C("stash_cancel", "结束整理，立刻赶往东仓。", "A1-TOWN-09",
+              [P("你甩上柜门，朝蓝火跑去。若已放入物品，它们仍留在柜中；耽搁的时间也追不回来。")],
+              [], cond_effects=[{"cond": {"cmp": ["warehouse_stashed", "==", 0]},
+                                  "ops": [setf("warehouse_enemy_advantage", False)]}],
               call="C-04"),
         ],
         "default_next": "A1-TOWN-09",
@@ -598,15 +598,20 @@ def patch_town10_seventh(N):
         n["choices"].insert(0, C(
             "peer_argue", "听另两位持有者争执该去哪治病。", "__SELF__",
             [
-                P("艾德里克咬着字：“先保住还能走的人。”莉瑞尔笑得不好听：“你是说先保住你的离境文书。”"
-                  "索林把锤子搁在膝盖上：“我修得动的东西我修。修不动的，别拿大话压我。”"
-                  "他们没有自动组成拯救小队——每人的私人目标仍在，残片只是把路叠在一起。"),
+                P("火后，各人对治病的办法各有主张。你先确认还有谁愿意留在河岸说话。"),
+                {"t": "say", "who": "艾德里克", "text": "“先保住还能走的人。”",
+                 "cond": ANY({"pc": "edric"}, ALL(flag("met_edric"), NOT(flag("alt_edric_dead"))))},
+                {"t": "say", "who": "莉瑞尔", "text": "“保人，还是保你那张离境文书？先说清楚。”",
+                 "cond": ANY({"pc": "liriel"}, ALL(flag("met_liriel"), NOT(flag("alt_liriel_dead"))))},
+                {"t": "say", "who": "索林", "text": "“我修得动的东西我修。修不动的，别拿大话压我。”",
+                 "cond": ANY({"pc": "thorin"}, ALL(flag("met_thorin"), NOT(flag("alt_thorin_dead"))))},
+                P("他们没有自动组成拯救小队。每人的私人目标仍在，残片只是把路叠在一起。"),
                 FOLD("情欲描写", "争执间隙，莉瑞尔的目光在你喉结上停过一瞬又收回；银链只热了一下。她说：“别用这种时候试我。”——拒绝本身也是她还醒着的证据。",
                      cond={"pc": "edric"}),
                 FOLD("残片侵扰", "旧雨骨把两人的脸叠成边境死者的脸；你必须眨眼几次，才把同伴认回来。", cond={"pc": "edric"}),
                 FOLD("残片侵扰", "裂锤骨想让你砸断这无用的争论。你把锤柄按进泥里，直到手指发疼。", cond={"pc": "thorin"}),
             ],
-            [setf("peer_therapy_argument"), add("truth", 0), setf("met_alt")],
+            [setf("peer_therapy_argument")],
             once=True,
         ))
 
@@ -625,14 +630,18 @@ def patch_shrine_absence(N):
                 s = stack.pop(); walk.append(s); stack.extend(s.get("sub") or [])
             for s in walk:
                 lab = s.get("label", "")
-                if "艾德里克" in lab:
-                    s["cond"] = ALL(s["cond"], NOT(flag("alt_edric_dead"))) if s.get("cond") else ALL(NOT({"pc": "edric"}), NOT(flag("alt_edric_dead")))
-                if "莉瑞尔" in lab or "（莉瑞尔）" in lab:
-                    s["cond"] = ALL(s["cond"], NOT(flag("alt_liriel_dead"))) if s.get("cond") else ALL(NOT({"pc": "liriel"}), NOT(flag("alt_liriel_dead")))
-                if "索林" in lab or "（索林）" in lab:
-                    s["cond"] = ALL(s["cond"], NOT(flag("alt_thorin_dead"))) if s.get("cond") else ALL(NOT({"pc": "thorin"}), NOT(flag("alt_thorin_dead")))
+                for role, name in (("edric", "艾德里克"), ("liriel", "莉瑞尔"), ("thorin", "索林")):
+                    if name in lab:
+                        present = ANY({"pc": role}, ALL(flag(f"met_{role}"), NOT(flag(f"alt_{role}_dead"))))
+                        if nid == "A3-SHRINE-03~2" and s.get("id") in {"s3c6", "s3c7", "s3c8"}:
+                            s["cond"] = present
+                        else:
+                            s["cond"] = ALL(s["cond"], present) if s.get("cond") else present
                 if "请一位同伴自愿留下" in lab:
-                    s["cond"] = ANY(NOT(flag("alt_edric_dead")), NOT(flag("alt_liriel_dead")), NOT(flag("alt_thorin_dead")))
+                    s["cond"] = ANY(*[
+                        ALL(NOT({"pc": role}), flag(f"met_{role}"), NOT(flag(f"alt_{role}_dead")))
+                        for role in ("edric", "liriel", "thorin")
+                    ])
                     # add incomplete party variant nearby — handled in parent shrine patch below
 
     # A3-SHRINE-07 incomplete party option text
@@ -669,6 +678,11 @@ def patch_act1_pressure(N):
 def patch_d_alt_peers(N):
     d = N.get("D-ALT")
     if not d: return
+    d["blocks"] = [P("你只找已经结识、仍能与你说话的持有者。每个人都带着自己的目的与界限。")]
+    for c in d.get("choices") or []:
+        role = {"t1": "edric", "t2": "liriel", "t3": "thorin"}.get(c.get("id"))
+        if role:
+            c["cond"] = ALL(NOT({"pc": role}), flag(f"met_{role}"), NOT(flag(f"alt_{role}_dead")))
     # Expand companion scenes with voice + folds + fall
     for c in d.get("choices") or []:
         if c.get("id") == "t1":  # edric companion
@@ -683,7 +697,7 @@ def patch_d_alt_peers(N):
                 subs.append(C("s1_drink", "看他借酒压记忆（沉沦）。", "__SELF__",
                     [P("他要了最烈的麦酒，喝相不好看。“少记一点，明天还能走路。”这不是策略，是在提前练习放弃。"),
                      FOLD("残片侵扰", "旧雨骨满足地安静了半寸——用遗忘换来的安静。")],
-                    [add("fall", 1), setf("edric_drink_seen")],
+                    [add("fall_edric", 1), setf("edric_drink_seen")],
                     cond=cmp("fall", ">=", 0)))
         if c.get("id") == "t2":  # liriel
             subs = c.setdefault("sub", [])
@@ -695,11 +709,11 @@ def patch_d_alt_peers(N):
                           "她把项圈两个字说得很慢，像已经想象过皮革贴喉、手指从锁骨滑到乳尖、在许可与臣服之间反复练习说停。"
                           "热意明显；她仍把决定权按在自己手上——目前如此。")],
                     [setf("liriel_patron_offer_seen")],
-                    cond=ALL(cmp("fall", ">=", 4), NOT({"pc": "liriel"}))))
+                    cond=cmp("fall_liriel", ">=", 4)))
             # ensure desire sub adds fall
             for s in subs:
                 if s.get("id") == "s2_desire" or "吸引" in s.get("label", ""):
-                    ensure_effect(s, add("fall", 1))
+                    s["effects"] = [e for e in s.get("effects") or [] if e.get("k") != "fall"]
                     if not any(b.get("t") == "fold" for b in s.get("result") or []):
                         s.setdefault("result", []).append(FOLD(
                             "情欲描写",
