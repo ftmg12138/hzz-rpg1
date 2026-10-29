@@ -465,6 +465,52 @@ body::after {
 .chip.good { color: var(--ok); } .chip.bad { color: var(--danger); }
 .reread { color: var(--muted); font-size: 14px; }
 .reread summary { cursor: pointer; margin-bottom: 8px; }
+
+/* Explicit prose foldouts — brass arrow on stone */
+.nsfw-fold {
+  margin: 10px 0 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brass-dark);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #2a241ccc 0%, #1a1713ee 100%);
+  box-shadow: inset 0 1px 0 #b8956a18, var(--glow-brass);
+}
+.nsfw-fold > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--brass-bright);
+  font-size: 13px;
+  letter-spacing: .06em;
+  user-select: none;
+}
+.nsfw-fold > summary::-webkit-details-marker { display: none; }
+.nsfw-fold .fold-arrow {
+  display: inline-block;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 7px;
+  border-color: transparent transparent transparent var(--brass);
+  transition: transform .15s ease;
+  flex: 0 0 auto;
+}
+.nsfw-fold[open] > summary .fold-arrow { transform: rotate(90deg); }
+.nsfw-fold .fold-label { font-family: var(--serif); }
+.nsfw-fold .fold-body {
+  padding: 2px 14px 12px 28px;
+  border-top: 1px dashed var(--line);
+  color: var(--text);
+}
+.nsfw-fold .fold-body .b-p,
+.nsfw-fold .fold-body .b-say,
+.nsfw-fold .fold-body .b-inner {
+  color: #e4d2b8;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
 .hub-status {
   margin-top: 16px; font-size: 13px; color: var(--accent2);
   padding: 6px 12px; border: 1px dashed var(--line);

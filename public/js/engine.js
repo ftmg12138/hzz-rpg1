@@ -224,7 +224,7 @@
     if (choice.hub_count && n.hub) s.vars[n.hub.counter] = num(s, n.hub.counter) + 1;
     apply(s, choice.effects, out.toasts);
     for (const ce of choice.cond_effects || []) if (test(s, ce.cond)) apply(s, ce.ops || ce.effects, out.toasts);
-    out.blocks.push(...(choice.result || []));
+    out.blocks.push(...(choice.result || []).filter((b) => !b.cond || test(s, b.cond)));
     let branch = null;
     if (choice.check) {
       const ck = choice.check;
@@ -237,7 +237,7 @@
       out.check = info; out.checkText = C().describe(info, ck);
       if (auto && ck.auto_text) out.blocks.push({ t: "note", text: ck.auto_text });
       branch = info.ok ? choice.success : choice.fail;
-      if (branch) { apply(s, branch.effects, out.toasts); out.blocks.push(...(branch.result || [])); }
+      if (branch) { apply(s, branch.effects, out.toasts); out.blocks.push(...(branch.result || []).filter((b) => !b.cond || test(s, b.cond))); }
     }
     const subs = visibleSubs(s, nodeId, choice);
     if (subs.length) {

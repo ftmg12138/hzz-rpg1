@@ -73,6 +73,10 @@ def v1_strings(nid, n):
 
 def blocks_strings(where, blocks):
     for b in blocks or []:
+        if b.get("t") == "fold":
+            yield where + ".fold", b.get("label")
+            yield from blocks_strings(where + ".fold", b.get("blocks") or [])
+            continue
         yield where, b.get("text")
         if b.get("who"):
             yield where + ".who", b.get("who")

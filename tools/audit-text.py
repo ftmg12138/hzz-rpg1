@@ -15,16 +15,22 @@ PATS = {
     "fallback 你决定": re.compile(r"^你决定："),
 }
 PAIRS = [("（", "）"), ("“", "”"), ("「", "」"), ("(", ")")]
+def iter_blocks(prefix, blocks):
+    for i, b in enumerate(blocks or []):
+        if b.get("t") == "fold":
+            yield f"{prefix}f{i}", b.get("label", "")
+            yield from iter_blocks(f"{prefix}f{i}.", b.get("blocks") or [])
+        elif b.get("t") != "h":
+            yield f"{prefix}{i}", b.get("text", "")
+
 def texts(n):
-    for i, b in enumerate(n.get("blocks", [])):
-        if b.get("t") != "h": yield f"b{i}", b.get("text", "")
+    yield from iter_blocks("b", n.get("blocks", []))
     st = [(c, c["id"]) for c in n.get("choices", [])]
     while st:
         c, p = st.pop()
         yield p + ".label", c.get("label", "")
         for nm, src in (("r", c), ("ok", c.get("success") or {}), ("ko", c.get("fail") or {})):
-            for j, b in enumerate(src.get("result") or []):
-                yield f"{p}.{nm}{j}", b.get("text", "")
+            yield from iter_blocks(f"{p}.{nm}", src.get("result") or [])
         st += [(s, p + "/" + s["id"]) for s in c.get("sub") or []]
 hits = {k: [] for k in PATS}
 for nid, n in N.items():

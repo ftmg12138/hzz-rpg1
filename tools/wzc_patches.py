@@ -14,6 +14,25 @@ ROOT = Path(__file__).resolve().parents[1]
 # ------------------------------------------------------------------ small builders
 def P(text): return {"t": "p", "text": text}
 def SAY(who, text): return {"t": "say", "who": who, "text": text}
+
+def FOLD(label, *parts, **kw):
+    """Collapsed explicit prose. UI renders as ▸ label; click expands nested blocks.
+    Markup in nodes.json: {"t":"fold","label":"情欲描写","blocks":[...]}
+    Optional cond on the fold itself (same as other blocks).
+    """
+    blocks = []
+    for part in parts:
+        if isinstance(part, str):
+            blocks.append(P(part))
+        elif isinstance(part, dict):
+            blocks.append(part)
+        else:
+            blocks.extend(part)
+    out = {"t": "fold", "label": label or "情欲描写", "blocks": blocks}
+    if "cond" in kw and kw["cond"] is not None:
+        out["cond"] = kw["cond"]
+    return out
+
 def add(k, v=1): return {"op": "add", "k": k, "v": v}
 def setf(k, v=True): return {"op": "set", "k": k, "v": v}
 def item(k): return {"op": "item", "k": k}
@@ -90,6 +109,7 @@ def apply(N, epis):
     greybridge(N)
     dialogues(N)
     liriel_desire(N)
+    companion_liriel_intimacy(N)
     city(N)
     mine(N)
     shrine(N)
@@ -373,27 +393,30 @@ def dialogues(N):
         N["D-ALT"]["blocks"] = [P("另一位残片持有者注意到了你，停下了手里的事。")]
 
 # ---------------------------------------------------------------- liriel desire / intimacy (consensual adult)
+# ---------------------------------------------------------------- liriel desire / intimacy (consensual adult)
 def liriel_desire(N):
-    """Make necklace-driven desire / charm rendezvous scenes more direct across Liriel's arc.
+    """Necklace-driven desire / charm scenes: tame surface + foldout explicit prose.
 
-    Voluntary intimacy: explicit physical prose.
-    Charm paths the player chose: describe the resulting sex/rendezvous explicitly,
-    while keeping the moral cost (corruption / hollow consent) visible.
-    Non-con that the player forces mid-scene still cuts short where already designed that way.
+    Foldouts use block type `fold` (see FOLD()). Surface lines stay readable;
+    ▸ 情欲描写 expands the direct sex/desire beats. Charm that hollows consent
+    keeps the moral cost visible; mid-scene forced non-con still cuts short.
     """
-    # ---- L-PRO-02 first touch: bodily hunger, not just "intuition"
+    # ---- L-PRO-02 first touch
     n = N["L-PRO-02"]
     for b in n["blocks"]:
-        if "地窖外有脚步" in b.get("text", ""):
+        if "地窖外有脚步" in b.get("text", "") or "银链在你掌中震动" in b.get("text", ""):
             b["text"] = (
                 "地窖外有脚步。一个陌生男人低声咒骂，正用铁钩拨开门边的石块。"
-                "银链在你掌中震动，热意沉进小腹——你忽然非常清楚自己可以怎样让他放下戒心："
-                "把声音放软，让呼吸显得慌乱，让他相信你需要他，甚至相信他可以碰你。"
+                "银链在你掌中震动，热意沉进小腹——你忽然非常清楚自己可以怎样让他放下戒心。"
             )
     c = find(n, "把银链戴上")
     c["result"] = [
-        P("你把银链绕上颈窝。热意立刻沉进乳尖与腿根。你靠近门边，声音里带上一点恰好的颤抖：“我被困住了。请帮帮我。”"),
-        P("男人立刻丢下铁钩来搬石头，目光黏在你唇上与领口，甚至没有先问你是谁。银链满意地轻颤。"),
+        P("你把银链绕上颈窝。热意立刻沉下来。你靠近门边，声音放软：“我被困住了。请帮帮我。”男人丢下铁钩来搬石头，甚至没有先问你是谁。"),
+        FOLD(
+            "情欲描写",
+            "银链一贴皮肤，乳尖与腿根就发烫发软。你把呼吸调得恰好像受惊，让领口松一点，让他的目光黏上来。"
+            "他搬石头时裤裆已经顶起形状；银链满意地轻颤——它要的不是求救，是你把自己当成诱饵的那一刻。",
+        ),
     ]
     c = find(n, "咬住舌尖")
     if c.get("success"):
@@ -401,41 +424,55 @@ def liriel_desire(N):
     if c.get("fail"):
         c["fail"]["result"] = [P("亲近的冲动没压干净，你仍未使用魅惑——只是心神发颤，下一句好话会更难说稳。")]
 
-    # ---- L-PRO-06 charm lure: seed the later stalker with bodily hunger
+    # ---- L-PRO-06 charm lure
     n = N["L-PRO-06"]
     c = find(n, "用银链引开")
     c["result"] = [
-        P("你让银链发热，对靠外的男人轻轻开口：“跟我来。我想单独……跟你说。”他的瞳孔放大，裤裆顶起形状，丢下同伴跟你走进雨里。"),
-        P("你在巷角把他按在湿墙上，舌尖刚触到他喉结——随即一肘砸上他的侧腹，夺刀回身偷袭另一个。女孩得救了。"),
-        P("被你点着欲火又丢下的男人会在镇里执着寻找你：他记得的不是刀，是你贴上来时的体温。"),
+        P("你让银链发热，对靠外的男人轻声说：“跟我来。我想单独跟你说。”他丢下同伴跟你走进雨里。巷角交手之后女孩得救了；被你点着欲火又丢下的男人，会在镇里执着寻找你。"),
+        FOLD(
+            "情欲描写",
+            "他的瞳孔放大，裤裆顶起形状。你在巷角把他按在湿墙上，舌尖刚触到他喉结——随即一肘砸上侧腹，夺刀回身偷袭另一个。"
+            "他记得的不是刀，是你贴上来时的体温与未兑现的交合。",
+        ),
     ]
     ensure_effect(c, setf("enchanted_follower_pending"))
 
     # ---- L-PRO-07 first full desire intrusion
     n = N["L-PRO-07"]
     n["blocks"] = [
-        P("雨停了。凯尔或妮芙若在，会走在前方，湿衣贴着肩背；若只剩你一人，路旁旅舍的窗里透出暖光，有人正在唱一首你听不懂的人类情歌。"),
-        P("银链骤然收紧。热意从腕间沉进小腹，再往更私密处涌——乳头发硬，腿根发软，呼吸一下子乱了。你想被手掌按住腰，想被嘴唇堵住未说完的话，想用交合确认自己不是地窖里那个屏住呼吸的影子。欲望先是身体里的热，随后变成更难承认的东西：如果别人真正渴望你，你就暂时不用判断自己值不值得活。"),
+        P("雨停了。凯尔或妮芙若在，会走在前方；若只剩你一人，路旁旅舍窗里透出暖光。"),
+        P("银链骤然收紧。热意从腕间沉进小腹，呼吸乱了——欲望先是身体里的热，随后变成更难承认的东西：如果别人真正渴望你，你就暂时不用判断自己值不值得活。"),
+        FOLD(
+            "情欲描写",
+            "乳头发硬，腿根发软。你想被手掌按住腰，想被嘴唇堵住未说完的话，想用交合确认自己不是地窖里那个屏住呼吸的影子。"
+            "银链把“被进入、被弄到发抖”熨进每一口呼吸里。",
+        ),
     ]
     c = find(n, "向愿意的人提出亲近")
     c["label"] = "向愿意的人提出亲近，并允许对方真实回答。"
     c["result"] = [
-        P("你没有催动银链。你把话说清楚：你现在想被抱、被进入、被弄到发抖——但对方可以说不。"),
+        P("你没有催动银链。你把话说清楚：你现在想被抱、想亲近——但对方可以说不。"),
         {
             "t": "p",
-            "text": "凯尔听完，喉结滚动一下：“现在不行。但你可以走近一点。”他让你的肩贴上他的，掌心扣住你的指节，拇指在你腕内侧慢慢摩挲。没有更进一步，可那体温足够让银链松一寸。",
+            "text": "凯尔听完，喉结滚动一下：“现在不行。但你可以走近一点。”他让你的肩贴上他的，掌心扣住你的指节。没有更进一步，可那体温足够让银链松一寸。",
             "cond": {"cmp": ["rel.kael", ">=", 1]},
         },
         {
             "t": "p",
-            "text": "妮芙握住你的手，掌心有泥和汗：“我可以陪你走。不是你欠我的，也不是今晚就得脱衣服。”她把你拉到屋檐下，额头抵着你的。银链不满地轻颤，却找不到可趁的缝。",
+            "text": "妮芙握住你的手：“我可以陪你走。不是你欠我的，也不是今晚就得脱衣服。”她把你拉到屋檐下，额头抵着你的。银链不满地轻颤，却找不到可趁的缝。",
             "cond": {"all": [{"flag": "saved_neve"}, {"not": {"cmp": ["rel.kael", ">=", 1]}}]},
         },
         {
             "t": "p",
-            "text": "旅舍里有个愿意的陌生人。你们关上门，他先问了一句“你确定？”你把银链藏进袖口，自己去解他的扣子。他的手顺着你的腰滑进裙摆，手指探进湿热处时你咬住了他的肩；随后他把你抵在床沿进入，每一次顶撞都让银链轻轻发颤，却无法替任何人开口。你高潮时叫出了声，他也射在里面——都是自愿，没有魅惑。事后你按旅舍规矩付清房钱。银链安静了一阵，像被喂饱。",
+            "text": "旅舍里有个愿意的陌生人。你们关上门；他先问了一句“你确定？”事后你按旅舍规矩付清房钱。银链安静了一阵，像被喂饱。",
             "cond": {"all": [{"not": {"cmp": ["rel.kael", ">=", 1]}}, {"not": {"flag": "saved_neve"}}]},
         },
+        FOLD(
+            "情欲描写",
+            "你把银链藏进袖口，自己去解他的扣子。他的手顺着你的腰滑进裙摆，手指探进湿热处时你咬住了他的肩；随后他把你抵在床沿进入，每一次顶撞都让银链轻轻发颤，却无法替任何人开口。"
+            "你高潮时叫出了声，他也射在里面——都是自愿，没有魅惑。",
+            cond={"all": [{"not": {"cmp": ["rel.kael", ">=", 1]}}, {"not": {"flag": "saved_neve"}}]},
+        ),
     ]
     c["effects"] = [add("fragment_pressure", -1)]
     c["cond_effects"] = [
@@ -446,39 +483,49 @@ def liriel_desire(N):
     ]
 
     c = find(n, "利用银链确保对方不会拒绝")
-    c["result"] = [P("银链一热，对方的眼神就空了。身体还在迎合，可回应里没有本人。你得到短暂安抚，随即恶心：那不是自愿。画面在这里切断。")]
+    c["result"] = [
+        P("银链一热，对方的眼神就空了。你得到短暂安抚，随即恶心：那不是自愿。画面在这里切断。"),
+        FOLD("情欲描写", "身体还在迎合，可回应里没有本人——只有被银链点着的机械动作。你没有把这一场写完整。"),
+    ]
 
     c = find(n, "把冲动转成坦白")
-    c["result"] = [P("你告诉同行者：“我现在很想让人按住我、进入我，证明我不是多余的。这不是请求，只是事实。”银链不满地收紧，却找不到可替你开口的缝。")]
+    c["result"] = [
+        P("你告诉同行者：“我现在很想亲近，证明我不是多余的。这不是请求，只是事实。”银链不满地收紧，却找不到可替你开口的缝。"),
+        FOLD("情欲描写", "你说得更直白：想让人按住你、进入你。对方听完，只按自己的意愿回应；银链找不到命令可下。"),
+    ]
 
     c = find(n, "独自压下去")
-    c["success"]["result"] = [P("你靠在湿树上，手指抠进树皮，直到大腿内侧的颤意退去。银链还在跳，可你没有把它指向任何人。")]
+    c["success"]["result"] = [P("你靠在湿树上，直到那一阵颤意退去。银链还在跳，可你没有把它指向任何人。")]
     c["fail"]["result"] = [P("欲望没压住，你仍独自熬过了这一阵。没有伤害别人，只是腿软得几乎站不稳。")]
 
     c = find(n, "用刀尖在银片上刻一道痕")
     c["result"] = [P("刀尖划过银片，血珠滚进刻痕。痛意压过情欲半拍。你提醒它：这具身体是谁的。")]
 
-    # ---- L-PRO-08 charm the gate guard (user's quoted coy blurb)
+    # ---- L-PRO-08 charm the gate guard
     n = N["L-PRO-08"]
     c = find(n, "魅惑守门兵")
     c["label"] = "魅惑守门兵"
     c["result"] = [
-        P("你把银链按在锁骨下，声音放软到几乎像叹息：“放我进城。夜里……来找我。”守门兵喉结滚动，登记册滑到一边，瞳孔深处的戒备被欲念冲垮。他不问姓名，只低声报了巷口旅舍的后门。"),
-        P("换岗后他果然擅离岗位摸进来。门一闩上，他的手就急着扯开你的衣带、揉你的乳尖，裤裆硬挺着顶在你小腹上——那不是谈妥边界的邀请，是银链替他点着的火。你把他按到墙板反客为主，自己坐下去吃进他的阴茎；木板随着顶撞轻响，你高潮时咬着他的肩叫出声，他也射在里面，还喘着求再来一次。"),
-        P("天亮后军务处通报：灰桥东门守兵擅离职守，记大过并调离。城镇公告栏多了一条含糊的「纪律处罚」新闻。残片的低语贴得更近，像满意地舔过耳廓。"),
+        P("你把银链按在锁骨下，声音放软：“放我进城。夜里……来找我。”守门兵放行，并报了巷口旅舍的后门。"),
+        P("换岗后他果然擅离岗位摸进来。天亮后军务处通报：灰桥东门守兵擅离职守，记大过并调离。城镇公告栏多了一条含糊的「纪律处罚」新闻。残片的低语贴得更近。"),
+        FOLD(
+            "情欲描写",
+            "门一闩上，他的手就急着扯开你的衣带、揉你的乳尖，裤裆硬挺着顶在你小腹上——那不是谈妥边界的邀请，是银链替他点着的火。"
+            "你把他按到墙板反客为主，自己坐下去吃进他的阴茎；木板随着顶撞轻响，你高潮时咬着他的肩叫出声，他也射在里面，还喘着求再来一次。"
+            "残片的低语像满意地舔过耳廓。",
+        ),
     ]
     ensure_effect(c, setf("enchanted_follower_pending"))
     ensure_effect(c, setf("charm_guard_news"))
 
-    # ---- A1-TOWN-04 Mira: upgrade parsed liriel intimacy topic (drop designer-leak duplicate)
+    # ---- A1-TOWN-04 Mira
     mira = N["A1-TOWN-04"]
     for b in mira["blocks"]:
-        if b.get("text", "").startswith("米拉一眼看出"):
-            b["text"] = "米拉一眼看出银链带来的躁动：你的瞳孔偏大，喉结轻滚，坐下时双腿不自觉地并紧。"
+        if b.get("text", "").startswith("米拉一眼看出") or "银链带来的躁动" in b.get("text", ""):
+            b["text"] = "米拉一眼看出银链带来的躁动：你的瞳孔偏大，坐下时双腿不自觉地并紧。"
         if "欲望不是罪" in b.get("text", ""):
-            b["text"] = "“欲望不是罪。想被操、想被抱紧，都不是。把别人的回答拿走，才是。”"
+            b["text"] = "“欲望不是罪。想被抱紧、想亲近，都不是。把别人的回答拿走，才是。”"
 
-    # Remove any prior patch-inserted duplicate.
     mira["choices"] = [c for c in mira["choices"] if c.get("id") != "t_desire"]
 
     topic = next((c for c in mira["choices"] if "亲近而非沉沦" in c.get("label", "") or c.get("id") == "t_desire"), None)
@@ -493,8 +540,9 @@ def liriel_desire(N):
     topic["once"] = True
     topic["next"] = None
     topic["result"] = [
-        SAY("米拉", "“银链放大的是欲望，不只是想上床。想被爱、想让人别走、想让一句拒绝消失，都是。想被进入、想叫出声，也可以。别恨自己的渴望。盯着你打算让谁替它付账。”"),
+        SAY("米拉", "“银链放大的是欲望，不只是想上床。想被爱、想让人别走、想让一句拒绝消失，都是。别恨自己的渴望。盯着你打算让谁替它付账。”"),
         P("她把一串钥匙转了半圈，等你自己选。"),
+        FOLD("情欲描写", "她说得更直白：想被进入、想叫出声，也可以——只要对方还能说停。"),
     ]
     topic["effects"] = []
     topic["sub"] = [
@@ -503,8 +551,12 @@ def liriel_desire(N):
             "请她安排一场双方都自愿的亲近。",
             "__SELF__",
             [
-                P("米拉带你见了一位同样自愿、且听过边界说明的客人。门关上之后，没有魅惑，没有“不会拒绝”的把戏。"),
-                P("对方先问你哪里可以碰。你把银链摘下放在枕边，自己跨坐上去，引导对方的手指、再引导进入。肉体撞在一处时银链在枕边轻颤，却插不进你们的对话——你们都能说停。汗、喘息、小腹痉挛的高潮都是你们自己选的。淡出前，米拉在门外敲了一下，提醒时辰。"),
+                P("米拉带你见了一位同样自愿、且听过边界说明的客人。门关上之后，没有魅惑，没有“不会拒绝”的把戏。淡出前，米拉在门外敲了一下，提醒时辰。"),
+                FOLD(
+                    "情欲描写",
+                    "对方先问你哪里可以碰。你把银链摘下放在枕边，自己跨坐上去，引导对方的手指、再引导进入。"
+                    "肉体撞在一处时银链在枕边轻颤，却插不进你们的对话——你们都能说停。汗、喘息、小腹痉挛的高潮都是你们自己选的。",
+                ),
             ],
             [add("time"), add("fragment_pressure", -1), {"op": "item", "k": "shaken", "v": False}, setf("mira_intimate_done"), setf("visited_mira")],
             once=True,
@@ -536,61 +588,102 @@ def liriel_desire(N):
     c["result"] = [P("你在橱窗前多站了一会儿。镜中那张“更好看”的脸朝你微笑——耳形更尖，目光更冷。你没有触碰银链，幻象自己散了。")]
 
     des1 = N["R-DES-01"]
-    des1["blocks"] = [P("同伴说要去执行后援。银链却把“留下”熨进舌尖：留下，留下来抱我，留下来别让这具身体空着。话到嘴边，几乎要变成命令。")]
+    des1["blocks"] = [
+        P("同伴说要去执行后援。银链却把“留下”熨进舌尖：留下来，别让这具身体空着。话到嘴边，几乎要变成命令。"),
+        FOLD("情欲描写", "它要的不只是陪伴——是留下来抱你，摸到你发抖，用交合把后援时辰一起吞掉。"),
+    ]
     c = find(des1, "请求而不强迫")
-    c["result"] = [P("你只说：“我想你留下。我想被抱紧，被摸到发抖——你可以拒绝。”对方按自己的意愿答了。被拒绝也让压力松了一点——因为边界还在。")]
+    c["result"] = [
+        P("你只说：“我想你留下。你可以拒绝。”对方按自己的意愿答了。被拒绝也让压力松了一点——因为边界还在。"),
+        FOLD("情欲描写", "你把话说全：想被抱紧，被摸到发抖。对方听完，只给了自己愿意给的那一部分。"),
+    ]
     c = find(des1, "魅惑留下")
     c["result"] = [
-        P("银链一紧，同伴的脚步顿住。你把他的手按上自己的腰、再往下滑进衣摆；他眼神发空，却仍硬着身子把你抵在墙角亲吻、抚摸，直到后援时辰错过。"),
-        P("效果解除后，对方想起那晚的空白与你身上的味道，关系崩了一角。后援失败。"),
+        P("银链一紧，同伴的脚步顿住。他把你抵在墙角，直到后援时辰错过。效果解除后关系崩了一角；后援失败。"),
+        FOLD(
+            "情欲描写",
+            "你把他的手按上自己的腰、再往下滑进衣摆；他眼神发空，却仍硬着身子亲吻、抚摸。"
+            "事后他想起那晚的空白与你身上的味道，像吞下一根刺。",
+        ),
     ]
 
     des3 = N["R-DES-03"]
-    des3["blocks"] = [P("旅店侍者被银链牵着，声音发紧：“今晚的房费……算我的。”他的目光停在你唇上、锁骨上，再往下顶起裤裆，像已经在想象把你按在门板上操。那不是清醒的邀请。")]
+    des3["blocks"] = [
+        P("旅店侍者被银链牵着，声音发紧：“今晚的房费……算我的。”他的目光停在你唇上、锁骨上。那不是清醒的邀请。"),
+        FOLD("情欲描写", "裤裆顶起形状，像已经在想象把你按在门板上操。银链替他说完了那句不该说的话。"),
+    ]
     c = find(des3, "接受但明确只要房间")
     c["result"] = [P("你收下免单，却把门从里面闩上，只睡不碰。门外他喘了一会儿才离开。即便如此，你仍在用银链扭曲过的同意换舒适——腐化悄然加深。")]
     c = find(des3, "付全价并拉开距离")
-    c["result"] = [P("你把三张商会券拍在柜上，后退一步：“我要的是床，不是你的鸡巴。”他眨眼，欲望像潮水退去，剩下尴尬的红晕。")]
+    c["result"] = [
+        P("你把三张商会券拍在柜上，后退一步：“我要的是床。”他眨眼，欲望像潮水退去，剩下尴尬的红晕。"),
+        FOLD("情欲描写", "你说得更硬：“我要的是床，不是你的鸡巴。”"),
+    ]
     c = find(des3, "问对方原本想说什么")
-    c["result"] = [P("他眨眼后抹了把脸：“其实客满。刚才那句……我不该那么说。”裤裆还没完全软下去。你可离开。")]
+    c["result"] = [P("他眨眼后抹了把脸：“其实客满。刚才那句……我不该那么说。”你可离开。")]
     c = find(des3, "加深影响索取情报")
-    c["result"] = [P("你让银链再热一分。他喘着把仓库暗门的位置说完，手指急着去解你的衣带、想把你按在柜台上。你按住他的手，只要情报，不给下面那一场。")]
+    c["result"] = [
+        P("你让银链再热一分。他把仓库暗门的位置说完；你按住他的手，只要情报，不给下面那一场。"),
+        FOLD("情欲描写", "他的手指急着去解你的衣带、想把你按在柜台上。你只要地图上的缝，不要他的阴茎。"),
+    ]
 
     des4 = N["R-DES-04"]
-    des4["blocks"] = [P("银链贴着皮肤发烫，低语清晰：只要提起凯尔当年的迟疑，他就不会拒绝任何请求——包括跟你上床，包括替你去死。")]
+    des4["blocks"] = [
+        P("银链贴着皮肤发烫，低语清晰：只要提起凯尔当年的迟疑，他就不会拒绝任何请求。"),
+        FOLD("情欲描写", "包括跟你上床，包括替你去死——银链把愧疚和情欲拧成同一根绳子。"),
+    ]
     c = find(des4, "使用愧疚让他冒险")
     c["result"] = [P("你提起那晚他晚到半个时辰。他脸色发白，却仍照你的话冒险。任务成了；他看你的眼神多了一层屈辱。腐化加深。")]
     c = find(des4, "直接提出请求")
     c["result"] = [P("你不提旧事，只把请求说清楚。他按你们现在的关系回答——没有银链替你撬开的缝。")]
     c = find(des4, "告诉他银链给了这个念头")
-    c["result"] = [P("你坦白：“银链让我觉得，只要提起那晚，你就会答应我任何事——包括抱我。”凯尔沉默片刻：“谢谢你没把诚实也当武器。”")]
+    c["result"] = [
+        P("你坦白：“银链让我觉得，只要提起那晚，你就会答应我任何事。”凯尔沉默片刻：“谢谢你没把诚实也当武器。”"),
+        FOLD("情欲描写", "你把后半句也说了：包括抱我。他听完，只点了点头，没有退开，也没有扑上来。"),
+    ]
     c = find(des4, "不请求")
     c["result"] = [P("你什么也没有要求。欲念在舌尖转了一圈又咽回去。凯尔的愧疚留在了他自己心里。")]
 
     des5 = N["R-DES-05"]
-    des5["blocks"] = [P("礼拜堂伤员握住你的手说“别走”。他不是爱你，只是痛和害怕；可被需要的感觉仍像火——银链甚至想把这点火扭成“留下，让他靠着你的身体入睡”。")]
+    des5["blocks"] = [
+        P("礼拜堂伤员握住你的手说“别走”。他不是爱你，只是痛和害怕；可被需要的感觉仍像火。"),
+        FOLD("情欲描写", "银链甚至想把这点火扭成“留下，让他靠着你的身体入睡”——把护理扭成床笫。"),
+    ]
     c = find(des5, "陪到药生效")
     c["result"] = [P("你留下来握着他的手，直到药力压住呻吟。没有更越界的触碰。艾琳向你点了点头。")]
     c = find(des5, "让银链延长依赖")
-    c["result"] = [P("你让银链轻颤。伤员抓紧你的指节，把脸埋进你掌心，像抓住唯一能填满空洞的体温。腐化加深；下次你离开时，他会恐慌发作。")]
+    c["result"] = [P("你让银链轻颤。伤员抓紧你的指节，把脸埋进你掌心。腐化加深；下次你离开时，他会恐慌发作。")]
     c = find(des5, "温和抽手叫修女来")
     c["result"] = [P("你轻轻抽手，把修女唤来。“他需要的是药，不是我的身体。”边界清楚，银链不满地凉下去。")]
 
     des6 = N["R-DES-06"]
     des6["blocks"] = [
-        P("先前被你魅惑过的男人堵住巷口。雨淋湿他的衣领，他却硬着嗓子说你们“命中注定”。他记得的是你的味道、你腿间的热，以及被丢下后整夜未能发泄的欲火——既可怜，又危险。"),
+        P("先前被你魅惑过的男人堵住巷口。雨淋湿他的衣领，他却硬着嗓子说你们“命中注定”。既可怜，又危险。"),
+        FOLD(
+            "情欲描写",
+            "他记得的是你的味道、你腿间的热，以及被丢下后整夜未能发泄的欲火——裤裆可耻地支着，却把那当成爱。",
+        ),
     ]
     c = find(des6, "解除并坦白影响")
-    c["success"]["result"] = [P("你握住银链反向一拧，把话说死：“是我骗了你的身体。那晚不是爱。”他崩溃跪地，随后踉跄离开，裤裆还可耻地支着。")]
+    c["success"]["result"] = [
+        P("你握住银链反向一拧，把话说死：“是我骗了你。那晚不是爱。”他崩溃跪地，随后踉跄离开。"),
+        FOLD("情欲描写", "你说得更狠：骗的是他的身体。离开时他裤裆还可耻地支着。"),
+    ]
     c["fail"]["result"] = [P("他不听。欲念转成怒火，他扑上来撕你的衣领，短兵相接。")]
     c = find(des6, "再次命令忘掉")
-    c["result"] = [P("银链再热一分。他眼里的欲火熄成空白，连同那晚你骑在他身上的记忆一起被抹掉。他茫然走开。腐化加深。")]
+    c["result"] = [
+        P("银链再热一分。他眼里的欲火熄成空白，连同那晚的记忆一起被抹掉。他茫然走开。腐化加深。"),
+        FOLD("情欲描写", "被抹掉的还包括你骑在他身上的画面——只剩潮湿的空白。"),
+    ]
     c = find(des6, "交给米拉安置")
-    c["result"] = [P("你把他还硬着、却说不出完整句子的人交给米拉。她会锁好房间、等他重新想起自己是谁——而不是你腿间的热。")]
+    c["result"] = [
+        P("你把他交给米拉。她会锁好房间、等他重新想起自己是谁。"),
+        FOLD("情欲描写", "他还硬着、说不出完整句子——记得的不是名字，是你腿间的热。"),
+    ]
     c = find(des6, "杀死以绝后患")
-    c["result"] = [P("短兵相接。你在他扑上来解你腰带时刺穿他的喉。残酷加深；巷口的雨洗不掉那点未散的腥气。")]
+    c["result"] = [P("短兵相接。你在他扑上来时刺穿他的喉。残酷加深；巷口的雨洗不掉那点未散的腥气。")]
 
-    # ---- Companion hub: when asking Liriel (as NPC) to charm a guard
+    # ---- Companion hub: ask Liriel to charm a guard
     if "D-ALT" in N:
         for c in N["D-ALT"]["choices"]:
             if c.get("id") != "t2":
@@ -599,17 +692,169 @@ def liriel_desire(N):
                 if "魅惑守卫" in s.get("label", ""):
                     s["result"] = [
                         P("你要莉瑞尔用银链迷倒守卫。她盯着你看了很久，拇指摩过银片。"),
-                        P("若守卫危险且另有退路，她会摇头：“我可以自己挨刀。别让我再替别人决定他想不想硬着鸡巴跟上来。”你尊重这句拒绝时，她眼里会多一点真的信任。"),
-                        P("若她照做：声音放软，守卫瞳孔一散，跟着进暗巷。门后是急促的解带声与压抑呻吟——她用被点着的交合换过路。出来时银链发烫，她不看你：“下次你自己骑上去。”"),
+                        P("若守卫危险且另有退路，她会摇头拒绝；你尊重这句拒绝时，她眼里会多一点真的信任。若她照做：守卫跟着进暗巷，她用被点着的交合换过路，出来时银链发烫，她不看你。"),
+                        FOLD(
+                            "情欲描写",
+                            "拒绝时她会说：“我可以自己挨刀。别让我再替别人决定他想不想硬着鸡巴跟上来。”"
+                            "照做时：声音放软，守卫瞳孔一散；门后是急促的解带声与压抑呻吟。出来时她只丢下一句：“下次你自己骑上去。”",
+                        ),
                     ]
 
-    # D-NPC-MIRA liriel flavor
     if "D-NPC-MIRA" in N:
         for b in N["D-NPC-MIRA"]["blocks"]:
             if "银链放大的是欲望" in b.get("text", ""):
-                b["text"] = "“银链放大的是欲望，不只是想上床。想被爱、想让人别走、想让一句拒绝消失，都是。想被进入、想叫出声，也可以。别恨自己的渴望。盯着你打算让谁替它付账。”"
-            if b.get("text", "").startswith("允许一次将强制魅惑"):
+                b["text"] = "“银链放大的是欲望，不只是想上床。想被爱、想让人别走、想让一句拒绝消失，都是。别恨自己的渴望。盯着你打算让谁替它付账。”"
+            if b.get("text", "").startswith("允许一次将强制魅惑") or b.get("text", "").startswith("这句话可当作"):
                 b["text"] = "这句话可当作高压侵扰时的锚：把强制魅惑改成坦白，而不是再点一把别人的欲火。"
+
+
+def companion_liriel_intimacy(N):
+    """Edric / Thorin paths: first meeting Liriel, and companion hangouts — foldout desire where chemistry fits."""
+    # ---- A1-TOWN-02 first recognition (Edric meets Liriel at the dark table)
+    tavern = N.get("A1-TOWN-02")
+    if tavern:
+        # Flavor when Edric sees her: attraction / silver-chain tension, not forced sex
+        for b in tavern["blocks"]:
+            if b.get("cond") == {"pc": "edric"} or (isinstance(b.get("cond"), dict) and b.get("cond").get("pc") == "edric"):
+                if "莉瑞尔坐在最暗的桌边" in b.get("text", ""):
+                    b["text"] = (
+                        "莉瑞尔坐在最暗的桌边，与凯尔低声争论是否公开一份旧名单。"
+                        "她腕间的银链偶尔反光；你移开视线时，仍觉得那一点凉意像贴上了自己的脉搏。"
+                    )
+        # Insert fold after edric-specific block if not already present
+        has_fold = any(b.get("t") == "fold" and b.get("cond", {}).get("pc") == "edric" for b in tavern["blocks"])
+        if not has_fold:
+            insert_at = next((i + 1 for i, b in enumerate(tavern["blocks"]) if b.get("cond", {}).get("pc") == "edric"), None)
+            if insert_at is not None:
+                tavern["blocks"].insert(
+                    insert_at,
+                    FOLD(
+                        "情欲描写",
+                        "近看时你才发现她领口下的锁骨被银链磨出浅痕，呼吸略急——像刚压下一阵不该在公共场合发作的热。"
+                        "她抬眼掠过你时，那一瞥里有评估，也有一闪而过的、几乎像邀请的湿意。你握紧杯柄，告诉自己那只是烛火。",
+                        cond={"pc": "edric"},
+                    ),
+                )
+
+        t4 = next((c for c in tavern["choices"] if c.get("id") == "t4" or "第一次相认" in c.get("label", "")), None)
+        if t4:
+            # Keep generic surface; add PC-conditional foldouts for meeting Liriel (edric) or later chemistry notes
+            base = [
+                P("两个残片容器靠近时，你与对方同时听见低鸣。"),
+                P("杯中麦酒泛起四圈波纹。你身上的容器发热；对方也立刻按住了某处衣物。你们对视时，都知道对方看见了同一条不存在的线，正从脚下伸向南方矿区。"),
+                {
+                    "t": "p",
+                    "text": "暗桌边的莉瑞尔抬起眼。银链在她腕间轻轻一跳，像认出了你怀里的旧雨骨。",
+                    "cond": {"pc": "edric"},
+                },
+                FOLD(
+                    "情欲描写",
+                    "她把手指按在银片上，指节发白——不是怕你，是怕银链把“靠近他”说成命令。"
+                    "你闻到雨、麦酒，和她身上一丝被强行压下的甜热。桌下她的膝几乎碰到你的；谁也没有再挪开。"
+                    "若你愿意，这一晚本可以只剩呼吸与未说完的邀请；她等你先开口，也等自己还能说不。",
+                    cond={"pc": "edric"},
+                ),
+            ]
+            # Don't wipe sub results; only replace parent result
+            t4["result"] = base
+
+            # Sub: show container — edric×liriel spark
+            for s in t4.get("sub") or []:
+                if s.get("id") == "s4c1" or "展示自己的容器" in s.get("label", ""):
+                    s["result"] = [
+                        P("你把自己的残片放在桌上。对方愣了一下，随即也掏出了自己的。"),
+                        {
+                            "t": "p",
+                            "text": "莉瑞尔的银链与你的容器隔空共鸣，两人都微微抬头，像被同一根弦弹了一下。",
+                            "cond": {"pc": "edric"},
+                        },
+                        FOLD(
+                            "情欲描写",
+                            "共鸣不只在骨头里。她的瞳孔微微放大，唇线发干；你察觉自己也硬了半分，随即被她一声轻咳打断。"
+                            "“别误会，”她低声说，却没有收回手，“它喜欢靠近会发热的东西。我不一定喜欢。”——话里留了缝，也留了退路。",
+                            cond={"pc": "edric"},
+                        ),
+                    ]
+                if s.get("id") == "s4c3" or "提出合作" in s.get("label", ""):
+                    s["result"] = [
+                        P("“到矿区为止，我们一起走。”对方想了想，点了点头。"),
+                        {
+                            "t": "p",
+                            "text": "莉瑞尔把银链藏进袖口：“一起走可以。别命令我喜欢你。”",
+                            "cond": {"pc": "edric"},
+                        },
+                        FOLD(
+                            "情欲描写",
+                            "她靠得更近时，袖口里的银链仍在发烫。你听得见她压低的呼吸：“路上若它又发作……你问我，别替我答。”"
+                            "那句话把可能发生的交合与绝对不允许的魅惑划开了。",
+                            cond={"pc": "edric"},
+                        ),
+                    ]
+
+    # ---- D-ALT Liriel-as-companion: deepen hangouts for Edric & Thorin
+    dalt = N.get("D-ALT")
+    if not dalt:
+        return
+    for c in dalt["choices"]:
+        if c.get("id") != "t2":
+            continue
+        # Soften intro when talking to her as companion
+        if not any(b.get("t") == "fold" for b in dalt.get("blocks") or []):
+            # keep global blocks tame; per-sub handles intimacy
+            pass
+        for s in c.get("sub") or []:
+            lab = s.get("label", "")
+            if "银链在说什么" in lab:
+                s["result"] = [
+                    P("“它不说。它让我的话听起来像我本来就想说，然后等我责怪它。”莉瑞尔把拇指按在银片上，停了一停。"),
+                    FOLD(
+                        "情欲描写",
+                        "她看着你（无论你是艾德里克还是索林），喉结轻滚：“有时它让我想被按在墙上亲到腿软——然后看我恨不恨自己把愿望说成你的错。”"
+                        "银链发热，她却把话说完，没有伸手拉你。边界还在：你可以走，也可以问下一步。",
+                    ),
+                ]
+            elif "坦白苔冠" in lab:
+                s["result"] = [
+                    P("你问她愿不愿意亲口说说苔冠的事。她沉默了很久：“等我准备好。”"),
+                    FOLD(
+                        "情欲描写",
+                        "她的指尖在你手腕内侧停了一秒，像试探温度，又像索取一点非银链的安慰。"
+                        "“别用身体换我的秘密，”她说，“若哪天我想要你，我会自己说——不是它替我说。”",
+                    ),
+                ]
+            elif "安静地待一会儿" in lab or "刻一个点" in lab:
+                s["result"] = [
+                    P("她让你用小刀在银片背面刻一个点。“若它把我的愿望说成命令，你提醒我这是我自己刻的。”"),
+                    FOLD(
+                        "情欲描写",
+                        "刻完时你们的指节相碰。她没有退开，呼吸扫过你的耳际：“今晚到此为止。若你还想……明天再问，问的是我，不是链子。”"
+                        "银链不满地凉下去。你记下了那一点未兑现的热——自愿，且可撤回。",
+                    ),
+                ]
+            # charm guard already handled in liriel_desire
+
+        # Add optional once-topic: share a room / acknowledge desire (player-chosen)
+        existing_ids = {s.get("id") for s in (c.get("sub") or [])}
+        if "s2_desire" not in existing_ids:
+            leave_or_end = len(c.get("sub") or [])
+            desire = C(
+                "s2_desire",
+                "承认你们之间的吸引，问她是否愿意更进一步。",
+                "__SELF__",
+                [
+                    P("你把话说清楚：你被她吸引，也看见银链在搅局——你要的是她本人的回答。"),
+                    P("莉瑞尔沉默片刻，拇指摩过银片：“今晚可以。摘下它。任何一刻说停，都算数。”"),
+                    FOLD(
+                        "情欲描写",
+                        "门闩落下。她把银链放在杯托上，自己跨坐到你腿上，先吻你的下唇，再引导你的手掌贴上她的腰、乳尖、湿热处。"
+                        "进入时她咬住你的肩压住叫声；每一次顶撞都让杯托上的银链轻颤，却插不进你们的呼吸——你们都能说停。"
+                        "高潮时她额头顶着你的，汗湿的发黏在颊边。事后她重新戴上银链，声音恢复平静：“这是我选的。记住区别。”",
+                    ),
+                ],
+                [add("rel.liriel", 1), add("time"), setf("liriel_shared_night")],
+                once=True,
+            )
+            c.setdefault("sub", []).insert(max(0, leave_or_end - 0), desire)
 
 # ---------------------------------------------------------------- city
 CITY_SPOTS = [
@@ -1487,6 +1732,18 @@ def text_fixes(N):
         def fix_blocks(bl):
             out = []
             for b in bl:
+                if b.get("t") == "fold":
+                    nested = fix_blocks(b.get("blocks") or [])
+                    if not nested and b.get("text"):
+                        # legacy single-text fold
+                        tb = {"t": "p", "text": b["text"]}
+                        nested = fix_blocks([tb])
+                    if nested:
+                        nb = dict(b)
+                        nb["blocks"] = nested
+                        nb.pop("text", None)
+                        out.append(nb)
+                    continue
                 t = b.get("text", "")
                 for a, r in TEXT_FIX.items():
                     if a in t:

@@ -7,7 +7,13 @@
   function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function show(id) { document.querySelectorAll(".screen").forEach((el) => el.classList.toggle("active", el.id === id)); window.scrollTo(0, 0); }
 
-  function blockHTML(b) {
+  function blockHTML(b, s) {
+    if (b.t === "fold") {
+      const lab = esc(b.label || "情欲描写");
+      const inner = blocksHTML(b.blocks || (b.text ? [{ t: "p", text: b.text }] : []), s);
+      if (!inner) return "";
+      return `<details class="nsfw-fold"><summary><span class="fold-arrow" aria-hidden="true"></span><span class="fold-label">${lab}</span></summary><div class="fold-body">${inner}</div></details>`;
+    }
     const t = esc(b.text);
     if (!t) return "";
     switch (b.t) {
@@ -18,7 +24,12 @@
       default: return `<p class="b-p">${t}</p>`;
     }
   }
-  function blocksHTML(list) { return (list || []).map(blockHTML).join(""); }
+  function blocksHTML(list, s) {
+    return (list || [])
+      .filter((b) => !b.cond || !s || E().test(s, b.cond))
+      .map((b) => blockHTML(b, s))
+      .join("");
+  }
 
   function characterArt(id, name) {
     return `<img class="char-portrait" src="assets/characters/${encodeURIComponent(id)}.jpg" alt="${esc(name)}角色肖像" loading="eager" />`;
@@ -93,12 +104,12 @@
     });
   }
 
-  function resultHTML(view, toasts) {
+  function resultHTML(view, toasts, s) {
     if (!view) return "";
     const chips = (toasts || []).map((t) => `<span class="chip ${t.t}">${esc(t.text)}</span>`).join("");
     return `<div class="you-chose">${esc(view.label)}</div>` +
       (view.checkText ? `<div class="check-line ${view.ok ? "ok" : "fail"}">${esc(view.checkText)}</div>` : "") +
-      blocksHTML(view.blocks) + (chips ? `<div class="chips">${chips}</div>` : "");
+      blocksHTML(view.blocks, s) + (chips ? `<div class="chips">${chips}</div>` : "");
   }
 
   /** last: 上一步的结果 {view, toasts, sameNode} */
@@ -113,11 +124,11 @@
     // 结果面板
     const view = pend ? pend.view : last && last.view;
     const toasts = last ? last.toasts : [];
-    res.innerHTML = resultHTML(view, toasts);
+    res.innerHTML = resultHTML(view, toasts, s);
     res.hidden = !view;
-    if (last && last.extra && last.extra.length) res.innerHTML += blocksHTML(last.extra);
+    if (last && last.extra && last.extra.length) res.innerHTML += blocksHTML(last.extra, s);
     // 节点正文
-    let body = blocksHTML(E().blocksFor(s, s.node));
+    let body = blocksHTML(E().blocksFor(s, s.node), s);
     if (n.kind === "ending") {
       body = endingArt(s.node, n.title, false) + body;
       const ep = E().epilogue(s);

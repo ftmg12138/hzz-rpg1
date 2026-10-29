@@ -53,3 +53,14 @@ export GITHUB_BACKUP_TOKEN=...
 - 存档在浏览器 `localStorage`，无后端。
 - 检定：`d20 + floor((属性-10)/2) >= DC`。
 - 剧情 Markdown 是叙事源文件；解析器与补丁层共同生成浏览器直接运行的数据。
+
+## 情欲折叠块（fold）
+
+露骨描写默认折叠。节点里使用结构化块（由 `tools/wzc_patches.py` 的 `FOLD()` 写入）：
+
+```json
+{"t":"fold","label":"情欲描写","blocks":[{"t":"p","text":"……"}]}
+```
+
+界面渲染为「▸ 情欲描写」，点击展开；主叙述保持可读的淡写。可选 `cond` 与普通块相同。
+
