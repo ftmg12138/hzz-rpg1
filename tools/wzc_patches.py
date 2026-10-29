@@ -89,6 +89,7 @@ def apply(N, epis):
     prologues(N)
     greybridge(N)
     dialogues(N)
+    liriel_desire(N)
     city(N)
     mine(N)
     shrine(N)
@@ -363,6 +364,150 @@ def dialogues(N):
         host.setdefault("choices", []).insert(0 if at.startswith("A3") else len(host["choices"]),
                                               C(f"talk_{did}", label, "__SELF__", [], [], call=did, once=True, talk=True))
         d["return_hint"] = at
+    # Companion hub: never offer the PC as their own companion.
+    if "D-ALT" in N:
+        pc_of = {"t1": "edric", "t2": "liriel", "t3": "thorin"}
+        for c in N["D-ALT"]["choices"]:
+            if c.get("id") in pc_of:
+                c["cond"] = NOT({"pc": pc_of[c["id"]]})
+        N["D-ALT"]["blocks"] = [P("另一位残片持有者注意到了你，停下了手里的事。")]
+
+# ---------------------------------------------------------------- liriel desire / intimacy (consensual adult)
+def liriel_desire(N):
+    """Make voluntary necklace-driven desire scenes more direct; keep non-con paths cut short."""
+    # ---- L-PRO-07 first full desire intrusion
+    n = N["L-PRO-07"]
+    n["blocks"] = [
+        P("雨停了。凯尔或妮芙若在，会走在前方，湿衣贴着肩背；若只剩你一人，路旁旅舍的窗里透出暖光，有人正在唱一首你听不懂的人类情歌。"),
+        P("银链骤然收紧。热意从腕间沉进小腹，再往更私密处涌——乳头发硬，腿根发软，呼吸一下子乱了。你想被手掌按住腰，想被嘴唇堵住未说完的话，想用交合确认自己不是地窖里那个屏住呼吸的影子。欲望先是身体里的热，随后变成更难承认的东西：如果别人真正渴望你，你就暂时不用判断自己值不值得活。"),
+    ]
+    c = find(n, "向愿意的人提出亲近")
+    c["label"] = "向愿意的人提出亲近，并允许对方真实回答。"
+    c["result"] = [
+        P("你没有催动银链。你把话说清楚：你现在想被抱、被进入、被弄到发抖——但对方可以说不。"),
+        {
+            "t": "p",
+            "text": "凯尔听完，喉结滚动一下：“现在不行。但你可以走近一点。”他让你的肩贴上他的，掌心扣住你的指节，拇指在你腕内侧慢慢摩挲。没有更进一步，可那体温足够让银链松一寸。",
+            "cond": {"cmp": ["rel.kael", ">=", 1]},
+        },
+        {
+            "t": "p",
+            "text": "妮芙握住你的手，掌心有泥和汗：“我可以陪你走。不是你欠我的，也不是今晚就得脱衣服。”她把你拉到屋檐下，额头抵着你的。银链不满地轻颤，却找不到可趁的缝。",
+            "cond": {"all": [{"flag": "saved_neve"}, {"not": {"cmp": ["rel.kael", ">=", 1]}}]},
+        },
+        {
+            "t": "p",
+            "text": "旅舍里有个愿意的陌生人。你们关上门，他先问了一句“你确定？”你把银链藏进袖口，自己去解他的扣子。他的手顺着你的腰滑进裙摆，手指探进湿热处时你咬住了他的肩；随后他把你抵在床沿进入，每一次顶撞都让银链轻轻发颤，却无法替任何人开口。你高潮时叫出了声，他也射在里面——都是自愿，没有魅惑。事后你按旅舍规矩付清房钱。银链安静了一阵，像被喂饱。",
+            "cond": {"all": [{"not": {"cmp": ["rel.kael", ">=", 1]}}, {"not": {"flag": "saved_neve"}}]},
+        },
+    ]
+    c["effects"] = [add("fragment_pressure", -1)]
+    c["cond_effects"] = [
+        {"cond": {"cmp": ["rel.kael", ">=", 1]}, "ops": [add("rel.kael")]},
+        {"cond": {"all": [{"flag": "saved_neve"}, {"not": {"cmp": ["rel.kael", ">=", 1]}}]}, "ops": [add("rel.mira")]},
+        {"cond": {"all": [{"not": {"cmp": ["rel.kael", ">=", 1]}}, {"not": {"flag": "saved_neve"}}]},
+         "ops": [add("time"), add("vouchers", -3)]},
+    ]
+
+    c = find(n, "利用银链确保对方不会拒绝")
+    c["result"] = [P("银链一热，对方的眼神就空了。身体还在迎合，可回应里没有本人。你得到短暂安抚，随即恶心：那不是自愿。画面在这里切断。")]
+    # keep existing effects; kael penalty already present
+
+    c = find(n, "把冲动转成坦白")
+    c["result"] = [P("你告诉同行者：“我现在很想让人按住我、进入我，证明我不是多余的。这不是请求，只是事实。”银链不满地收紧，却找不到可替你开口的缝。")]
+
+    c = find(n, "独自压下去")
+    c["success"]["result"] = [P("你靠在湿树上，手指抠进树皮，直到大腿内侧的颤意退去。银链还在跳，可你没有把它指向任何人。")]
+    c["fail"]["result"] = [P("欲望没压住，你仍独自熬过了这一阵。没有伤害别人，只是腿软得几乎站不稳。")]
+
+    c = find(n, "用刀尖在银片上刻一道痕")
+    c["result"] = [P("刀尖划过银片，血珠滚进刻痕。痛意压过情欲半拍。你提醒它：这具身体是谁的。")]
+
+    # ---- A1-TOWN-04 Mira: upgrade parsed liriel intimacy topic (drop designer-leak duplicate)
+    mira = N["A1-TOWN-04"]
+    for b in mira["blocks"]:
+        if b.get("text", "").startswith("米拉一眼看出"):
+            b["text"] = "米拉一眼看出银链带来的躁动：你的瞳孔偏大，喉结轻滚，坐下时双腿不自觉地并紧。"
+        if "欲望不是罪" in b.get("text", ""):
+            b["text"] = "“欲望不是罪。想被操、想被抱紧，都不是。把别人的回答拿走，才是。”"
+
+    # Remove any prior patch-inserted duplicate.
+    mira["choices"] = [c for c in mira["choices"] if c.get("id") != "t_desire"]
+
+    topic = next((c for c in mira["choices"] if "亲近而非沉沦" in c.get("label", "") or c.get("id") == "t_desire"), None)
+    if topic is None:
+        leave_i = next((i for i, c in enumerate(mira["choices"]) if c.get("id") == "leave"), len(mira["choices"]))
+        topic = C("t_desire", "向米拉坦白银链带来的情欲躁动。", None, [], [], topic=True, once=True, cond={"pc": "liriel"}, sub=[])
+        mira["choices"].insert(leave_i, topic)
+    topic["id"] = "t_desire"
+    topic["label"] = "向米拉坦白银链带来的情欲躁动。"
+    topic["cond"] = {"pc": "liriel"}
+    topic["topic"] = True
+    topic["once"] = True
+    topic["next"] = None
+    topic["result"] = [
+        SAY("米拉", "“银链放大的是欲望，不只是想上床。想被爱、想让人别走、想让一句拒绝消失，都是。想被进入、想叫出声，也可以。别恨自己的渴望。盯着你打算让谁替它付账。”"),
+        P("她把一串钥匙转了半圈，等你自己选。"),
+    ]
+    topic["effects"] = []
+    topic["sub"] = [
+        C(
+            "intimate",
+            "请她安排一场双方都自愿的亲近。",
+            "__SELF__",
+            [
+                P("米拉带你见了一位同样自愿、且听过边界说明的客人。门关上之后，没有魅惑，没有“不会拒绝”的把戏。"),
+                P("对方先问你哪里可以碰。你把银链摘下放在枕边，自己跨坐上去，引导对方的手指、再引导进入。肉体撞在一处时银链在枕边轻颤，却插不进你们的对话——你们都能说停。汗、喘息、小腹痉挛的高潮都是你们自己选的。淡出前，米拉在门外敲了一下，提醒时辰。"),
+            ],
+            [add("time"), add("fragment_pressure", -1), {"op": "item", "k": "shaken", "v": False}, setf("mira_intimate_done"), setf("visited_mira")],
+            once=True,
+        ),
+        C(
+            "kitchen",
+            "去后厨帮忙，靠劳动压下冲动。",
+            "__SELF__",
+            [P("你在后厨剁菜、搬汤桶，直到手臂发酸、情欲退成背景噪音。米拉递来一碗浓汤：“欲望可以留着。先把肚子填上。”")],
+            [add("fragment_pressure", -1), setf("visited_mira")],
+            once=True,
+        ),
+        C(
+            "nonrefuse",
+            "要求找一个不会拒绝的人。",
+            "__SELF__",
+            [
+                SAY("米拉", "“门在那边。别再进我的店。”"),
+                P("她当场结束谈话。红牡丹的门在你身后合上。"),
+            ],
+            [add("rel.mira", -2), setf("visited_mira")],
+            once=True,
+        ),
+    ]
+
+    # ---- Desire intrusion pool: more bodily where sex is on the table
+    des3 = N["R-DES-03"]
+    des3["blocks"] = [P("旅店侍者被银链牵着，声音发紧：“今晚的房费……算我的。”他的目光停在你唇上、锁骨上，再往下，像已经在想象把你按在门板上。那不是清醒的邀请。")]
+    c = find(des3, "接受但明确只要房间")
+    c["result"] = [P("你收下免单，却把门从里面闩上，只睡不碰。即便如此，你仍在用银链扭曲过的同意换舒适——腐化悄然加深。")]
+    c = find(des3, "付全价并拉开距离")
+    c["result"] = [P("你把三张商会券拍在柜上，后退一步：“我要的是床，不是你。”他眨眼，欲望像潮水退去，剩下尴尬的红晕。")]
+    c = find(des3, "问对方原本想说什么")
+    c["result"] = [P("他眨眼后抹了把脸：“其实客满。刚才那句……我不该那么说。”你可离开。")]
+    c = find(des3, "加深影响索取情报")
+    c["result"] = [P("你让银链再热一分。他喘着把仓库暗门的位置说完，手指还想去解你的衣带。你按住他的手，只要情报。")]
+
+    des1 = N["R-DES-01"]
+    des1["blocks"] = [P("同伴说要去执行后援。银链却把“留下”熨进舌尖：留下，留下来抱我，留下来别让这具身体空着。话到嘴边，几乎要变成命令。")]
+    c = find(des1, "请求而不强迫")
+    c["result"] = [P("你只说：“我想你留下。你可以拒绝。”对方按自己的意愿答了。被拒绝也让压力松了一点——因为边界还在。")]
+    c = find(des1, "魅惑留下")
+    c["result"] = [P("银链一紧，同伴的脚步就顿住了。后援因此失败。事后对方想起那晚的空白，关系崩了一角。")]
+
+    # D-NPC-MIRA liriel flavor
+    if "D-NPC-MIRA" in N:
+        for b in N["D-NPC-MIRA"]["blocks"]:
+            if "银链放大的是欲望" in b.get("text", ""):
+                b["text"] = "“银链放大的是欲望，不只是想上床。想被爱、想让人别走、想让一句拒绝消失，都是。想被进入、想叫出声，也可以。别恨自己的渴望。盯着你打算让谁替它付账。”"
+
 
 # ---------------------------------------------------------------- city
 CITY_SPOTS = [
