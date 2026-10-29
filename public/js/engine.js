@@ -106,6 +106,19 @@
             s.resonance_explained = true;
             toasts.push({ t: "bad", text: "共鸣：城与钟骨同频的压力（菜单可查看说明）" });
           }
+          if (k === "fall" && before < 4 && num(s, "fall") >= 4 && !s.vars.fall_threshold_4) {
+            s.vars.fall_threshold_4 = true;
+            const pc = s.pc;
+            const msg = pc === "liriel"
+              ? "沉沦加深：有人开始传“饲养会发热的人”的邀约"
+              : pc === "edric"
+              ? "沉沦加深：借酒压记忆的冲动更难推开"
+              : pc === "thorin"
+              ? "沉沦加深：暴怒开始找错对象"
+              : "沉沦加深：残片开始改写你的选择";
+            toasts.push({ t: "bad", text: msg });
+            toasts.push({ t: "bad", text: "沉沦已达阈值（4/6）——酒馆与同伴对话会出现新后果" });
+          }
           break;
         }
         case "set": s.vars[k] = e.v; break;
@@ -132,6 +145,36 @@
         }
         case "adv": s.adv[k || "*"] = true; toasts.push({ t: "good", text: "你为下一次尝试占得了先机" }); break;
         case "dis": s.dis[k || "*"] = true; toasts.push({ t: "bad", text: "下一次尝试会更难" }); break;
+        case "stash_slot": {
+          ensureBags(s);
+          const slot = e.v || k;
+          const gear = META.gear || {};
+          const frag = META.characters[s.pc] && META.characters[s.pc].fragment;
+          let moved = null;
+          for (const id of s.items.slice()) {
+            if (id === frag) continue;
+            const g = gear[id];
+            if (!g) continue;
+            if (slot === "misc") {
+              if (g.slot === "weapon" || g.slot === "armor" || g.slot === "magic") continue;
+            } else if (g.slot !== slot) continue;
+            const r = stashItem(s, id);
+            if (r.ok) { moved = g.name || id; break; }
+          }
+          if (!moved && slot === "misc") {
+            for (const id of s.items.slice()) {
+              if (id === frag) continue;
+              const g = gear[id];
+              if (g && (g.slot === "weapon" || g.slot === "magic")) continue; // prefer non-primary
+              // allow armor as second stash
+              const r = stashItem(s, id);
+              if (r.ok) { moved = (g && g.name) || itemName(id) || id; break; }
+            }
+          }
+          if (moved) toasts.push({ t: "good", text: `已存入安全点：「${moved}」` });
+          else toasts.push({ t: "bad", text: "没有可存的对应物品（或残片拒绝入柜）" });
+          break;
+        }
       }
     }
   }
@@ -331,9 +374,9 @@
     for (const slot of ["weapon", "armor", "magic"]) {
       const id = eq[slot]; if (id && g[id]) p += Number(g[id].power || 0);
     }
-    const str = Math.floor(((s.stats && s.stats.STR) || 10) - 10) / 2;
-    const dex = Math.floor(((s.stats && s.stats.DEX) || 10) - 10) / 2;
-    p += Math.max(0, Math.floor(str), Math.floor(dex));
+    const strMod = Math.floor((((s.stats && s.stats.STR) || 10) - 10) / 2);
+    const dexMod = Math.floor((((s.stats && s.stats.DEX) || 10) - 10) / 2);
+    p += Math.max(0, strMod, dexMod);
     return p;
   }
   function ensureBags(s) {
@@ -379,6 +422,19 @@
     s.vars[itemId] = true;
     return { ok: true, text: "已取回行囊。" };
   }
+  function equipSummary(s) {
+    ensureBags(s);
+    const g = META.gear || {};
+    const names = META.item_names || {};
+    const out = {};
+    for (const slot of ["weapon", "armor", "magic"]) {
+      const id = s.equip[slot];
+      const ge = id && g[id];
+      out[slot] = id ? { id, name: (ge && ge.name) || names[id] || id, power: ge ? Number(ge.power || 0) : 0 } : null;
+    }
+    out.power = combatPower(s);
+    return out;
+  }
   function fallLabel(v) {
     v = Number(v) || 0;
     if (v <= 1) return "沉沦 浅";
@@ -387,5 +443,5 @@
     return "沉沦 危";
   }
 
-  global.WZCEngine = { init, setRng, newState, test, apply, visibleChoices, visibleSubs, resolvePending, canAfford, displayLabel, choose, chooseSub, enter, hub, blocksFor, epilogue, timeLabel, num, REL_NAMES, combatPower, equipItem, unequipSlot, stashItem, takeStash, fallLabel, gearOf, ensureBags };
+  global.WZCEngine = { init, setRng, newState, test, apply, visibleChoices, visibleSubs, resolvePending, canAfford, displayLabel, choose, chooseSub, enter, hub, blocksFor, epilogue, timeLabel, num, REL_NAMES, combatPower, equipItem, unequipSlot, stashItem, takeStash, fallLabel, gearOf, ensureBags, equipSummary };
 })(typeof window !== "undefined" ? window : globalThis);

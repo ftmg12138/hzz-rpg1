@@ -67,30 +67,32 @@
     $("btn-chars-back").onclick = onBack;
   }
 
+  function setVital(el, text, title, warn) {
+    if (!el) return;
+    el.textContent = text || "";
+    if (title) el.title = title;
+    el.className = "vital" + (warn ? " warn" : "");
+  }
   function hud(s, nodes) {
     const Eng = E();
     if (Eng.ensureBags) Eng.ensureBags(s);
+    const meta = global.WZCMeta || {};
+    const help = meta.stats_help || {};
     const n = nodes[s.node] || {};
-    $("hud-name").textContent = s.name;
+    $("hud-name").textContent = s.name || "";
     $("hud-loc").textContent = n.title || "";
-    $("hud-time").textContent = Eng.timeLabel(s);
-    const hp = $("hud-hp"); hp.textContent = `体力 ${s.hp}/${s.max_hp}`; hp.className = s.hp <= Math.ceil(s.max_hp / 3) ? "warn" : "";
-    $("hud-vouchers").textContent = `商会券 ${Eng.num(s, "vouchers")}`;
-    const r = Eng.num(s, "resonance"); const rs = $("hud-resonance");
-    rs.textContent = "共鸣 " + "●".repeat(Math.min(r, 6)) + "○".repeat(Math.max(0, 6 - r)); rs.className = r >= 4 ? "warn" : "";
-    rs.title = (global.WZCMeta && WZCMeta.resonance_help) || "共鸣：城与钟骨同频的压力";
-    const fallEl = $("hud-fall");
-    if (fallEl) {
-      const f = Eng.num(s, "fall");
-      fallEl.textContent = Eng.fallLabel ? Eng.fallLabel(f) : ("沉沦 " + f);
-      fallEl.title = ((global.WZCMeta && WZCMeta.fall_help) || "沉沦值") + `（当前 ${f}/6）`;
-      fallEl.className = f >= 4 ? "warn" : "";
-    }
-    const powEl = $("hud-power");
-    if (powEl && Eng.combatPower) {
-      powEl.textContent = "战力 " + Eng.combatPower(s);
-      powEl.title = "装备与属性合计；战力≥4 时战斗检定占优";
-    }
+    const time = Eng.timeLabel(s) || "";
+    const timeEl = $("hud-time");
+    if (timeEl) { timeEl.textContent = time; timeEl.hidden = !time; }
+    const hpWarn = s.hp <= Math.ceil(s.max_hp / 3);
+    setVital($("hud-hp"), `体 ${s.hp}/${s.max_hp}`, help.hp || "体力", hpWarn);
+    setVital($("hud-vouchers"), `券 ${Eng.num(s, "vouchers")}`, help.vouchers || "商会券", false);
+    const r = Eng.num(s, "resonance");
+    setVital($("hud-resonance"), `共 ${"●".repeat(Math.min(r, 6))}${"○".repeat(Math.max(0, 6 - r))}`, help.resonance || meta.resonance_help || "共鸣", r >= 4);
+    const f = Eng.num(s, "fall");
+    setVital($("hud-fall"), `沉 ${f}/6`, (help.fall || meta.fall_help || "沉沦") + (Eng.fallLabel ? ` · ${Eng.fallLabel(f)}` : ""), f >= 4);
+    const pow = Eng.combatPower ? Eng.combatPower(s) : 0;
+    setVital($("hud-power"), `战 ${pow}`, help.power || "战力：装备与属性合计；≥4 战斗占优", pow >= 4);
   }
 
   function choiceTag(c, s, nodes) {
@@ -187,7 +189,7 @@
     }
 
     let html = "";
-    html += "<h4>装备</h4>";
+    html += `<div class="bag-equip-head"><h4>装备</h4><span class="bag-power-live" id="bag-power-live">战力 ${Eng.combatPower ? Eng.combatPower(s) : 0}</span></div>`;
     for (const slot of ["weapon", "armor", "magic"]) {
       const id = (s.equip || {})[slot];
       const g = id && gear[id];
@@ -258,46 +260,69 @@
     modal(mode === "save" ? "存档" : "读档", auto + rows);
     document.querySelectorAll("#modal-body [data-slot]").forEach((b) => (b.onclick = () => { onPick(Number(b.dataset.slot)); closeModal(); }));
   }
+  function renderStatsHelp(focus) {
+    const meta = global.WZCMeta || {};
+    const h = meta.stats_help || {};
+    const order = [
+      ["hp", "体力", h.hp || meta.hp_help],
+      ["vouchers", "商会券", h.vouchers || meta.vouchers_help],
+      ["resonance", "共鸣", h.resonance || meta.resonance_help],
+      ["fall", "沉沦", h.fall || meta.fall_help],
+      ["power", "战力", h.power || meta.power_help],
+      ["fragment_pressure", "残片压迫", h.fragment_pressure],
+      ["truth", "真相", h.truth],
+    ];
+    let body = `<dl class="stats-help">`;
+    for (const [k, label, text] of order) {
+      if (!text) continue;
+      const hi = focus && focus === k ? ` style="color:var(--ember)"` : "";
+      body += `<dt${hi}>${esc(label)}</dt><dd>${esc(text)}</dd>`;
+    }
+    body += `</dl><p class="muted">点顶部状态条任一格也可打开本说明。正文里的「▸ 残片侵扰 / ▸ 情欲描写」可展开压迫细节。</p>`;
+    modal("属性说明", body);
+  }
   function renderMenu(h) {
-    const rh = (global.WZCMeta && WZCMeta.resonance_help) || "共鸣是城与钟骨同频的压力。升得越高，残片侵扰越烈。";
-    const fh = (global.WZCMeta && WZCMeta.fall_help) || "沉沦记录你对残片的顺从与自我崩解。";
-    modal("菜单", `<div class="menu"><button type="button" class="btn" id="m-save">存档</button><button type="button" class="btn" id="m-load">读档</button><button type="button" class="btn ghost" id="m-help">共鸣与沉沦说明</button><button type="button" class="btn ghost" id="m-title">回到标题</button></div><p class="hint">检定规则：掷一枚二十面骰，加上相应能力的修正，达到难度即成功。较易 10 · 中等 13 · 困难 16 · 极难 19。</p>`);
+    modal("菜单", `<div class="menu"><button type="button" class="btn" id="m-save">存档</button><button type="button" class="btn" id="m-load">读档</button><button type="button" class="btn ghost" id="m-help">属性说明</button><button type="button" class="btn ghost" id="m-title">回到标题</button></div><p class="hint">检定规则：掷一枚二十面骰，加上相应能力的修正，达到难度即成功。较易 10 · 中等 13 · 困难 16 · 极难 19。</p>`);
     $("m-save").onclick = () => { closeModal(); h.onSave(); };
     $("m-load").onclick = () => { closeModal(); h.onLoad(); };
-    $("m-help").onclick = () => { modal("共鸣与沉沦", `<p>${esc(rh)}</p><p>${esc(fh)}</p><p class="muted">三位主角的残片压迫均可在正文中点击「▸ 残片侵扰」或「▸ 情欲描写」小箭头展开。</p>`); };
+    $("m-help").onclick = () => renderStatsHelp();
     $("m-title").onclick = () => { closeModal(); h.onTitle(); };
   }
 
 
   function dossierDepth(s, id) {
     const d = Number(s.vars["dossier_" + id + "_depth"] || 0);
-    if (s.pc === id) return Math.max(d, 1);
-    const met = s.vars["met_" + id] || s.vars[id + "_met"] || (id === "kael");
-    if (!met && id !== "kael") return -1;
-    return d;
+    if (s.pc === id) return Math.max(d, 2);
+    const met = !!(s.vars["met_" + id] || s.vars[id + "_met"] || s.vars["talked_" + id]);
+    if (id === "kael") return met || s.seen["A1-TOWN-02"] || s.seen["A1-TOWN-01"] ? Math.max(d, 0) : -1;
+    if (!met) return -1;
+    return Math.max(d, 0);
   }
   function renderPeople(s, meta) {
     if (!s) return;
     const dossiers = meta.dossiers || {};
-    const order = ["edric","liriel","thorin","valen","kael","ysolde","mira","eilyn","mara","garrick","elara","serath","lyra","gromm"];
-    let html = "";
+    const order = [s.pc, "edric","liriel","thorin","valen","kael","ysolde","mira","eilyn","mara","garrick","elara","serath","lyra","gromm"];
+    const seen = new Set();
+    let html = "<p class=\"muted\">点开条目可查看外貌、性格与你目前所知的经历。</p>";
     let shown = 0;
     order.forEach((id) => {
+      if (!id || seen.has(id)) return; seen.add(id);
       const d = dossiers[id]; if (!d) return;
       const depth = dossierDepth(s, id);
       if (depth < 0) return;
       shown++;
-      const hist = d["history" + Math.min(depth, 2)] || d.history0 || "";
-      html += `<details class="dossier"><summary>${esc(d.name)} · ${esc(d.role || d.appear && d.appear.slice(0, 12) || id)}</summary>` +
+      const hist = d["history" + Math.min(Math.max(depth, 0), 2)] || d.history0 || "";
+      const tag = id === s.pc ? "主角" : (d.role || (d.appear ? d.appear.slice(0, 14) : id));
+      html += `<details class="dossier"${id === s.pc ? " open" : ""}><summary>${esc(d.name)} · ${esc(tag)}</summary>` +
         `<div class="dossier-body">` +
-        (d.appear ? `<p>${esc(d.appear)}</p>` : "") +
-        (d.personality ? `<p><em>${esc(d.personality)}</em></p>` : "") +
+        (d.appear ? `<p><strong>外貌</strong> — ${esc(d.appear)}</p>` : "") +
+        (d.personality ? `<p><strong>性格</strong> — <em>${esc(d.personality)}</em></p>` : "") +
         (d.blurb ? `<p>${esc(d.blurb)}</p>` : "") +
-        `<p class="muted">已知：${esc(hist || d.known || "初识。")}</p>` +
+        `<p class="muted"><strong>已知经历</strong> — ${esc(hist || d.known || "初识。")}</p>` +
         `</div></details>`;
     });
     if (!shown) html = "<p class=\"muted\">尚未结识足够的人。去酒馆或街口多开口。</p>";
     modal("人物简介", html);
   }
-  global.WZCUI = { toast, renderTitle, renderChars, renderGame, renderJournal, renderBag, renderPeople, renderEndings, renderSaveLoad, renderMenu, closeModal };
+  global.WZCUI = { toast, renderTitle, renderChars, renderGame, renderJournal, renderBag, renderPeople, renderEndings, renderSaveLoad, renderMenu, renderStatsHelp, closeModal };
 })(typeof window !== "undefined" ? window : globalThis);

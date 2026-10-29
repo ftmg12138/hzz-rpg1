@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="description" content="雾钟城：第七声 — 单人文字冒险 RPG" />
   <title>雾钟城：第七声</title>
-  <link rel="stylesheet" href="css/app.css?v=10-bgm" />
+  <link rel="stylesheet" href="css/app.css?v=11-phase1" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23141010'/%3E%3Ccircle cx='32' cy='32' r='28' fill='none' stroke='%23b8956a' stroke-width='2'/%3E%3Cpath d='M32 12v8M22 28c0-8 4-12 10-12s10 4 10 12l2 14c1 5-2 8-6 10h-12c-4-2-7-5-6-10z' fill='%23b8956a'/%3E%3Ccircle cx='32' cy='36' r='3' fill='%23c45c3a'/%3E%3C/svg%3E" />
 </head>
 <body class="theme-belfry gate-locked">
@@ -41,25 +41,28 @@
 
     <!-- Game -->
     <section id="screen-game" class="screen">
-      <header class="hud">
-        <div class="hud-left">
-          <span id="hud-name" class="hud-name"></span>
-          <span id="hud-loc" class="hud-loc"></span>
+      <header class="hud" id="hud">
+        <div class="hud-row hud-row-top">
+          <div class="hud-place">
+            <span id="hud-name" class="hud-name"></span>
+            <span id="hud-loc" class="hud-loc"></span>
+            <span id="hud-time" class="hud-time" title="时间"></span>
+          </div>
+          <div class="hud-actions">
+            <button type="button" class="icon-btn" id="btn-journal" title="日志">日志</button>
+            <button type="button" class="icon-btn" id="btn-bag" title="行囊">行囊</button>
+            <button type="button" class="icon-btn" id="btn-people" title="人物">人物</button>
+            <button type="button" class="icon-btn" id="btn-help" title="属性说明">?</button>
+            <button type="button" class="icon-btn" id="btn-save" title="存档">存档</button>
+            <button type="button" class="icon-btn" id="btn-menu" title="菜单">菜单</button>
+          </div>
         </div>
-        <div class="hud-mid">
-          <span id="hud-time" title="时间"></span>
-          <span id="hud-hp" title="体力"></span>
-          <span id="hud-vouchers" title="商会券"></span>
-          <span id="hud-resonance" title="共鸣压力"></span>
-          <span id="hud-fall" title="沉沦"></span>
-          <span id="hud-power" title="战力"></span>
-        </div>
-        <div class="hud-right">
-          <button type="button" class="icon-btn" id="btn-journal" title="日志">日志</button>
-          <button type="button" class="icon-btn" id="btn-bag" title="行囊">行囊</button>
-          <button type="button" class="icon-btn" id="btn-people" title="人物">人物</button>
-          <button type="button" class="icon-btn" id="btn-save" title="存档">存档</button>
-          <button type="button" class="icon-btn" id="btn-menu" title="菜单">菜单</button>
+        <div class="hud-row hud-vitals" id="hud-vitals" aria-label="状态">
+          <button type="button" class="vital" id="hud-hp" title="体力" data-stat="hp"></button>
+          <button type="button" class="vital" id="hud-vouchers" title="商会券" data-stat="vouchers"></button>
+          <button type="button" class="vital" id="hud-resonance" title="共鸣" data-stat="resonance"></button>
+          <button type="button" class="vital" id="hud-fall" title="沉沦" data-stat="fall"></button>
+          <button type="button" class="vital" id="hud-power" title="战力" data-stat="power"></button>
         </div>
       </header>
       <main class="stage">
@@ -84,12 +87,12 @@
 
     <div id="toast" class="toast" hidden></div>
   </div>
-  <script src="js/checks.js?v=10-bgm"></script>
-  <script src="js/save.js?v=10-bgm"></script>
-  <script src="js/engine.js?v=10-bgm"></script>
-  <script src="js/ui.js?v=10-bgm"></script>
-  <script src="js/bgm.js?v=10-bgm"></script>
-  <script src="js/gate.js?v=10-bgm"></script>
-  <script src="js/main.js?v=10-bgm"></script>
+  <script src="js/checks.js?v=11-phase1"></script>
+  <script src="js/save.js?v=11-phase1"></script>
+  <script src="js/engine.js?v=11-phase1"></script>
+  <script src="js/ui.js?v=11-phase1"></script>
+  <script src="js/bgm.js?v=11-phase1"></script>
+  <script src="js/gate.js?v=11-phase1"></script>
+  <script src="js/main.js?v=11-phase1"></script>
 </body>
 </html>

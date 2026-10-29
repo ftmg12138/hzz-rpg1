@@ -75,6 +75,12 @@
     document.getElementById("btn-journal").onclick = () => WZCUI.renderJournal(state, meta);
     document.getElementById("btn-bag").onclick = () => WZCUI.renderBag(state, meta);
     document.getElementById("btn-people").onclick = () => WZCUI.renderPeople(state, meta);
+    document.getElementById("btn-help").onclick = () => WZCUI.renderStatsHelp();
+    document.getElementById("hud-vitals").onclick = (e) => {
+      const v = e.target.closest && e.target.closest(".vital");
+      if (!v) return;
+      WZCUI.renderStatsHelp(v.dataset.stat);
+    };
     document.getElementById("btn-save").onclick = openSave;
     document.getElementById("btn-menu").onclick = () => WZCUI.renderMenu({ onSave: openSave, onLoad: openLoad, onTitle: () => { state = null; showTitle(); } });
     document.addEventListener("keydown", (e) => {
