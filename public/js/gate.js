@@ -77,6 +77,10 @@
     `;
     document.body.appendChild(root);
     document.body.classList.add("gate-locked");
+    if (global.WZCBgm) {
+      global.WZCBgm.mount();
+      global.WZCBgm.armGestureUnlock(root);
+    }
     return root;
   }
 
@@ -84,6 +88,10 @@
     return new Promise((resolve) => {
       if (isUnlocked()) {
         document.body.classList.remove("gate-locked");
+        if (global.WZCBgm) {
+          global.WZCBgm.mount();
+          global.WZCBgm.armGestureUnlock(document.body);
+        }
         return resolve(true);
       }
       const root = createGateUI();
@@ -180,6 +188,10 @@
           setTimeout(() => {
             root.remove();
             document.body.classList.remove("gate-locked");
+            if (global.WZCBgm) {
+              global.WZCBgm.mount();
+              global.WZCBgm.tryStart();
+            }
             resolve(true);
           }, 520);
           return;
@@ -268,6 +280,10 @@
   async function requireUnlock() {
     if (isUnlocked()) {
       document.body.classList.remove("gate-locked");
+      if (global.WZCBgm) {
+        global.WZCBgm.mount();
+        global.WZCBgm.armGestureUnlock(document.body);
+      }
       return true;
     }
     let data;

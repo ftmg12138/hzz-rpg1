@@ -848,3 +848,68 @@ body.gate-locked #fog { opacity: 0; }
   }
   .gate-plate { width: min(400px, 42vw); }
 }
+
+
+/* —— BGM dock (封面 / 标题共用) —— */
+#bgm-dock {
+  position: fixed;
+  z-index: 10050;
+  left: 14px;
+  bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  pointer-events: none;
+  max-width: min(280px, calc(100vw - 28px));
+}
+.bgm-toggle {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #8a734a88;
+  background: linear-gradient(180deg, #2a2218ee, #16110cee);
+  color: #e8d4a8;
+  font-family: var(--serif);
+  font-size: 13px;
+  letter-spacing: .06em;
+  cursor: pointer;
+  box-shadow: 0 6px 18px #0008, inset 0 1px 0 #c9a66a33;
+  backdrop-filter: blur(4px);
+}
+.bgm-toggle:hover {
+  border-color: #c9a66acc;
+  color: #ffe7b8;
+}
+.bgm-toggle .bgm-ico {
+  display: inline-flex;
+  width: 1.1em;
+  justify-content: center;
+  opacity: .9;
+}
+.bgm-toggle[data-state="playing"] {
+  border-color: #b8956aaa;
+}
+.bgm-toggle[data-state="muted"] {
+  opacity: .78;
+  color: #a89878;
+}
+.bgm-credit {
+  pointer-events: none;
+  margin: 0;
+  padding: 0 4px;
+  font-size: 10px;
+  line-height: 1.35;
+  color: #9a8868aa;
+  font-family: var(--serif);
+  letter-spacing: .02em;
+  text-shadow: 0 1px 2px #000a;
+}
+body.gate-locked .bgm-credit { color: #cbb892bb; }
+@media (max-width: 420px) {
+  #bgm-dock { left: 10px; bottom: 10px; }
+  .bgm-credit { font-size: 9px; max-width: 70vw; }
+}
