@@ -1,6 +1,6 @@
 {
  "title": "雾钟城：第七声",
- "version": "2.2.0-phase2",
+ "version": "2.2.1-fall-art",
  "node_count": 221,
  "characters": {
   "edric": {
@@ -630,6 +630,7 @@
    "END-FALL-EDRIC",
    "END-FALL-THORIN"
   ],
-  "notes": "Act2/3 density + fall endings + Liriel mid/late desire + 第七声 theming"
+  "notes": "Act2/3 density + fall endings + Liriel mid/late desire + 第七声 theming",
+  "fall_art": "commissioned_gen_2026-10-29"
  }
 }
