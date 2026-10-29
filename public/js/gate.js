@@ -41,54 +41,45 @@
     root.setAttribute("aria-modal", "true");
     root.setAttribute("aria-label", "尘封书封面门禁");
     root.innerHTML = `
-      <div class="gate-backdrop" aria-hidden="true"></div>
-      <div class="gate-book">
-        <div class="gate-ribbon" aria-hidden="true"></div>
-        <div class="gate-pages" aria-hidden="true"></div>
-        <div class="gate-spine" aria-hidden="true">
-          <span class="gate-spine-band"></span>
-          <span class="gate-spine-band"></span>
-          <span class="gate-spine-band"></span>
-          <span class="gate-spine-band"></span>
+      <div class="gate-scene" aria-hidden="true">
+        <picture class="gate-photo">
+          <source type="image/webp" srcset="assets/gate/tome-desk.webp" />
+          <img src="assets/gate/tome-desk.jpg" alt="" width="1502" height="1047" decoding="async" fetchpriority="high" />
+        </picture>
+        <div class="gate-shade"></div>
+        <div class="gate-light"></div>
+        <div class="gate-flame">
+          <span class="gate-flame-glow"></span>
+          <span class="gate-flame-outer"></span>
+          <span class="gate-flame-mid"></span>
+          <span class="gate-flame-core"></span>
+          <span class="gate-flame-wick"></span>
         </div>
-        <div class="gate-cover">
-          <div class="gate-leather" aria-hidden="true"></div>
-          <div class="gate-scuffs" aria-hidden="true"></div>
-          <div class="gate-dust" aria-hidden="true"></div>
-          <div class="gate-peel" aria-hidden="true"></div>
-          <div class="gate-corner gate-corner-tl" aria-hidden="true"></div>
-          <div class="gate-corner gate-corner-tr" aria-hidden="true"></div>
-          <div class="gate-corner gate-corner-bl" aria-hidden="true"></div>
-          <div class="gate-corner gate-corner-br" aria-hidden="true"></div>
-          <div class="gate-frame" aria-hidden="true"></div>
-          <div class="gate-seal" aria-hidden="true"><img src="assets/gate/wax-vii.svg" alt="" /></div>
-          <div class="gate-plate">
-            <p class="gate-eyebrow">尘封典籍</p>
-            <h1 class="gate-title">雾钟城：第七声</h1>
-            <p class="gate-sub">解开封蜡，方可翻开第七声</p>
-            <div class="gate-step" id="gate-step-pass">
-              <label class="gate-label" for="gate-pass">口令</label>
-              <input type="password" id="gate-pass" class="gate-input" autocomplete="off" spellcheck="false" placeholder="输入口令" />
-              <button type="button" class="btn primary gate-btn" id="gate-verify">验证口令</button>
+      </div>
+      <div class="gate-plate">
+        <p class="gate-eyebrow">尘封典籍</p>
+        <h1 class="gate-title">雾钟城：第七声</h1>
+        <p class="gate-sub">烛火摇曳。解开封蜡，方可翻开第七声。</p>
+        <div class="gate-step" id="gate-step-pass">
+          <label class="gate-label" for="gate-pass">口令</label>
+          <input type="password" id="gate-pass" class="gate-input" autocomplete="off" spellcheck="false" placeholder="输入口令" />
+          <button type="button" class="btn primary gate-btn" id="gate-verify">验证口令</button>
+        </div>
+        <div class="gate-step" id="gate-step-pat" hidden>
+          <p class="gate-label">手势密码 · 至少连四点</p>
+          <div class="gate-pad-wrap">
+            <svg class="gate-lines" id="gate-lines" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+            <div class="gate-pad" id="gate-pad" role="application" aria-label="九点手势密码">
+              ${[1,2,3,4,5,6,7,8,9].map((n) => `<button type="button" class="gate-dot" data-n="${n}" aria-label="点 ${n}" tabindex="-1"></button>`).join("")}
             </div>
-            <div class="gate-step" id="gate-step-pat" hidden>
-              <p class="gate-label">手势密码 · 至少连四点</p>
-              <div class="gate-pad-wrap">
-                <svg class="gate-lines" id="gate-lines" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
-                <div class="gate-pad" id="gate-pad" role="application" aria-label="九点手势密码">
-                  ${[1,2,3,4,5,6,7,8,9].map((n) => `<button type="button" class="gate-dot" data-n="${n}" aria-label="点 ${n}" tabindex="-1"></button>`).join("")}
-                </div>
-              </div>
-              <div class="gate-pat-actions">
-                <button type="button" class="btn ghost gate-btn-ghost" id="gate-pat-clear">清除手势</button>
-                <button type="button" class="btn ghost gate-btn-ghost" id="gate-back-pass">返回口令</button>
-              </div>
-            </div>
-            <p class="gate-msg" id="gate-msg" role="status" aria-live="polite"></p>
-            <p class="gate-hint">口令正确后绘制手势 · 本标签页会话内保持解锁</p>
           </div>
-          <div class="gate-torn" aria-hidden="true"></div>
+          <div class="gate-pat-actions">
+            <button type="button" class="btn ghost gate-btn-ghost" id="gate-pat-clear">清除手势</button>
+            <button type="button" class="btn ghost gate-btn-ghost" id="gate-back-pass">返回口令</button>
+          </div>
         </div>
+        <p class="gate-msg" id="gate-msg" role="status" aria-live="polite"></p>
+        <p class="gate-hint">口令正确后绘制手势 · 本标签页会话内保持解锁</p>
       </div>
     `;
     document.body.appendChild(root);
