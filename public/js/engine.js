@@ -119,6 +119,19 @@
             toasts.push({ t: "bad", text: msg });
             toasts.push({ t: "bad", text: "沉沦已达阈值（4/6）——酒馆与同伴对话会出现新后果" });
           }
+          if (k === "fall" && before < 6 && num(s, "fall") >= 6 && !s.vars.fall_threshold_6) {
+            s.vars.fall_threshold_6 = true;
+            const pc = s.pc;
+            const msg6 = pc === "liriel"
+              ? "沉沦极限：饲养与项圈的门已打开（城市枢纽 / 初鸣庭可选沉沦结局）"
+              : pc === "edric"
+              ? "沉沦极限：酒与放弃的结局已在门口（城市枢纽 / 初鸣庭）"
+              : pc === "thorin"
+              ? "沉沦极限：裂锤不认人的结局已在门口（城市枢纽 / 初鸣庭）"
+              : "沉沦极限：专属结局已解锁";
+            toasts.push({ t: "bad", text: msg6 });
+            toasts.push({ t: "bad", text: "沉沦已达极限（6/6）——可进入沉沦专属结局与后日谈" });
+          }
           break;
         }
         case "set": s.vars[k] = e.v; break;

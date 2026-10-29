@@ -132,6 +132,19 @@ def apply(N, epis):
     except Exception as e:
         print('wzc_revision_pass skipped:', e)
 
+    try:
+        import wzc_phase1_systems as _p1
+        _p1.patch_tavern_shallow(N)
+        _p1.patch_stash_actions(N)
+    except Exception as e:
+        print('wzc_phase1_systems skipped:', e)
+
+    try:
+        import wzc_phase2_pass as _p2
+        _p2.apply_to_nodes(N)
+    except Exception as e:
+        print('wzc_phase2_pass skipped:', e)
+
 # ---------------------------------------------------------------- prologues
 def prologues(N):
     # ---- L-PRO-01: ruins hub, two careful searches before dark
@@ -1937,8 +1950,8 @@ def text_fixes(N):
 def meta(N):
     chars = json.loads((ROOT / "tools/characters.json").read_text(encoding="utf-8"))
     epis = EPILOGUES
-    return {
-        "title": "雾钟城：第七声", "version": "2.0.0", "node_count": len(N),
+    m = {
+        "title": "雾钟城：第七声", "version": "2.2.0-phase2", "node_count": len(N),
         "characters": chars,
         "time_labels": ["黄昏", "入夜", "深夜", "午夜", "三更", "四更", "黎明"],
         "item_names": dict(T.ITEM_NAMES),
@@ -1950,3 +1963,19 @@ def meta(N):
         "dc_words": {"10": "较易", "13": "中等", "16": "困难", "19": "极难"},
         "stat_names": {"STR": "力量", "DEX": "敏捷", "CON": "体魄", "CHA": "魅力", "INS": "洞察", "WIL": "意志"},
     }
+    try:
+        import wzc_revision_pass as _rp
+        _rp.patch_meta(m)
+    except Exception as e:
+        print("revision meta skipped:", e)
+    try:
+        import wzc_phase1_systems as _p1
+        _p1.patch_meta(m)
+    except Exception as e:
+        print("phase1 meta skipped:", e)
+    try:
+        import wzc_phase2_pass as _p2
+        _p2.patch_meta(m, N)
+    except Exception as e:
+        print("phase2 meta skipped:", e)
+    return m

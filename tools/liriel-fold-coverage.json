@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-29T07:24:36.626Z",
+  "generated": "2026-10-29T08:25:29.975Z",
   "scanned": 48,
   "counts": {
     "a_has_fold": 24,
@@ -169,7 +169,7 @@
       "id": "A1-TOWN-02",
       "title": "白鸦旅店",
       "cls": "a",
-      "folds": 5,
+      "folds": 16,
       "required": true,
       "lirielish": true,
       "intimacy": true
